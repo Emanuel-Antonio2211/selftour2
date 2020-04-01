@@ -1,0 +1,30 @@
+Column(
+    children: <Widget>[
+    Container(
+        child: Stack(
+        overflow: Overflow.visible,
+        children: <Widget>[
+        Container(
+            child: _card(),
+        ),
+        Positioned(
+            top: 190.0,
+            left: 28.0,
+            child: Container(
+            child: _cardTipo1(),
+            ),
+        ),
+        Positioned(
+            top: 300.0,
+            left: 270.0,
+            child: FloatingActionButton(
+            backgroundColor: Colors.lightGreen[300],
+            child: Icon(Icons.favorite_border,color: Colors.white,),
+            onPressed: (){},
+            )
+        )
+        ],
+        ),
+    ),
+    ],
+)
