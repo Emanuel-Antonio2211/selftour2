@@ -2,18 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:provider/provider.dart';
-import 'package:selftourapp/src/googlemaps/requests/google_maps_requests.dart';
+//import 'package:provider/provider.dart';
+//import 'package:selftourapp/src/googlemaps/requests/google_maps_requests.dart';
 import 'package:selftourapp/src/googlemaps/states/app_state.dart';
 import 'package:selftourapp/src/models/detalle_tour_model.dart';
-import 'package:selftourapp/src/widgets/compra_tour_page.dart';
+//import 'package:selftourapp/src/widgets/compra_tour_page.dart';
 
 class InformacionTour extends StatelessWidget {
   final List<DetalleTour> listadetalle;
   InformacionTour({@required this.listadetalle});
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
+    //Size size = MediaQuery.of(context).size;
     return Container(
       child: ListView.builder(
         itemCount: listadetalle.length,
@@ -407,6 +407,8 @@ class InformacionTour extends StatelessWidget {
       ],
     );
   }
+
+  /*
   Widget _botonesOpcionesUsuario(BuildContext context){
     final size = MediaQuery.of(context).size;
     String _valor = "COMPRADO";
@@ -447,7 +449,7 @@ class InformacionTour extends StatelessWidget {
           ),*/
       ],
     );
-  }
+  }*/
 
   Widget _botonEnlace(BuildContext context){
     return FlatButton(
@@ -475,7 +477,7 @@ class InformacionTour extends StatelessWidget {
 
   Widget _parrafoInformacion(BuildContext context,DetalleTour detalle) {
     //InfoTour _tour = ModalRoute.of(context).settings.arguments;
-    final size = MediaQuery.of(context).size;
+    //final size = MediaQuery.of(context).size;
     return Column(
       children: <Widget>[
         Container(
@@ -548,14 +550,14 @@ class InformacionTour extends StatelessWidget {
           child: RaisedButton(
             child: Text('Ver más',style: TextStyle(color: Colors.white),),
             onPressed: ()async{
-          List<LatLng> puntos = [
+          /*List<LatLng> puntos = [
                 
                 LatLng(20.9751655,-89.6212047),
                 LatLng(20.974451,-89.6231728),
                 LatLng(20.9717124,-89.6256245),
                 LatLng(20.9713964,-89.6250387),
                 
-              ];
+              ];*/
               //GoogleMapsServices services = new GoogleMapsServices();
              // services.navegar();
             Navigator.pushNamed(context, 'googlemap',arguments: detalle);
@@ -956,7 +958,7 @@ class InformacionTour extends StatelessWidget {
   Widget _fotosSitio(BuildContext context,DetalleTour detalle){
     var size = MediaQuery.of(context).size;
     //InfoTour tour = ModalRoute.of(context).settings.arguments;
-    DetalleTour tour = new DetalleTour();
+    //DetalleTour tour = new DetalleTour();
     return PageView.builder(
       pageSnapping: false,
       controller: PageController(

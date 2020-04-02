@@ -1,10 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+//import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 //import 'package:flutter_advanced_networkimage/provider.dart';
 import 'package:selftourapp/src/models/tour_categoria_model.dart';
-import 'package:selftourapp/src/preferencias_usuario/preferencias_usuario.dart';
-import 'package:selftourapp/src/providers/categorias_providers.dart';
+//import 'package:selftourapp/src/preferencias_usuario/preferencias_usuario.dart';
+//import 'package:selftourapp/src/providers/categorias_providers.dart';
 import 'package:translator/translator.dart';
 
 class ToursRecientes extends StatefulWidget {
@@ -52,8 +52,8 @@ class _ToursRecientesState extends State<ToursRecientes> {
   Widget recientes (BuildContext context,InfoTour tourReciente){
     final size = MediaQuery.of(context).size;
     //CategoriasProvider categoriasProvider = CategoriasProvider();
-    PreferenciasUsuario prefs = PreferenciasUsuario();
-    final BaseCacheManager baseCacheManager = DefaultCacheManager();
+    //PreferenciasUsuario prefs = PreferenciasUsuario();
+    //final BaseCacheManager baseCacheManager = DefaultCacheManager();
 
     final tarjeta = Container(
       child: Column(

@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_progress_button/flutter_progress_button.dart';
-import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:generic_bloc_provider/generic_bloc_provider.dart';
 import 'package:selftourapp/src/bloc/login_bloc.dart';
 
@@ -29,7 +28,7 @@ class _LoginState extends State<Login> {
   Widget build(BuildContext context) {
     LoginBloc bloc = BlocProvider.of<LoginBloc>(context);
     final size = MediaQuery.of(context).size;
-    String login = AppTranslations.of(context).text('title_login');
+    //String login = AppTranslations.of(context).text('title_login');
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -141,7 +140,7 @@ Widget _email(LoginBloc bloc){
  return StreamBuilder(
     stream: bloc.emailStream,
     builder: (BuildContext context, AsyncSnapshot snapshot){
-      String errorEmail = AppTranslations.of(context).text('title_erroremail');
+      //String errorEmail = AppTranslations.of(context).text('title_erroremail');
 
       return Column(
         children: <Widget>[
@@ -284,12 +283,14 @@ Widget _botonIngresar(LoginBloc bloc){
 
 _login(LoginBloc bloc,BuildContext context) async {
  Map info = await usuarioProvider.loginIn(bloc.mail, bloc.pass);
- bloc.signInEmail(bloc.mail, bloc.pass, context);
+ 
  String errorLog = AppTranslations.of(context).text('title_errorlog');
 //await bloc.signInEmail(bloc.mail,bloc.pass, context);
+
  if(info['success']){
    //Navigator.pushReplacementNamed(context, 'menuprincipal');
-   Navigator.pop(context);
+    await bloc.signInEmail(bloc.mail, bloc.pass, context).then((result){});
+   //Navigator.pop(context);
  }else{
    mostrarAlerta(context,info['mensaje'],'$errorLog','assets/error.png');
  }

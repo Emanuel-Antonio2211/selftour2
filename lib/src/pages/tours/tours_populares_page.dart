@@ -1,4 +1,4 @@
-import 'package:cached_network_image/cached_network_image.dart';
+//import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 //import 'package:material_design_icons_flutter/icon_map.dart';
 import 'package:selftourapp/src/models/tour_categoria_model.dart';

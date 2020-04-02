@@ -1,10 +1,14 @@
 //Este archivo va a contener todos los casos de uso de la aplicación
 import 'dart:async'; //Para manejar streams
+import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart'; //Aplica el combinelastes
 import 'package:selftourapp/src/bloc/validators.dart';
 import 'package:selftourapp/src/preferencias_usuario/preferencias_usuario.dart';
+import 'package:selftourapp/src/providers/usuario_provider.dart';
 //Se importa el archivo repositorio creado anteriormente
 import 'package:selftourapp/src/repository/auth_repository.dart';
 import 'package:generic_bloc_provider/generic_bloc_provider.dart';
@@ -21,8 +25,11 @@ class LoginBloc with Validators implements Bloc{
   AuthRepository _authrepository = AuthRepository();
   //Se instancia FirebaseAuth
   FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-
+  //UsuarioProvider _usuarioProvider = UsuarioProvider();
+  final firebaseMessaging = FirebaseMessaging();
   PreferenciasUsuario prefs = new PreferenciasUsuario();
+  String tokenFCM = '';
+
   //Se declara el stream - Flujo de datos
   //Stream - Firebase
   //StreamController
@@ -40,6 +47,40 @@ class LoginBloc with Validators implements Bloc{
       streamFirebase.sink.add(user);
     });
   }
+
+  Map<String, dynamic> parseJwt(String token) {
+  final parts = token.split('.');
+  if (parts.length != 3) {
+    throw Exception('invalid token');
+  }
+
+  final payload = _decodeBase64(parts[1]);
+  final payloadMap = json.decode(payload);
+  if (payloadMap is! Map<String, dynamic>) {
+    throw Exception('invalid payload');
+  }
+
+  return payloadMap;
+}
+
+ String _decodeBase64(String str) {
+  String output = str.replaceAll('-', '+').replaceAll('_', '/');
+
+  switch (output.length % 4) {
+    case 0:
+      break;
+    case 2:
+      output += '==';
+      break;
+    case 3:
+      output += '=';
+      break;
+    default:
+      throw Exception('Illegal base64url string!"');
+  }
+
+  return utf8.decode(base64Url.decode(output));
+}
   
   //Los bloc se conectan con la interfaz de usuario
   //Casos de uso
@@ -122,11 +163,12 @@ class LoginBloc with Validators implements Bloc{
   }
   //3. Sign In a la aplicacion con Google
 signInGoogle(BuildContext context) async { //Se va a llamar en la interfaz
-   _authrepository.signInFirebaseGoogle().then((FirebaseUser authUser){
+  await _authrepository.signInFirebaseGoogle().then((FirebaseUser authUser)async{
    
-   if(authUser == null){
-    _authrepository.usuarioNuevo(authUser.providerData[1].displayName, authUser.providerData[1].email, null, authUser.providerData[1].phoneNumber).then((user){
+   /*if(authUser == null){
+    /*_authrepository.usuarioNuevo(authUser.providerData[1].displayName, authUser.providerData[1].email, null, authUser.providerData[1].phoneNumber).then((user){
       //Navigator.pop(context);
+      
       Map info = user;
       if(info['ok']){
         streamFirebase.sink.add(authUser);
@@ -135,26 +177,114 @@ signInGoogle(BuildContext context) async { //Se va a llamar en la interfaz
       }
     }).catchError((error){
       mostrarAlerta(context, error.toString(), error.toString(), 'assets/error.png');
+    });*/
+    await _authrepository.loginUserGoogle(authUser.providerData[0].uid).then((user){
+      final result = user;
+      if(result['_dtu']['msg'] == "Login Successfully"){
+        prefs.token = result['_dtu']['provider']['_uit'][0] + result['_dtu']['provider']['_uit'][1] + result['_dtu']['provider']['_uit'][2];
+        final decodedInfoUser = parseJwt(prefs.token);
+        print("Datos del usuario decodificado");
+        print(decodedInfoUser);
+        streamFirebase.sink.add(authUser);
+      }else{
+        mostrarAlerta(context, result['_dtu']['msg'], '', 'assets/error.png');
+      }
+    }).catchError((error){
+      mostrarAlerta(context, error.toString(), error.toString(), 'assets/error.png');
     });
    }else{
      streamFirebase.sink.add(authUser);
-   }
-    
+   }*/
+    await _authrepository.loginUserGoogle(authUser.providerData[0].uid.toString()).then((user)async{
+      final result = user;
+      if(result['_dtu']['msg'] == "Login Successfully"){
+        
+        String token = '';
+        String resultToken = '';
+        for(int i = 0; i < result['_dtu']['provider']['_uit'].length; i++){
+          token = token + result['_dtu']['provider']['_uit'][i].toString()+".";
+          resultToken = token.substring(0,token.length-1);
+        }
+        print("Token: ");
+        print(resultToken);
+        //prefs.token = prefs.token + "${result['_dtu']['provider']['_uit'][0].toString()}" + "${result['_dtu']['provider']['_uit'][1].toString()}" + "${result['_dtu']['provider']['_uit'][2].toString()}";
+        prefs.token = resultToken;
+        final decodedInfoUser = parseJwt(prefs.token.toString());
+        print("Datos del usuario decodificado");
+        prefs.iduser = decodedInfoUser['id'].toString();
+        prefs.name = result['_dtu']['udt']['name'].toString();
+        prefs.email = authUser.providerData[1].email.toString();
+        prefs.phone = authUser.providerData[1].phoneNumber.toString();
+        prefs.photoUrl = result['_dtu']['udt']['photoURL'].toString();
+        if(authUser != null){
+          // Check is already sign up - Checa si está logueado
+          firebaseMessaging.getToken().then((token){
+            tokenFCM = token;
+            print("Token 1");
+            print(tokenFCM);
+          });
+          
+          prefs.tokenFCM = tokenFCM;
+          Stream<String> fcmStream = firebaseMessaging.onTokenRefresh;
+          fcmStream.listen((token){
+            prefs.tokenFCM = token;
+            print("Token Refresh");
+            print(prefs.tokenFCM);
+          });
+          final QuerySnapshot result = await Firestore.instance.collection('users').where('email',isEqualTo: prefs.email).getDocuments(); //authUser.providerData[1].email
+          final List<DocumentSnapshot> documents = result.documents;
+          if(documents.length == 0){
+            // Update data to server if new user - Actualiza los datos del servidor
+            // si el usuario es nuevo myUser.providerData[1].uid
+            //authUser.providerData[1].email
+            Firestore.instance.collection('users').document(prefs.email).setData(
+              {
+                'tokenfcm':"$tokenFCM",
+                'nickname': prefs.name,//authUser.providerData[1].displayName
+                'id': prefs.iduser,//authUser.providerData[1].uid
+                'email': prefs.email,//authUser.providerData[1].email
+                'photoUrl': prefs.photoUrl,//authUser.providerData[1].photoUrl
+                'createdAt': DateTime.now().millisecondsSinceEpoch.toString(),
+                'chattingWith': null
+              }
+            );
+
+            // Write data to local - Escribir los datos en local
+          // FirebaseUser currentUser = user;
+            
+          }else{
+            print("El usuario ya existe");
+            Stream<String> fcmStream = firebaseMessaging.onTokenRefresh;
+            fcmStream.listen((token){
+              prefs.tokenFCM = token;
+              print("Token Refresh");
+              print(prefs.tokenFCM);
+            });
+          }
+        }
+        print(decodedInfoUser);
+        streamFirebase.sink.add(authUser);
+      }else{
+        mostrarAlerta(context, result['_dtu']['msg'].toString() , '', 'assets/error.png'); //result['_dtu']['msg']
+      }
+    }).catchError((error){
+      mostrarAlerta(context, error.toString(), error.toString(), 'assets/error.png');
+    });
      //await usuarioNuevo(myUser.displayName, myUser.email, null, null);
    }).catchError((error){
      mostrarAlerta(context, error.toString(), error.toString(), 'assets/error.png');
    });
   }
-signInEmail( String email,String pass, BuildContext context)async{
+Future<void> signInEmail( String email,String pass, BuildContext context)async{
     //final size = MediaQuery.of(context).size;
-    _authrepository.logEmailPassword(email, pass).then((authUser){
+    String noverificado = AppTranslations.of(context).text('title_noverificado');
+    await _authrepository.logEmailPassword(email, pass).then((authUser)async{
       if(authUser == null){
-        _authrepository.registerEmail(email, pass).then((user){
+       await _authrepository.registerEmail(email, pass).then((user){
           if(user.isEmailVerified){
-            
             mostrarAlerta(context, user.isEmailVerified.toString(), '', 'assets/error.png');
           }else{
-            mostrarAlerta(context, 'No verificado', '', 'assets/error.png');
+            mostrarAlerta(context, '$noverificado', '', 'assets/error.png');
           }
         }).catchError((error){
           mostrarAlerta(context, error.toString(), '', 'assets/error.png');
@@ -214,8 +344,8 @@ signInEmail( String email,String pass, BuildContext context)async{
   createUser(BuildContext context,String email, String password)async{
     String errorReg = AppTranslations.of(context).text('title_errorreg');
     //String errorLog = AppTranslations.of(context).text('title_errorlog');
-    _authrepository.registerEmail(email, password).then((usuario){
-      signInEmail(email, pass,context);
+    await _authrepository.registerEmail(email, password).then((usuario)async{
+     await signInEmail(email, pass,context);
       return usuario;
     }).catchError((error){
       mostrarAlerta(context, error.toString(),'$errorReg', 'assets/error.png');

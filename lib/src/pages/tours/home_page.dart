@@ -394,11 +394,11 @@ Future<void> getDatos()async{
 
 
   Widget _imagenFondo(){
-    final appState = Provider.of<AppState>(context);
+    //final appState = Provider.of<AppState>(context);
    //print(appState.location);
     var size = MediaQuery.of(context).size;
-    String hoy = AppTranslations.of(context).text('title_today');
-    String mes = AppTranslations.of(context).text('title_month');
+    //String hoy = AppTranslations.of(context).text('title_today');
+    //String mes = AppTranslations.of(context).text('title_month');
 
     List<String> imagenes = [
       'assets/app/Imagen1.jpeg',
@@ -557,7 +557,7 @@ Future<void> getDatos()async{
           ),
         );
   }
-  Widget _mes(){
+  /*Widget _mes(){
     String dropdownValue = 'Mes';
     return DropdownButton<String>(
         underline: Container(),
@@ -575,7 +575,7 @@ Future<void> getDatos()async{
         }).toList(),
       );
     
-  }
+  }*/
 
   
 
@@ -1103,7 +1103,7 @@ Future<void> getDatos()async{
       },
     );
   }
-  Widget _imagenes() {
+ /* Widget _imagenes() {
     var size = MediaQuery.of(context).size;
     final imagen = Container(
       padding: EdgeInsets.all(6.0),
@@ -1206,7 +1206,7 @@ Future<void> getDatos()async{
         ],
       ),
     );
-  }
+  }*/
 
   
   

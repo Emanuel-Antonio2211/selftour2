@@ -548,6 +548,7 @@ class _GaleriaPageState extends State<GaleriaPage> {
     );
   }
 
+/*
   Widget _cardTipo1() {
     // Retorna una tarjeta
     return Container(
@@ -588,5 +589,5 @@ class _GaleriaPageState extends State<GaleriaPage> {
         ),
       ),
     );
-  }
+  }*/
 }

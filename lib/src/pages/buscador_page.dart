@@ -204,6 +204,7 @@ class _BuscadorPageState extends State<BuscadorPage>
     );
 }*/
 
+/*
   Widget _card() {
     final card = Container(
       padding: EdgeInsets.all(10.0),
@@ -691,5 +692,5 @@ class _BuscadorPageState extends State<BuscadorPage>
         ),
       ],
     );
-  }
+  }*/
 }

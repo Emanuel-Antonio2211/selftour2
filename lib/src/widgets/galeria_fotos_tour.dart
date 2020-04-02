@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_swiper/flutter_swiper.dart';
+//import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:selftourapp/src/models/tour_categoria_model.dart';
 class GaleriaTourPage extends StatelessWidget {
   @override

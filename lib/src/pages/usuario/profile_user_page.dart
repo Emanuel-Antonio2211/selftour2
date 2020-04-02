@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
+//import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:selftourapp/src/pages/usuario/profile_head.dart';
 
@@ -14,7 +14,7 @@ class _ProfileUserPageState extends State<ProfileUserPage> {
   //LoginBloc bloc;
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
+    //final size = MediaQuery.of(context).size;
 
     //bloc = BlocProvider.of(context);
 
@@ -215,7 +215,7 @@ class _ProfileUserPageState extends State<ProfileUserPage> {
         );
   }
 
-  Widget _verPerfil(BuildContext context){
+  /*Widget _verPerfil(BuildContext context){
     return FlatButton(
       child: Text('Ver Perfil',style: TextStyle(
             color: Colors.white),),
@@ -223,8 +223,9 @@ class _ProfileUserPageState extends State<ProfileUserPage> {
         Navigator.pushNamed(context, 'infousuario');
       },
     );
-  }
+  }*/
 
+/*
   Widget _card() {
     final size = MediaQuery.of(context).size;
     final card = Container(
@@ -840,5 +841,5 @@ class _ProfileUserPageState extends State<ProfileUserPage> {
             ))
       ]),
     );
-  }
+  }*/
 }

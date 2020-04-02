@@ -1,4 +1,4 @@
-import 'package:cached_network_image/cached_network_image.dart';
+//import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:selftourapp/src/models/tour_categoria_model.dart';
 import 'package:selftourapp/src/preferencias_usuario/preferencias_usuario.dart';
@@ -88,7 +88,7 @@ class _ToursRecientesPageState extends State<ToursRecientesPage> {
   }
 
   Widget lista(){
-    final size = MediaQuery.of(context).size;
+    //final size = MediaQuery.of(context).size;
     String noData = AppTranslations.of(context).text('title_nodata');
     return SingleChildScrollView(
         child: Column(
@@ -332,7 +332,7 @@ class _ToursRecientesPageState extends State<ToursRecientesPage> {
   }*/
 
   Widget grid(){
-    final size = MediaQuery.of(context).size;
+    //final size = MediaQuery.of(context).size;
     String noData = AppTranslations.of(context).text('title_nodata');
     return SingleChildScrollView(
       child: Column(

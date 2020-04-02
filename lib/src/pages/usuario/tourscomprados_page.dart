@@ -250,41 +250,46 @@ class _CompradosState extends State<Comprados> {
 
   Widget _toursComprados(BuildContext context, InfoTour tour){
     final size = MediaQuery.of(context).size;
-    return Card(
-      child: Row(
-        children: <Widget>[
-            ClipRRect(
-            borderRadius: BorderRadius.circular(5.0),
-            child:
-            /*Image.network(
-              tour.picture[0]['url'].toString(),
-              width: size.width * 0.5,
-              height: size.height * 0.15,
-              fit: BoxFit.fill,
-              scale: 1.0,
-            )*/
-            CachedNetworkImage(
-              imageUrl: "${tour.url}",
-              //errorWidget: (context, url, error)=>Icon(Icons.error),
-              //cacheManager: baseCacheManager,
-              useOldImageOnUrlChange: true,
-              width: size.width * 0.5,
-              height: size.height * 0.15,
-              fit: BoxFit.fill,
+    return GestureDetector(
+      onTap: (){
+        Navigator.pushNamed(context, 'detalletour',arguments: tour);
+      },
+      child: Card(
+        child: Row(
+          children: <Widget>[
+              ClipRRect(
+              borderRadius: BorderRadius.circular(5.0),
+              child:
+              /*Image.network(
+                tour.picture[0]['url'].toString(),
+                width: size.width * 0.5,
+                height: size.height * 0.15,
+                fit: BoxFit.fill,
+                scale: 1.0,
+              )*/
+              CachedNetworkImage(
+                imageUrl: "${tour.url}",
+                //errorWidget: (context, url, error)=>Icon(Icons.error),
+                //cacheManager: baseCacheManager,
+                useOldImageOnUrlChange: true,
+                width: size.width * 0.5,
+                height: size.height * 0.15,
+                fit: BoxFit.fill,
+              )
+            ),
+            SizedBox(
+              width: size.width * 0.02,
+            ),
+            Flexible(
+              child: Text(
+                tour.title,
+                style: TextStyle(
+                  fontFamily: 'Point-SemiBold'
+                ),
+              )
             )
-          ),
-          SizedBox(
-            width: size.width * 0.02,
-          ),
-          Flexible(
-            child: Text(
-              tour.title,
-              style: TextStyle(
-                fontFamily: 'Point-SemiBold'
-              ),
-            )
-          )
-        ],
+          ],
+        ),
       ),
     );
   }

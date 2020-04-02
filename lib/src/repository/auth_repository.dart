@@ -3,8 +3,8 @@
 
 
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
-import 'package:selftourapp/src/bloc/login_bloc.dart';
+//import 'package:flutter/material.dart';
+//import 'package:selftourapp/src/bloc/login_bloc.dart';
 //import 'package:flutter/widgets.dart';
 //import 'package:selfttour/src/bloc/login_bloc.dart';
 import 'package:selftourapp/src/providers/usuario_provider.dart';
@@ -18,6 +18,7 @@ class AuthRepository{
   Future<FirebaseUser> signInFirebaseFacebook() async =>_usuarioProvider.loginWithFacebook();
   Future<FirebaseUser> signInFirebaseTwitter() async => _usuarioProvider.loginWithTwitter();
   Future<FirebaseUser> signInFirebaseGoogle() async => _usuarioProvider.loginWithGoogle();
+  Future<Map<String,dynamic>> loginUserGoogle(String uid)async => _usuarioProvider.loginUserGoogle(uid);
   //Future<Map<String,dynamic>> signInFirebaseEmail(String email,String pass,BuildContext context)async=>_usuarioProvider.loginIn(email, pass);
   Future<Map<String,dynamic>> usuarioNuevo(String nombre,String email, String password, String telefono)async => _usuarioProvider.usuarioNuevo(nombre,email,password,telefono);
   Future<Map<String,dynamic>> logIn(String email,String password)async =>_usuarioProvider.loginIn(email, password);

@@ -194,7 +194,7 @@ class _CreateTourStepState extends State<CreateTourStep> {
     );
   }
 
-  Widget _ubicacionTour(){
+  /*Widget _ubicacionTour(){
     final size = MediaQuery.of(context).size;
     return ListView(children: <Widget>[
         Column(
@@ -215,7 +215,7 @@ class _CreateTourStepState extends State<CreateTourStep> {
           ],
         ),
       ]);
-  }
+  }*/
   Widget _pais() {
     String dropdownValue = 'Ingrese el pais';
     final size = MediaQuery.of(context).size;

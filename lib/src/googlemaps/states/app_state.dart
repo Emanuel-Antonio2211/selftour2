@@ -6,7 +6,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:selftourapp/src/googlemaps/requests/google_maps_requests.dart';
 import 'package:selftourapp/src/models/detalle_tour_model.dart';
-import 'package:selftourapp/src/models/tour_categoria_model.dart';
+//import 'package:selftourapp/src/models/tour_categoria_model.dart';
 
 class AppState with ChangeNotifier{
   static LatLng _initialPosition;

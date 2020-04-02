@@ -50,7 +50,7 @@ class _AppThemePageState extends State<AppThemePage> {
     return Icon(Icons.volume_up,size: 130.0,color: Colors.white,);
   }
   Widget _continuar(){
-    final size = MediaQuery.of(context).size;
+    //final size = MediaQuery.of(context).size;
     return RaisedButton(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40.0)),
       child: Text('Ir a la aplicación',style: TextStyle(color: Colors.white),),

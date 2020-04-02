@@ -325,6 +325,7 @@ class CategoriaHorizontal extends StatelessWidget {
     }).toList();
   }*/
 
+/*
   Widget _imagenCategoria(BuildContext context) {
     var size = MediaQuery.of(context).size;
     final imagen = Container(
@@ -429,5 +430,5 @@ class CategoriaHorizontal extends StatelessWidget {
         ],
       ),
     );
-  }
+  }*/
 }

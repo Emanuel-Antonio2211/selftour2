@@ -11,8 +11,8 @@ import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:flutter_twitter_login/flutter_twitter_login.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:selftourapp/src/providers/push_notifications_provider.dart';
-import 'package:selftourapp/src/utils/utils.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+//import 'package:selftourapp/src/utils/utils.dart';
+//import 'package:shared_preferences/shared_preferences.dart';
 
 
 //Creamos la clase UsuarioProvider
@@ -47,7 +47,7 @@ class UsuarioProvider{
   final GoogleSignIn googleSignIn = GoogleSignIn( scopes: [
     'email'
   ] );
-  String _message = 'Logged out.';
+  //String _message = 'Logged out.';
 
 
   Map<String, dynamic> parseJwt(String token) {
@@ -239,7 +239,7 @@ class UsuarioProvider{
           {
             'nickname':decoded['name'],
             'id': decoded['id'],
-            'email': decoded['name'],
+            'email': decoded['user'],
             'photoUrl':null,
             'createdAt': DateTime.now().millisecondsSinceEpoch.toString(),
             'chattingWith': null
@@ -411,52 +411,33 @@ class UsuarioProvider{
     //Se hace la autenticacion con firebase
     //Verifica si la cuenta existe
    myUser = await _auth.signInWithCredential(GoogleAuthProvider.getCredential(idToken: gSA.idToken,accessToken:gSA.accessToken));
-   prefs.token = gSA.idToken;
-   prefs.iduser = myUser.providerData[1].uid;
-   prefs.name = myUser.providerData[1].displayName;
-   prefs.email = myUser.providerData[1].email;
-   prefs.phone = myUser.providerData[1].phoneNumber;
-   prefs.photoUrl = myUser.providerData[1].photoUrl;
-    if(myUser != null){
-      // Check is already sign up - Checa si está logueado
-      firebaseMessaging.getToken().then((token){
-         tokenFCM = token;
-       });
-      prefs.tokenFCM = tokenFCM; //id myUser.providerData[1].uid
-      final QuerySnapshot result = await Firestore.instance.collection('users').where('email',isEqualTo: myUser.providerData[1].email).getDocuments();
-      final List<DocumentSnapshot> documents = result.documents;
-      if(documents.length == 0){
-        // Update data to server if new user - Actualiza los datos del servidor
-        // si el usuario es nuevo myUser.providerData[1].uid
-        Firestore.instance.collection('users').document(myUser.providerData[1].email).setData(
-          {
-            'tokenfcm':"$tokenFCM",
-            'nickname':myUser.providerData[1].displayName,
-            'id': myUser.providerData[1].uid,
-            'email':myUser.providerData[1].email,
-            'photoUrl':myUser.providerData[1].photoUrl,
-            'createdAt': DateTime.now().millisecondsSinceEpoch.toString(),
-            'chattingWith': null
-          }
-        );
-
-        // Write data to local - Escribir los datos en local
-       // FirebaseUser currentUser = user;
-        
-      }
-    }
+   //prefs.token = gSA.idToken;
+    
     print(myUser);
     myUser.getIdToken().then((value){
       print(value);
     });
-    verifGoogle(prefs.token).then((result){
-      Map info = result;
-      print("info: $info");
-      //prefs.tokenVerif = ;
-    }).catchError((error){
-      print(error);
-    });
     return myUser;
+  }
+
+  Future<Map<String,dynamic>> loginUserGoogle(String uid)async{
+    String url = "https://api-users.selftours.app/loginUser";
+
+    final resp = await http.post(
+      url,
+      headers:{
+        HttpHeaders.contentTypeHeader: "application/x-www-form-urlencoded"
+      },
+      body: {
+        "uid": "$uid"
+      }
+    );
+
+    final decodedResp = json.decode(resp.body);
+    print("Respuesta");
+    print(decodedResp);
+
+    return decodedResp;
   }
 
   Future<Map<String,dynamic>> verifGoogle(String idToken)async{

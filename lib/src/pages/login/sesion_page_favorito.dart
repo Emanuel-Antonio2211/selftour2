@@ -1,13 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_signin_button/flutter_signin_button.dart';
+//import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:selftourapp/src/bloc/provider.dart';
 import 'package:selftourapp/src/models/tour_categoria_model.dart';
 import 'package:selftourapp/src/pages/create_account/create_account_page.dart';
 import 'package:selftourapp/src/pages/login/login_page.dart';
-import 'package:selftourapp/src/pages/pagos/pagos_page.dart';
-import 'package:selftourapp/src/pages/usuario/chat_page.dart';
+//import 'package:selftourapp/src/pages/pagos/pagos_page.dart';
+//import 'package:selftourapp/src/pages/usuario/chat_page.dart';
 import 'package:selftourapp/src/providers/usuario_provider.dart';
 import 'package:generic_bloc_provider/generic_bloc_provider.dart';
 //import 'package:firebase_auth/firebase_auth.dart';

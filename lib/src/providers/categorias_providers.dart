@@ -564,9 +564,9 @@ _toursPage++;
   Future<Map<String,dynamic>> comentar(String idtour, String comentario)async{
     String url = 'https://api-users.selftours.app/comments/$idtour';
 
-    Map<String,dynamic> datos = {
+    /*Map<String,dynamic> datos = {
       "comment": "$comentario"
-    };
+    };*/
 
     final resp = await http.post(
       url,
@@ -671,7 +671,7 @@ _toursPage++;
 
   Future<Map<String,dynamic>> detectarIdioma(String texto)async{
     final urlBase = 'translation.googleapis.com';
-    final url = 'https://translation.googleapis.com/language/translate/v2/detect?q=hello&key=AIzaSyAAw4woNIssZ0P5Lonws9W-9LTRHRCMyqc';
+    //final url = 'https://translation.googleapis.com/language/translate/v2/detect?q=hello&key=AIzaSyAAw4woNIssZ0P5Lonws9W-9LTRHRCMyqc';
     final response = Uri.https(
       urlBase, 
       '/language/translate/v2/detect',{
@@ -748,7 +748,7 @@ _toursPage++;
  Future<bool> crearTour(TourModel tour)async{
    String _url = '$urltour/tours/createTour?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiVmljZW50ZSBNaXMiLCJ1c2VyIjoidmluY2VtaXM2MTBAZ21haWwuY29tIiwiaWQiOjEsImlhdCI6MTU3MTMzMTM2OSwiZXhwIjoxNTcxNDE3NzY5fQ.H4n7f-2BvRtT4662uXNWooV-myrDhRbWkbvpv9X6zI0'; //${usuarioProvider.prefs.token}
 
-    Map<String, dynamic> datos = {
+    /*Map<String, dynamic> datos = {
       "title": "${tour.titulo}",
       "description": "${tour.description}",
       "duration":"${tour.duration}",
@@ -758,7 +758,7 @@ _toursPage++;
       "idcountry":"${tour.idcountry}",
       "idstate":"${tour.idstate}",
       "idcity":"${tour.idcity}"
-    };
+    };*/
 
     final resp = await http.post(_url,body: tourModelToJson(tour));
     final decodedData = json.decode(resp.body);

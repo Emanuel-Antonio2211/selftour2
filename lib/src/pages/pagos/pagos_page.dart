@@ -382,7 +382,7 @@ class _DetalleCompraPageState extends State<DetalleCompraPage> {
                         if(snapshot.hasData){
                           final resp = snapshot.data;
                           _prefs.idiomaDescripcion = Locale(resp['data']['detections'][0][0]['language']);
-                          return null;
+                          return Container();
                         }else{
                           return Container(
                             color: Colors.white,
@@ -469,7 +469,7 @@ class _DetalleCompraPageState extends State<DetalleCompraPage> {
                         if(snapshot.hasData){
                           final resp = snapshot.data;
                           _prefs.idiomaRecomendacion = Locale(resp['data']['detections'][0][0]['language']);
-                          return null;
+                          return Container();
                         }else{
                           return Container(
                             color: Colors.white,
@@ -1520,23 +1520,27 @@ if(Platform.isAndroid){
                             ),
                           ),
                         ),
-                        Container(
-                          //color: Colors.transparent,
-                          width: size.width * 0.7,
-                          child: TextFormField(
-                            style: TextStyle(color: Colors.transparent),
-                            enabled: false,
-                            initialValue: deviceSesionId,
-                            onSaved: (value){
-                               deviceSesionId = value;
-                              tarjeta.deviceSesionId = deviceSesionId;
-                            },
-                            textCapitalization: TextCapitalization.characters,
-                            keyboardType: TextInputType.text,
-                            decoration: InputDecoration(
-                              disabledBorder: InputBorder.none
-                              //labelText: '$cvc',
-                              //labelStyle: TextStyle(fontFamily: 'Point-SemiBold',color: Colors.grey)
+                        Visibility(
+                          visible: false,
+                          child: Container(
+                            //color: Colors.transparent,
+                            width: size.width * 0.7,
+                            height: size.height * 0.1,
+                            child: TextFormField(
+                              style: TextStyle(color: Colors.transparent),
+                              enabled: false,
+                              initialValue: deviceSesionId,
+                              onSaved: (value){
+                                 deviceSesionId = value;
+                                tarjeta.deviceSesionId = deviceSesionId;
+                              },
+                              textCapitalization: TextCapitalization.characters,
+                              keyboardType: TextInputType.text,
+                              decoration: InputDecoration(
+                                disabledBorder: InputBorder.none
+                                //labelText: '$cvc',
+                                //labelStyle: TextStyle(fontFamily: 'Point-SemiBold',color: Colors.grey)
+                              ),
                             ),
                           ),
                         ),

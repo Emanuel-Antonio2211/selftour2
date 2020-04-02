@@ -3,7 +3,7 @@ import 'package:flutter/widgets.dart';
 //import 'package:selfttour/src/bloc/provider.dart';
 import 'package:selftourapp/src/pages/tours/busqueda_tour_page.dart';
 import 'package:selftourapp/src/pages/tours/home_page.dart';
-import 'package:selftourapp/src/pages/tours/tours_mapa_page.dart';
+//import 'package:selftourapp/src/pages/tours/tours_mapa_page.dart';
 import 'package:selftourapp/src/pages/usuario/profile_user_page.dart';
 import 'package:selftourapp/src/pages/usuario/tourscomprados_page.dart';
 import 'package:selftourapp/src/pages/usuario/toursfavoritos_page.dart';
@@ -48,7 +48,7 @@ class _TabsPageState extends State<TabsPage> {
     );
   }
 
-  Widget _llamarPaginas(int paginaActual){
+  /*Widget _llamarPaginas(int paginaActual){
     switch(paginaActual){
       case 0: return IndexPage();
       case 1: return ToursCompradosPage();
@@ -59,7 +59,7 @@ class _TabsPageState extends State<TabsPage> {
       default:
         return IndexPage();
     }
-  }
+  }*/
   Widget _crearBottomNavigationBar(){
     return BottomNavigationBar(
       backgroundColor: Colors.white,

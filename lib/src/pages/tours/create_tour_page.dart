@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:selftourapp/src/models/creartour_model.dart';
-import 'package:selftourapp/src/models/tour_categoria_model.dart';
-import 'package:selftourapp/src/pages/tours/tituloTour.dart';
+//import 'package:selftourapp/src/models/tour_categoria_model.dart';
+//import 'package:selftourapp/src/pages/tours/tituloTour.dart';
 import 'package:selftourapp/src/providers/categorias_providers.dart';
 
 class CreateTourPage extends StatefulWidget {
@@ -18,17 +18,17 @@ class _CreateTourPageState extends State<CreateTourPage> {
   List<int> categorias = [1,2,3,4,5,6];
     int categoriaSeleccionada=1;
   List<int> paises = [1,2,3,4,5,6];
-    var _paisSeleccionado = 1;
+    //var _paisSeleccionado = 1;
   List<int> estados = [1,2,3,4,5,6];
-    var _estadoSeleccionado = 1;
+    //var _estadoSeleccionado = 1;
   List<int> ciudades = [1,2,3,4,5,6];
-    var _ciudadSeleccionada = 1;
+    //var _ciudadSeleccionada = 1;
 
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
   
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
+    //final size = MediaQuery.of(context).size;
 
     return Scaffold(
       appBar: AppBar(

@@ -565,7 +565,7 @@ class _ListaTourPageState extends State<ListaTourPage> with SingleTickerProvider
     );*/
   }
 
-
+/*
 Widget _listaTourCMapa(Categoria categoria){
     var size = MediaQuery.of(context).size;
     final categoriasProvider = new CategoriasProvider();
@@ -625,7 +625,7 @@ Widget _listaTourCMapa(Categoria categoria){
         
       },
     );*/
-  }
+  }*/
 
   /*Widget _tarjeta(BuildContext context, InfoTour tour){
     final size = MediaQuery.of(context).size;

@@ -103,10 +103,10 @@ class _MapaState extends State<Mapa> {
     //DetalleTour tour = ModalRoute.of(context).settings.arguments;
     InfoTour tour = ModalRoute.of(context).settings.arguments;
     List<LatLng> puntos = List();
-    List<LatLng> coords = List();
+    //List<LatLng> coords = List();
     String cadena = '';
     String result = '';
-    Map<String,dynamic> resp;
+    //Map<String,dynamic> resp;
     List<Polyline> _polilineas = List();
     final categoriasProvider = CategoriasProvider();
     double sumaX = 0;
@@ -343,8 +343,8 @@ class _MapaState extends State<Mapa> {
                 child: CircularProgressIndicator(),
               ) : Stack(
           children: <Widget>[
-            FutureBuilder(//, ${tour.city} tour.route.first['site'] tour.route.last['site']
-              future: categoriasProvider.ruta("${tour.route.first['site']}", "${tour.route.first['site']} ", result),
+            FutureBuilder(//, ${tour.route.first['site']}, ${tour.city} tour.route.first['site'] tour.route.last['site']
+              future: categoriasProvider.ruta("${tour.route.first['lat']}, ${tour.route.first['lng']}", "${tour.route.first['lat']}, ${tour.route.first['lng']} ", result),
              // initialData: InitialData,
               builder: (BuildContext context, AsyncSnapshot<Map<String,dynamic>> snapshot) {
                 PolylinePoints polylinePoints = PolylinePoints();
@@ -355,6 +355,7 @@ class _MapaState extends State<Mapa> {
                 if(snapshot.hasData){
 
                   for(int j = 0; j < tour.route.length; j++){
+                    
 
                       final resultado = polylinePoints.decodePolyline(resp['routes'][0]['overview_polyline']['points']);
                       //final res = polyline.Polyline.Decode(encodedString: resp['routes'][i]['overview_polyline']['points'],precision: 5);
@@ -395,9 +396,6 @@ class _MapaState extends State<Mapa> {
                   
                       }
                     
-
-                    
-                  
                     print("Puntos");
                     print(pointsDecoded);
                   return GoogleMap(
@@ -749,7 +747,7 @@ class _MapaState extends State<Mapa> {
                             //String numero;
                             final origen = Location(name: '${appState.initialPosition.toString()}',latitude: appState.initialPosition.latitude,longitude: appState.initialPosition.longitude );
                             final destino = Location(name: '${detalletour['site']}',latitude: double.parse(detalletour['lat']) ,longitude: double.parse(detalletour['lng']) );
-                            await _directions.startNavigation( origin: origen, destination: destino,mode: NavigationMode.walking,simulateRoute: false,language: "es", units: VoiceUnits.metric);
+                            await _directions.startNavigation( origin: origen, destination: destino,mode: NavigationMode.walking,simulateRoute: false,language: "${prefs.idioma}", units: VoiceUnits.metric);
                            
                               
                             // await appState.userLocation().then((result){
@@ -772,12 +770,12 @@ class _MapaState extends State<Mapa> {
                             final origen = Location(name: '${appState.initialPosition.toString()}',latitude: appState.initialPosition.latitude,longitude: appState.initialPosition.longitude );
                             final destino = Location(name: '${detalletour['site']}',latitude: double.parse(detalletour['lat']) ,longitude: double.parse(detalletour['lng']) );
                             //_directions.startNavigation( origin: origen, destination: destino,mode: NavigationMode.cycling,simulateRoute: false,language: 'German',units: VoiceUnits.metric);
-                            await _directions.startNavigation( origin: origen, destination: destino,mode: NavigationMode.cycling,simulateRoute: false,language: 'es',units: VoiceUnits.metric);
+                            await _directions.startNavigation( origin: origen, destination: destino,mode: NavigationMode.cycling,simulateRoute: false,language: "${prefs.idioma}",units: VoiceUnits.metric);
                           }else if(value == 3){
                             print("Opcion: $value");
                             final origen = Location(name: '${appState.initialPosition.toString()}',latitude: appState.initialPosition.latitude,longitude: appState.initialPosition.longitude );
                             final destino = Location(name: '${detalletour['site']}',latitude: double.parse(detalletour['lat']) ,longitude: double.parse(detalletour['lng']) );
-                            await _directions.startNavigation( origin: origen, destination: destino,mode: NavigationMode.driving,simulateRoute: false,language: 'es',units: VoiceUnits.metric);
+                            await _directions.startNavigation( origin: origen, destination: destino,mode: NavigationMode.driving,simulateRoute: false,language: "${prefs.idioma}",units: VoiceUnits.metric);
                           }
                           //print("Opcion: $value");
                         },
@@ -1351,7 +1349,7 @@ class _DetalleSitioState extends State<DetalleSitio> {
                           //initialData: InitialData,
                           builder: (BuildContext context, AsyncSnapshot<Map<String,dynamic>> snapshot) {
                             if(snapshot.hasData){
-                              final resp = snapshot.data;
+                             // final resp = snapshot.data;
                               return null;
                             }
                             return Container();

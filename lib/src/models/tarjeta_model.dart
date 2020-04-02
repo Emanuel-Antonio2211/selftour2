@@ -4,7 +4,7 @@
 
 import 'dart:convert';
 
-import 'package:selftourapp/src/preferencias_usuario/preferencias_usuario.dart';
+//import 'package:selftourapp/src/preferencias_usuario/preferencias_usuario.dart';
 
 TarjetaModel tarjetaFromJson(String str) => TarjetaModel.fromJson(json.decode(str));
 

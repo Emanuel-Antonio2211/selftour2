@@ -2,7 +2,7 @@
 //Esta clase sirve de contenedor de todos los tours que se
 //manejen
 
-import 'dart:ffi';
+//import 'dart:ffi';
 
 class ListaToursC{
   //Esta lista va a contener todos los tours mapeados en el método
@@ -54,6 +54,7 @@ class InfoTour {
   String country;
   String foto;
   String gallery;
+  String map_tour;
   Map<String,dynamic> temporada;
   List picture;
   List route;
@@ -61,12 +62,15 @@ class InfoTour {
   bool comprado = false;
   int favorite;
 
+  //Lugares cercanos
   int idroute;
   String title_route;
   String description_route;
   double latitude;
   double longitude;
   double distance;
+  double lat;
+  double lng;
 
   //shoppingtour
   int idsell;
@@ -106,6 +110,7 @@ class InfoTour {
     this.country,
     this.foto,
     this.gallery,
+    this.map_tour,
     this.temporada,
     this.picture,
     this.route,
@@ -118,6 +123,8 @@ class InfoTour {
     this.description_route,
     this.latitude,
     this.longitude,
+    this.lat,
+    this.lng,
     this.distance,
 
     //Shopping tour
@@ -154,6 +161,7 @@ class InfoTour {
     country       = json['country'];
     foto          = json['photo'];
     gallery       = json['gallery'];
+    map_tour      = json['map_tour'];
     temporada     = json['days_and_season'];
     picture       = json['picture'];
     route         = json['sites'];
@@ -166,6 +174,8 @@ class InfoTour {
     description_route = json['description_route'];
     latitude      = json['latitude'];
     longitude     = json['longitude'];
+    lat           = json['lat'];
+    lng           = json['lng'];
     //distance      = json['distance'];
 
     //ShoppingTour

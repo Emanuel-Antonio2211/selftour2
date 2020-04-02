@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'dart:math';
+//import 'dart:math';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 //import 'dart:math' as math;
@@ -14,12 +14,12 @@ import 'package:flutter/rendering.dart';
 //import 'package:flutter/services.dart';
 //import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_polyline_points/flutter_polyline_points.dart';
+//import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 //import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 //import 'package:flutter_advanced_networkimage/provider.dart';
 //import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+//import 'package:google_maps_flutter/google_maps_flutter.dart';
 //import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 //import 'package:flutter_share/flutter_share.dart';
@@ -261,13 +261,13 @@ class _DetalleTourPageState extends State<DetalleTourPage> with SingleTickerProv
                             icon: Platform.isIOS ? Icon(Icons.open_in_browser,color: isShrink ? Colors.black:Colors.white,):Icon(Icons.share,color: isShrink ? Colors.black:Colors.white,),
                             onPressed: ()async{
                               final DynamicLinkParameters parameters = DynamicLinkParameters(
-                                uriPrefix: 'https://selftourtravel.page.link',
-                                navigationInfoParameters: NavigationInfoParameters(
+                                uriPrefix: 'https://selftourtravel.page.link',//https://selftourtravel.page.link    https://selftour.travel
+                                /*navigationInfoParameters: NavigationInfoParameters(
                                   forcedRedirectEnabled: true
-                                ),
+                                ),*/
                                 /*googleAnalyticsParameters: GoogleAnalyticsParameters(
 
-                                ),*/
+                                ),*/ // ?${snapshot.data.single.idtour.toString()}
                                 link: Uri.parse('https://selftourtravel.page.link/detalletour/?${snapshot.data.single.idtour.toString()}'),//https://www.selftour.travel
                                 androidParameters: AndroidParameters(
                                   //fallbackUrl: Uri.parse('https://www.selftour.travel'),
@@ -773,7 +773,7 @@ class _DetalleTourPageState extends State<DetalleTourPage> with SingleTickerProv
                 //print("Idioma detalle");
                 //print(prefs.idiomaDetalle);
                 //print(prefs.idioma);
-                return null;
+                return Container();
               }else{
                 return Container();
               }
@@ -1478,7 +1478,7 @@ Widget _parrafoInformacion(BuildContext context,InfoTour detalle) {
                           /*print("Idioma detectado");
                           print(respuesta['data']['detections'][0][0]['language']);*/
                           prefs.idiomaOriginal = Locale(respuesta['data']['detections'][0][0]['language']);
-                          return null;
+                          return Container();
                         }else{
                           return Container();
                         }
@@ -1925,101 +1925,7 @@ Widget _botonesOpcionesUsuario(BuildContext context,InfoTour detalleTour){
     String invitacionComentar = AppTranslations.of(context).text('title_invitacion_comentar');
     String comentar = AppTranslations.of(context).text('title_comentar');
     final size = MediaQuery.of(context).size;
-    //bool comprado = detalle.comprado;
-    GoogleMapController _mapController;
-    Set<Marker> _markers = {};
-    Set<Polyline> _polyline = {};
-    String cadena = '';
-    String result = '';
-
-    double x = 0;
-    double y = 0;
-    double sumaX = 0;
-    double sumaY = 0;
-    double posicionX = 0;
-    double posicionY = 0;
-
-    //double distancia = 0;
-
-
-    //Set<double> puntos = {};
-
-    List<LatLng> puntos = List();
-
-    for(int i = 0; i < detalle.route.length;i++){
-      cadena = cadena + 'via:'+ detalle.route[i]['lat']+'%2C'+detalle.route[i]['lng']+'%7C';
-      final init = cadena.length - 3;
-      result = cadena.substring(0,init);
-    }
-    for(int i = 0; i < detalle.route.length;i++){
-      puntos.add(
-        LatLng(double.parse(detalle.route[i]['lat']),double.parse(detalle.route[i]['lng']) ),
-        
-      );
-    }
-    //print(puntos);
-    Future<void> cargarMarcadores()async{
-      for(int i = 0; i < detalle.route.length; i++){
-        final byteData = await getBytesCanvas(80, 60, '${(i+1).toString()}');
-        _markers.add(
-          Marker(
-            visible: true,
-            markerId: MarkerId('${detalle.route[i]['site']}'),
-            position: LatLng(double.tryParse( detalle.route[i]['lat']), double.tryParse( detalle.route[i]['lng'])),
-            infoWindow: InfoWindow(
-              title: '${detalle.route[i]['site']}'
-            ),
-            icon: BitmapDescriptor.fromBytes(byteData)
-          )
-        );
-      }
-    }
-
-    cargarMarcadores();
-
-    for(int i = 0; i < detalle.route.length; i++){
-      _markers.addAll([
-        Marker(
-          visible: true,
-          markerId: MarkerId(detalle.route[i]['_idsite']),
-          position: LatLng(double.parse(detalle.route[i]['lat']), double.parse(detalle.route[i]['lng'])),
-          infoWindow: InfoWindow(
-            title: '${detalle.route[i]['site']}',
-            //snippet: '${detalle.route[i]['description']}'
-            ),
-          icon: BitmapDescriptor.defaultMarker
-        )
-      ]);
-      /*_polyline.addAll([
-        Polyline(
-          polylineId: PolylineId(detalle.route[i]['_idsite']),
-          color: Colors.red,
-          visible: true,
-          width: 3,
-          points: puntos
-        )
-      ]);*/
-      //_mapController.addPolyline();
-      
-    }
-
-  //Cálculo del punto medio
-  for(int p = 0; p < puntos.length; p++){
-    sumaX = sumaX + puntos[p].latitude;
-    sumaY = sumaY + puntos[p].longitude;
-  }
-
-  posicionX = sumaX/puntos.length;
-  posicionY = sumaY/puntos.length;
-
-  x = posicionX;
-  y = posicionY;
     
-    /*x = ((puntos.first.latitude + puntos.last.latitude)/2);
-    y = ((puntos.first.longitude + puntos.last.longitude)/2);*/
-
-    //distancia = math.sqrt(math.pow(x, 2) + math.pow(y, 2));
-    //print("Distancia: $distancia");
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -2040,111 +1946,11 @@ Widget _botonesOpcionesUsuario(BuildContext context,InfoTour detalleTour){
         Container(
           width: size.width * 1.0,
           height: size.height * 0.5,
-          child: FutureBuilder(
-            future: categoriasProvider.ruta('${detalle.route.first['site']}, ${detalle.city}', '${detalle.route.last['site']}, ${detalle.city}', result),
-            //initialData: InitialData,
-            builder: (BuildContext context, AsyncSnapshot snapshot) {
-              PolylinePoints polylinePoints = PolylinePoints();
-              List<LatLng> pointsDecoded = List();
-              final resp = snapshot.data;
-              if(snapshot.hasData){
-                for(int i = 0; i < resp['routes'].length;i++){
-                  for(int j = 0; j < detalle.route.length; j++){
-                    final resultado = polylinePoints.decodePolyline(resp['routes'][i]['overview_polyline']['points']);
-                    final resultadoSet = resultado.toSet();
-                    for(int c = 0; c < resultadoSet.length; c++){
-                      pointsDecoded.addAll([
-                        LatLng(resultadoSet.elementAt(c).latitude,resultadoSet.elementAt(c).longitude)
-                      ]);
-                    }
-                    _polyline.add(
-                      Polyline(
-                        geodesic: true,
-                        polylineId: PolylineId('id'),
-                        /*patterns: [
-                          PatternItem.dash(20.0),
-                          PatternItem.dot,
-                          PatternItem.gap(20)
-                          
-                        ],*/
-                        width: 4,
-                        color: Colors.red,
-                        points: pointsDecoded
-                      )
-                    );
-                  }
-                }
-
-                return GoogleMap(
-                  initialCameraPosition: CameraPosition(
-                    target: LatLng(x, y),//puntos.length == 5 ? 8.4 : puntos.length == 2 ? 10.8 : puntos.length == 3 ? 10.8 : puntos.length == 4 ? 8.5 : puntos.length == 6 ? 9.0 : 14.3
-                    zoom: 10.0
-                  ),// 9.9 appState.lastPosition
-                  onMapCreated: (GoogleMapController controller){
-                    _mapController = controller;
-                    //_mapController.getVisibleRegion();
-                  
-                   /* double x0, y0;
-                    double x1,y1;
-                    double left, right, bottom,top;*/
-
-                  /* for(LatLng punto in puntos){
-                      if(x0 == null){
-                        x0=x1=punto.latitude;
-                        y0=y1=punto.longitude;
-                      }else{
-                        if(punto.latitude > x1){
-                          x1 = punto.latitude;
-                        }else if(punto.latitude < x0){
-                          x0 = punto.latitude;
-                        }else if(punto.longitude > y1){
-                          y1 = punto.longitude;
-                        }else if(punto.longitude < y0){
-                          y0 = punto.longitude;
-                        }
-                      }
-                      
-                     /* left = min(punto.latitude,punto.latitude);
-                      right = max(punto.latitude,punto.latitude);
-                      top = max(punto.longitude,punto.longitude);
-                      bottom = min(punto.longitude,punto.longitude);*/
-                    }*/
-  
-                    /*left = min(x1,y1);
-                    right = max(x0,y0);
-                    top = max(x0,y0);
-                    bottom = min(x1,y1);*/
-
-                   /*final bounds = LatLngBounds(
-                      southwest: LatLng(x0,y0),
-                      northeast: LatLng(x1,y1)
-                    );
-                    print("bounds");
-                    print(bounds);
-                    _mapController.animateCamera(CameraUpdate.newLatLngBounds(bounds, 220.0));*/
-                    
-                  },
-                  //myLocationEnabled: true,
-                  mapType: MapType.normal,
-                  //compassEnabled: true,
-                  markers: _markers,//appState.markers
-                  /*onCameraMove: (CameraPosition cameraPosition){
-                    _mapController.moveCamera(CameraUpdate.newCameraPosition(cameraPosition));
-                  },*///appState.onCameraMove,
-                  polylines: _polyline,//appState.polyLines
-                  mapToolbarEnabled: false,
-                  rotateGesturesEnabled: false,
-                  scrollGesturesEnabled: false,
-                  zoomGesturesEnabled: false,
-                  tiltGesturesEnabled: true,
-                  //myLocationButtonEnabled: true,
-                );
-              }else{
-                return Container();
-              }
-              
-            },
-          ),
+          child: CachedNetworkImage(
+            imageUrl: detalle.map_tour,
+            useOldImageOnUrlChange: true,
+            fit: BoxFit.fill,
+          )
           
           //Image.asset('assets/iconomapa.png',fit: BoxFit.fill,)
         ),//prefs.iduser == detalle.iduser.toString() 
@@ -2203,13 +2009,13 @@ Widget _botonesOpcionesUsuario(BuildContext context,InfoTour detalleTour){
     );
   }
 
-Widget _opiniones(BuildContext context) {
+  Widget _opiniones(BuildContext context) {
     final size = MediaQuery.of(context).size;
     String opiniones = AppTranslations.of(context).text('title_opinions');
     return Column(
       children: <Widget>[
         SizedBox(
-            height: 10.0,
+          height: 10.0,
         ),
         Container(
           padding: EdgeInsets.only(left: size.width * 0.03),

@@ -26,7 +26,7 @@ class _InformacionTourState extends State<InformacionTour> with SingleTickerProv
 
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
+    //Size size = MediaQuery.of(context).size;
    
     return 
     
@@ -143,6 +143,7 @@ class _InformacionTourState extends State<InformacionTour> with SingleTickerProv
     );*/
   }
 
+/*
    Widget _detalleTourComprado(BuildContext context, DetalleTour detalle){
     final size = MediaQuery.of(context).size;
     return Container(
@@ -234,7 +235,7 @@ class _InformacionTourState extends State<InformacionTour> with SingleTickerProv
       ),
 
     );
-  }
+  }*/
 
   Widget _datosCreadorTour(BuildContext context, DetalleTour detalle){
     final size = MediaQuery.of(context).size;
@@ -514,7 +515,7 @@ class _InformacionTourState extends State<InformacionTour> with SingleTickerProv
   Widget _botonesOpcionesUsuario(BuildContext context){
     //InfoTour tour = InfoTour();
     final size = MediaQuery.of(context).size;
-    String _valor = "COMPRADO";
+    //String _valor = "COMPRADO";
     return Column(
       children: <Widget>[
         
@@ -580,7 +581,7 @@ class _InformacionTourState extends State<InformacionTour> with SingleTickerProv
 
   Widget _parrafoInformacion(BuildContext context,DetalleTour detalle) {
     //InfoTour _tour = ModalRoute.of(context).settings.arguments;
-    final size = MediaQuery.of(context).size;
+    //final size = MediaQuery.of(context).size;
     return Column(
       children: <Widget>[
         Container(
