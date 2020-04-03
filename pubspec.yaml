@@ -90,7 +90,7 @@ dependencies:
   flutter_map: ^0.1.0
   flutter_mapbox_navigation: ^0.0.10 #^0.0.10 #0.0.9  #0.0.10 #0.0.8   #0.0.7 #^0.0.3
   #Notificaciones push
-  firebase_messaging: ^5.1.5
+  firebase_messaging: ^6.0.13 #5.1.5
   #Google translator
   translator: ^0.1.2
   #flutter_date_picker: ^0.1.8

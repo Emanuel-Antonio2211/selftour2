@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart'; //Aplica el combinelastes
 import 'package:selftourapp/src/bloc/validators.dart';
 import 'package:selftourapp/src/preferencias_usuario/preferencias_usuario.dart';
-import 'package:selftourapp/src/providers/usuario_provider.dart';
+//import 'package:selftourapp/src/providers/usuario_provider.dart';
 //Se importa el archivo repositorio creado anteriormente
 import 'package:selftourapp/src/repository/auth_repository.dart';
 import 'package:generic_bloc_provider/generic_bloc_provider.dart';
@@ -210,7 +210,7 @@ signInGoogle(BuildContext context) async { //Se va a llamar en la interfaz
         //prefs.token = prefs.token + "${result['_dtu']['provider']['_uit'][0].toString()}" + "${result['_dtu']['provider']['_uit'][1].toString()}" + "${result['_dtu']['provider']['_uit'][2].toString()}";
         prefs.token = resultToken;
         final decodedInfoUser = parseJwt(prefs.token.toString());
-        print("Datos del usuario decodificado");
+        
         prefs.iduser = decodedInfoUser['id'].toString();
         prefs.name = result['_dtu']['udt']['name'].toString();
         prefs.email = authUser.providerData[1].email.toString();
@@ -225,12 +225,12 @@ signInGoogle(BuildContext context) async { //Se va a llamar en la interfaz
           });
           
           prefs.tokenFCM = tokenFCM;
-          Stream<String> fcmStream = firebaseMessaging.onTokenRefresh;
+         /* Stream<String> fcmStream = firebaseMessaging.onTokenRefresh;
           fcmStream.listen((token){
             prefs.tokenFCM = token;
             print("Token Refresh");
             print(prefs.tokenFCM);
-          });
+          });*/
           final QuerySnapshot result = await Firestore.instance.collection('users').where('email',isEqualTo: prefs.email).getDocuments(); //authUser.providerData[1].email
           final List<DocumentSnapshot> documents = result.documents;
           if(documents.length == 0){
@@ -254,14 +254,15 @@ signInGoogle(BuildContext context) async { //Se va a llamar en la interfaz
             
           }else{
             print("El usuario ya existe");
-            Stream<String> fcmStream = firebaseMessaging.onTokenRefresh;
+            /*Stream<String> fcmStream = firebaseMessaging.onTokenRefresh;
             fcmStream.listen((token){
               prefs.tokenFCM = token;
               print("Token Refresh");
               print(prefs.tokenFCM);
-            });
+            });*/
           }
         }
+        print("Datos del usuario decodificado");
         print(decodedInfoUser);
         streamFirebase.sink.add(authUser);
       }else{
