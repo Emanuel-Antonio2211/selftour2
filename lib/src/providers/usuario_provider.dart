@@ -113,8 +113,8 @@ class UsuarioProvider{
      prefs.token= decodedResp['token'];
      print("Token: ${prefs.token}");
      prefs.name = decodedResp['name'];
-     prefs.email = decodedResp['user'];
-     prefs.photoUrl = null;
+     prefs.email = authData['mail'];//decodedResp['user']
+     prefs.photoUrl = decodedResp['profile'].toString();
      prefs.tokenFCM = tokenFCM;
       //print(credential);
       //myUser = await _auth.signInWithCredential(credential);
