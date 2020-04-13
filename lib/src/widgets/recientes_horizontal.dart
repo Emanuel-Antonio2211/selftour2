@@ -122,7 +122,7 @@ class _ToursRecientesState extends State<ToursRecientes> {
     return GestureDetector(
       child: tarjeta,
       onTap: (){
-        Navigator.pushNamed(context, 'detalletour',arguments: tourReciente);
+        Navigator.pushNamed(context, '/detalletour',arguments: tourReciente);
       },
     );
   }

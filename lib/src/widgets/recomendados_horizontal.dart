@@ -119,7 +119,7 @@ class _ToursRecomendadosState extends State<ToursRecomendados> {
     return GestureDetector(
       child: tarjeta,
       onTap: (){
-        Navigator.pushNamed(context, 'detalletour',arguments: tourRecomendado);
+        Navigator.pushNamed(context, '/detalletour',arguments: tourRecomendado);
       },
     );
   }

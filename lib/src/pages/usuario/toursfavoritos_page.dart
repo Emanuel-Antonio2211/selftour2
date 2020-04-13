@@ -283,7 +283,7 @@ class _FavoritosState extends State<Favoritos> {
     
     return GestureDetector(
       onTap: (){
-        Navigator.pushNamed(context, 'detalletour',arguments: tour);
+        Navigator.pushNamed(context, '/detalletour',arguments: tour);
       },
           child: Stack(
             children:[ 

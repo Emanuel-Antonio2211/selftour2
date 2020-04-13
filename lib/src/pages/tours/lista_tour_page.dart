@@ -187,6 +187,13 @@ class _ListaTourPageState extends State<ListaTourPage> with SingleTickerProvider
     //ToursProvider toursProvider = new ToursProvider();
     final categoriasProvider = new CategoriasProvider();
     categoriasProvider.getToursC(categoria.ctidss.toString());
+    void cargarTours(){
+      setState(() {
+        
+      });
+      categoriasProvider.getToursC(categoria.ctidss.toString());
+    }
+    
 
     return SingleChildScrollView(
           child: Column(
@@ -240,7 +247,9 @@ class _ListaTourPageState extends State<ListaTourPage> with SingleTickerProvider
                   case ConnectionState.done:
                     if(snapshot.hasData && snapshot.data.length > 0){
                       return ListaToursCategoriaVertical(
-                        listaTours: snapshot.data,siguientePagina: categoriasProvider.getToursC,
+                        listaTours: snapshot.data,
+                        siguientePagina: cargarTours,
+                        ctid: categoria.ctidss,
                       );
                     }else if(snapshot.hasError){
                       return Column(
@@ -284,7 +293,9 @@ class _ListaTourPageState extends State<ListaTourPage> with SingleTickerProvider
                   case ConnectionState.active:
                     if(snapshot.hasData){
                       return ListaToursCategoriaVertical(
-                        listaTours: snapshot.data,siguientePagina: categoriasProvider.getToursC,
+                        listaTours: snapshot.data,
+                        siguientePagina: cargarTours,
+                        ctid: categoria.ctidss,
                       );
                     }else{
                       return Column(
@@ -388,6 +399,13 @@ class _ListaTourPageState extends State<ListaTourPage> with SingleTickerProvider
     //ToursProvider toursProvider = new ToursProvider();
     final categoriasProvider = new CategoriasProvider();
     categoriasProvider.getToursC(categoria.ctidss.toString());
+    void cargarTour(){
+      setState(() {
+        
+      });
+      categoriasProvider.getToursC(categoria.ctidss.toString());
+    }
+    
     return Container(
       width: double.infinity,
       child: SingleChildScrollView(
@@ -439,7 +457,8 @@ class _ListaTourPageState extends State<ListaTourPage> with SingleTickerProvider
                     if(snapshot.hasData){
                       return ListaToursCategoriaGrid(
                         listaTours: snapshot.data,
-                        siguientePagina: categoriasProvider.getToursC
+                        siguientePagina: cargarTour,
+                        ctid: categoria.ctidss,
                       );
                     }else{
                       return Column(
@@ -465,7 +484,8 @@ class _ListaTourPageState extends State<ListaTourPage> with SingleTickerProvider
                     if(snapshot.hasData){
                       return ListaToursCategoriaGrid(
                         listaTours: snapshot.data,
-                        siguientePagina: categoriasProvider.getToursC
+                        siguientePagina: cargarTour,
+                        ctid: categoria.ctidss,
                       );
                     }else{
                       return Column(

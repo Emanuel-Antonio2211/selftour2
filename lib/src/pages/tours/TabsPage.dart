@@ -1,5 +1,7 @@
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:selftourapp/src/models/tour_categoria_model.dart';
 //import 'package:selfttour/src/bloc/provider.dart';
 import 'package:selftourapp/src/pages/tours/busqueda_tour_page.dart';
 import 'package:selftourapp/src/pages/tours/home_page.dart';
@@ -8,7 +10,7 @@ import 'package:selftourapp/src/pages/usuario/profile_user_page.dart';
 import 'package:selftourapp/src/pages/usuario/tourscomprados_page.dart';
 import 'package:selftourapp/src/pages/usuario/toursfavoritos_page.dart';
 import 'package:selftourapp/src/translation_class/app_translations.dart';
-
+import 'package:selftourapp/src/providers/dynamic_link_provider.dart';
 
 class TabsPage extends StatefulWidget {
   @override
@@ -16,7 +18,7 @@ class TabsPage extends StatefulWidget {
 }
 
 class _TabsPageState extends State<TabsPage> {
-
+  final dynamicLinkProvider = DynamicLinkProvider();
   int currentIndex = 0;
 
   final List<Widget> _children = [
@@ -32,8 +34,68 @@ class _TabsPageState extends State<TabsPage> {
 
   @override
   void initState() {
+    //initDynamicLinks();
+    dynamicLinkProvider.startDynamicLink(context);
     super.initState();
+    
   }
+
+  void dynamicLinkHandled()async{
+    await dynamicLinkProvider.startDynamicLink(context);
+  }
+
+/*
+  void initDynamicLinks()async{
+    final PendingDynamicLinkData data = await FirebaseDynamicLinks.instance.getInitialLink();
+    final Uri deepLink = data?.link;
+
+    if(deepLink != null){
+
+      print("DeepLink");
+      print(deepLink.path);
+      //print(deepLink.queryParameters['detalletour']);
+      //Navigator.pushNamed(context, ruta,arguments: argument);
+      final argument = deepLink.queryParameters['_lookup'];
+      print(argument);
+          Map<String, dynamic> json = {
+          "idtour": argument.toString()
+          };
+       final infotour = InfoTour.fromJsonMap(json);
+      Navigator.pushNamed(context, '${deepLink.path}',arguments: infotour);
+      
+    }
+    FirebaseDynamicLinks.instance.onLink(
+      onSuccess: (PendingDynamicLinkData dynamicLink)async{
+        final Uri deepLink = dynamicLink?.link;
+
+        if(deepLink != null){
+          print("Ruta: ");
+          print(deepLink.path);
+          final argument = deepLink.queryParameters['_lookup'];
+          print(argument);
+          int idtour = int.parse(argument);
+          Map<String, dynamic> json = {
+          "idtour": idtour
+          };
+        final infotour = InfoTour.fromJsonMap(json);
+        Navigator.pushNamed(context, '${deepLink.path}',arguments: infotour);
+          var isPost = deepLink.pathSegments.contains('detalletour');
+          /*if(isPost){
+             final argument = deepLink.queryParameters['idtour'];
+             print("Argumento");
+             print(argument);
+            if(argument != null){
+              //navigatorKey.currentState.pushNamed('detalletour',arguments: argument);
+            }
+          }*/
+        }
+      },
+      onError: (OnLinkErrorException e)async{
+        print('OnLinkError');
+        print(e.message);
+      }
+    );
+  }*/
 
   @override
   Widget build(BuildContext context) {

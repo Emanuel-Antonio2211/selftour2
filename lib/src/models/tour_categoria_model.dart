@@ -36,6 +36,7 @@ class InfoTour {
   String name;
   String title = '';
   String description;
+  String shop;
   String fulldescription;
   Map<String,dynamic> characteristics;
   String requeriments;
@@ -92,6 +93,7 @@ class InfoTour {
     this.name,
     this.title,
     this.description,
+    this.shop,
     this.fulldescription,
     this.characteristics,
     this.requeriments,
@@ -141,6 +143,7 @@ class InfoTour {
     name          = json['name'];
     title         = json['title'];
     description   = json['description'];
+    shop          = json['shop'];
     fulldescription = json['full_description'];
     characteristics = json['characteristic'];
     requeriments = json['requeriments_tour'];

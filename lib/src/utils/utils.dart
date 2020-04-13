@@ -234,7 +234,7 @@ void mostrarConfirmacion(BuildContext context,String mensaje,String title,String
                         shape: StadiumBorder(),
                         child: Text('$aceptar',style: TextStyle(color: Colors.white),),
                         onPressed: (){
-                          Navigator.popUntil(context, ModalRoute.withName('detalletour'));
+                          Navigator.popUntil(context, ModalRoute.withName('/detalletour'));
                           //Navigator.popAndPushNamed(context, 'detalletour');
                           //Navigator.pop(context);
                         },

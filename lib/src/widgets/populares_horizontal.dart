@@ -149,7 +149,7 @@ class _ToursPopularesState extends State<ToursPopulares> {
       child: tarjeta,
       onTap: (){
         print('id de la categoria: ${tourPopular.idtour}');
-        Navigator.pushNamed(context, 'detalletour',arguments: tourPopular);
+        Navigator.pushNamed(context, '/detalletour',arguments: tourPopular);
       },
     );
   }

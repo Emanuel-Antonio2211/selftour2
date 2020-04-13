@@ -15,12 +15,13 @@ import 'package:selftourapp/src/translation_class/app_translations.dart';
 class ListaToursCategoriaVertical extends StatefulWidget {
   final List<InfoTour> listaTours;
   final Function siguientePagina;
+  final String ctid;
 
   final CategoriasProvider provider = CategoriasProvider();
 
   final PreferenciasUsuario prefs = PreferenciasUsuario();
 
-  ListaToursCategoriaVertical({ @required this.listaTours,@required this.siguientePagina});
+  ListaToursCategoriaVertical({ @required this.listaTours,@required this.siguientePagina, this.ctid});
 
   @override
   _ListaToursCategoriaVerticalState createState() => _ListaToursCategoriaVerticalState();
@@ -32,6 +33,23 @@ class ListaToursCategoriaVertical extends StatefulWidget {
 
 class _ListaToursCategoriaVerticalState extends State<ListaToursCategoriaVertical> {
   
+  Future<Null> cargarTours()async{
+    final duration = Duration(seconds: 2);
+
+    Timer(duration, (){
+      //Se borra la lista para generar otra
+      widget.listaTours.clear();
+      widget.provider.getToursC(widget.ctid).then((datos){
+        for(int i = 0; i<datos.length; i++){
+          widget.listaTours.add(datos[i]);
+        }
+      });
+      print("Ctid");
+      print(widget.ctid);
+    });
+
+    return Future.delayed(duration);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,16 +64,19 @@ class _ListaToursCategoriaVerticalState extends State<ListaToursCategoriaVertica
     return Container(
       //color: Colors.grey,
       height: size.height * 0.8,
-      child: ListView.builder(
-        scrollDirection: Axis.vertical,
-        //pageSnapping: false,
-        controller: widget._pageController,
-        //children: _tarjetas(context)
-        itemCount: widget.listaTours.length,
-        itemBuilder: (context,i){
-          return _tarjeta(context, widget.listaTours[i]);
-        },
-      )
+      child: RefreshIndicator(
+          onRefresh: cargarTours,
+          child: ListView.builder(
+            scrollDirection: Axis.vertical,
+            //pageSnapping: false,
+            controller: widget._pageController,
+            //children: _tarjetas(context)
+            itemCount: widget.listaTours.length,
+            itemBuilder: (context,i){
+              return _tarjeta(context, widget.listaTours[i]);
+            },
+          ),
+      ),
     );
   }
 
@@ -262,7 +283,7 @@ class _ListaToursCategoriaVerticalState extends State<ListaToursCategoriaVertica
       child: tarjeta,
       onTap: (){
         print('Tour con el id: ${tour.idtour.toString()}');
-        Navigator.pushNamed(context, 'detalletour',arguments: tour);//,arguments: tour.idtour.toInt()
+        Navigator.pushNamed(context, '/detalletour',arguments: tour);//,arguments: tour.idtour.toInt()
       },
     );
   }
@@ -331,8 +352,26 @@ class ListaToursCategoriaGrid extends StatelessWidget {
   final CategoriasProvider categoriasProvider = CategoriasProvider();
   final PreferenciasUsuario prefs = PreferenciasUsuario();
   final Function siguientePagina;
-  ListaToursCategoriaGrid({@required this.listaTours,@required this.siguientePagina});
+  final String ctid;
+  ListaToursCategoriaGrid({@required this.listaTours,@required this.siguientePagina, this.ctid});
   final _scrollController = ScrollController();
+  Future<Null> cargarTours()async{
+    final duration = Duration(seconds: 2);
+
+    Timer(duration, (){
+      //Se borra la lista para generar otra
+      listaTours.clear();
+      categoriasProvider.getToursC(ctid).then((datos){
+        for(int i = 0; i<datos.length; i++){
+          listaTours.add(datos[i]);
+        }
+      });
+      print("Ctid");
+      print(ctid);
+    });
+
+    return Future.delayed(duration);
+  }
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -348,13 +387,16 @@ class ListaToursCategoriaGrid extends StatelessWidget {
     return Container(
       //color: Colors.grey,
       height: size.height * 0.8,
-      child: GridView.builder(
-        controller: _scrollController,
-        itemCount: listaTours.length,
-        itemBuilder: (context,i){
-          return _tarjeta(context, listaTours[i]);
-        },
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+      child: RefreshIndicator(
+        onRefresh: cargarTours,
+        child: GridView.builder(
+          controller: _scrollController,
+          itemCount: listaTours.length,
+          itemBuilder: (context,i){
+            return _tarjeta(context, listaTours[i]);
+          },
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+        ),
       )
       
       /*ListView.builder(
@@ -592,7 +634,7 @@ class ListaToursCategoriaGrid extends StatelessWidget {
       child: tarjeta,
       onTap: (){
         print('Tour con el id: ${tour.idtour.toString()}');
-        Navigator.pushNamed(context, 'detalletour',arguments: tour);//,arguments: tour.idtour.toInt()
+        Navigator.pushNamed(context, '/detalletour',arguments: tour);//,arguments: tour.idtour.toInt()
       },
     );
   }
@@ -799,7 +841,7 @@ class _ListaToursCategoriaMapaState extends State<ListaToursCategoriaMapa> {
 
     return GestureDetector(
       onTap: (){
-        Navigator.pushNamed(context, 'detalletour',arguments: tour);
+        Navigator.pushNamed(context, '/detalletour',arguments: tour);
       },
       child: tours
       );

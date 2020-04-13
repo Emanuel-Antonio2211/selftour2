@@ -135,7 +135,7 @@ class DataSearch extends SearchDelegate{
                   //Se cierra la búsqueda primero
                   close(context, null);
                   //tour.uniqueid='';
-                  Navigator.pushNamed(context, 'detalletour',arguments: tour);
+                  Navigator.pushNamed(context, '/detalletour',arguments: tour);
                 },
                 child: Card(
                   child: Container(
@@ -350,7 +350,7 @@ class DataSearch extends SearchDelegate{
                   //Se cierra la búsqueda primero
                   close(context, null);
                   //showResults(context);
-                  Navigator.pushNamed(context, 'detalletour',arguments: tour);
+                  Navigator.pushNamed(context, '/detalletour',arguments: tour);
                 },
                 child: Card(
                   child: Container(

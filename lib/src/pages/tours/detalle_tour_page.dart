@@ -261,25 +261,29 @@ class _DetalleTourPageState extends State<DetalleTourPage> with SingleTickerProv
                             icon: Platform.isIOS ? Icon(Icons.open_in_browser,color: isShrink ? Colors.black:Colors.white,):Icon(Icons.share,color: isShrink ? Colors.black:Colors.white,),
                             onPressed: ()async{
                               final DynamicLinkParameters parameters = DynamicLinkParameters(
-                                uriPrefix: 'https://selftourtravel.page.link',//https://selftourtravel.page.link    https://selftour.travel
+                                uriPrefix: 'https://travelselftour.page.link',
                                 /*navigationInfoParameters: NavigationInfoParameters(
                                   forcedRedirectEnabled: true
                                 ),*/
                                 /*googleAnalyticsParameters: GoogleAnalyticsParameters(
 
                                 ),*/ // ?${snapshot.data.single.idtour.toString()}
-                                link: Uri.parse('https://selftourtravel.page.link/detalletour/?${snapshot.data.single.idtour.toString()}'),//https://www.selftour.travel
+                                //link: Uri.parse('https://selftour.travel/single_tour.html?_lookup=${snapshot.data.single.idtour.toString()}'),//https://www.selftour.travel &d=1
+                                link: Uri.parse('https://travelselftour.page.link/detalletour?_lookup=${snapshot.data.single.idtour.toString()}'),
                                 androidParameters: AndroidParameters(
-                                  //fallbackUrl: Uri.parse('https://www.selftour.travel'),
+                                  //fallbackUrl: Uri.parse('https://selftour.travel/single_tour.html?_lookup=${snapshot.data.single.idtour.toString()}'),
                                   //fallbackUrl: Uri.parse('https://selftourtravel.page.link/detalletour/?${snapshot.data.single.idtour.toString()}'),
                                   packageName: 'travel.selftour.selftour',
-                                  minimumVersion: 21
+                                  minimumVersion: 0
                                 ),
                                 iosParameters: IosParameters ( 
-                                    //fallbackUrl: Uri.parse('https://selftourtravel.page.link/detalletour?${snapshot.data.single.idtour.toString()}'),
-                                    bundleId: 'travel.selftour.selftour',
-                                    minimumVersion: '1.0.1',
-                                    appStoreId: '1489659850',
+                                  //fallbackUrl: Uri.parse('https://selftourtravel.page.link/detalletour?${snapshot.data.single.idtour.toString()}'),
+                                  bundleId: 'travel.selftour.selftour',
+                                  minimumVersion: '1.0.1',
+                                  appStoreId: '1489659850'
+                                ),
+                                dynamicLinkParametersOptions: DynamicLinkParametersOptions(
+                                  shortDynamicLinkPathLength: ShortDynamicLinkPathLength.short
                                 ),
                                 socialMetaTagParameters:  SocialMetaTagParameters(
                                   title: snapshot.data.single.title,
@@ -291,6 +295,8 @@ class _DetalleTourPageState extends State<DetalleTourPage> with SingleTickerProv
                               //final Uri dynamicUrl = await parameters.buildUrl();
                               final ShortDynamicLink shortDynamicLink = await parameters.buildShortLink();
                               final Uri shortUrl = shortDynamicLink.shortUrl;
+                              print("Link");
+                              print(shortUrl);
                               Share.share(
                                 shortUrl.toString(),
                                 subject: '${tour.title}'
@@ -1829,7 +1835,7 @@ Widget _botonesOpcionesUsuario(BuildContext context,InfoTour detalleTour){
         Container(
           width: size.width * 0.56,
           height: size.height * 0.07, //prefs.iduser != detalleTour.iduser.toString()
-          child: prefs.email != detalleTour.userData['mail'] && (prefs.idtour != detalleTour.idtour.toString()) ? RaisedButton(
+          child: prefs.idsell.toString() != detalleTour.shop || prefs.email != detalleTour.userData['mail'] && (prefs.idtour != detalleTour.idtour.toString()) ? RaisedButton(
             color: Color(0xFF055EEE), //Color(0xFFD62250) Color(0xFFfc5cc8)
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
             textTheme: ButtonTextTheme.primary,

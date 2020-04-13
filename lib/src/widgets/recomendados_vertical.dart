@@ -200,7 +200,7 @@ class RecomendadoVertical extends StatelessWidget {
     );
     return GestureDetector(
       onTap: (){
-        Navigator.pushNamed(context, 'detalletour',arguments: tour);
+        Navigator.pushNamed(context, '/detalletour',arguments: tour);
       },
       child: recomendado
     );
@@ -418,7 +418,7 @@ class RecomendadoGrid extends StatelessWidget {
     return GestureDetector(
       child: recomendado,
       onTap: (){
-        Navigator.pushNamed(context, 'detalletour',arguments: tour);
+        Navigator.pushNamed(context, '/detalletour',arguments: tour);
       },
     );
   }

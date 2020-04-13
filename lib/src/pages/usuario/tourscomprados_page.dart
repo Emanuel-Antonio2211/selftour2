@@ -15,7 +15,7 @@ class ToursCompradosPage extends StatefulWidget {
 class _ToursCompradosPageState extends State<ToursCompradosPage> {
   List<InfoTour> comprados = List();
   CategoriasProvider categoriasProvider = CategoriasProvider();
-  PreferenciasUsuario prefs = PreferenciasUsuario();
+  
   bool loading = false;
 
   @override
@@ -233,10 +233,10 @@ class Comprados extends StatefulWidget {
 }
 
 class _CompradosState extends State<Comprados> {
+  PreferenciasUsuario prefs = PreferenciasUsuario();
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-
     return Container(
       height: size.height * 0.8,
       child: ListView.builder(
@@ -250,9 +250,10 @@ class _CompradosState extends State<Comprados> {
 
   Widget _toursComprados(BuildContext context, InfoTour tour){
     final size = MediaQuery.of(context).size;
+    prefs.idsell = tour.idsell.toString();
     return GestureDetector(
       onTap: (){
-        Navigator.pushNamed(context, 'detalletour',arguments: tour);
+        Navigator.pushNamed(context, '/detalletour',arguments: tour);
       },
       child: Card(
         child: Row(

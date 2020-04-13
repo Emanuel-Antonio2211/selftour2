@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:generic_bloc_provider/generic_bloc_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 //import 'package:provider/provider.dart';
 import 'Dart:ui' as ui;
 
@@ -39,7 +38,6 @@ import 'package:selftourapp/src/pages/tours/busqueda_tour_page.dart';
 import 'package:selftourapp/src/pages/tours/detalle_tour_page.dart';
 import 'package:selftourapp/src/pages/tours/home_page.dart';
 import 'package:selftourapp/src/pages/tours/lista_tour_page.dart';
-import 'package:selftourapp/src/pages/usuario/chat_page.dart';
 import 'package:selftourapp/src/pages/usuario/edicion_informacion_page.dart';
 import 'package:selftourapp/src/pages/usuario/infousuario_page.dart';
 import 'package:selftourapp/src/pages/usuario/preferencia_idioma.dart';
@@ -121,42 +119,8 @@ class _MyAppState extends State<MyApp> {
     _newLocaleDelegate = AppTranslationsDelegate(newLocale: prefs.idioma == null ? Locale('es'):Locale(prefs.idioma));
     application.onLocaleChanged = onLocaleChange;
     
-    this.initDynamicLinks();
   }
   
-
-  void initDynamicLinks()async{
-    final PendingDynamicLinkData data = await FirebaseDynamicLinks.instance.getInitialLink();
-    final Uri deepLink = data?.link;
-
-    print(deepLink);
-
-    if(deepLink != null){
-      Navigator.pushNamed(context, deepLink.path);
-     /* navigatorKey.currentState.pushNamed('${deepLink.path}').then((navegador){
-        return navegador;
-      }).catchError((e){
-        print(e);
-      });*/
-      //return deepLink.toString();
-    }
-    FirebaseDynamicLinks.instance.onLink(
-      onSuccess: (PendingDynamicLinkData dynamicLink)async{
-        final Uri deepLink = dynamicLink?.link;
-
-        if(deepLink != null){
-          Navigator.pushNamed(context, deepLink.path);
-          //navigatorKey.currentState.pushNamed('${deepLink.path}');
-          
-        }
-      },
-      onError: (OnLinkErrorException e)async{
-        print('OnLinkError');
-        print(e.message);
-      }
-    );
-  }
-
   void onLocaleChange(Locale locale){
     setState(() {
      _newLocaleDelegate = AppTranslationsDelegate(newLocale: locale);
@@ -177,7 +141,7 @@ class _MyAppState extends State<MyApp> {
    
     final prefs = new PreferenciasUsuario();
     print(prefs.token);
-    
+
     return BlocProvider(
       child: MaterialApp(
         /*supportedLocales: [
@@ -218,14 +182,14 @@ class _MyAppState extends State<MyApp> {
        
         debugShowCheckedModeBanner: false,
         //Se maneja el estado del material app
-        navigatorKey: navigatorKey,
+        //navigatorKey: dynamicLinkProvider.navigationKey,
         title: 'SelfTour',
         initialRoute: 'menuprincipal',
         routes: {
           '/'              : (BuildContext context)=>IndexPage(),
           'tours'          : (BuildContext context)=>ListaTourPage(),
           'busquedatour'   : (BuildContext context)=>BusquedaTourPage(),
-          'detalletour'    : (BuildContext context)=>DetalleTourPage(),
+          '/detalletour'    : (BuildContext context)=>DetalleTourPage(),
           'galeriatour'    : (BuildContext context)=>GaleriaTourPage(),
           'googlemap'      : (BuildContext context)=>Mapa(),
           'comprar'        : (BuildContext context)=>PagosPage(),

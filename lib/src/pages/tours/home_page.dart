@@ -58,8 +58,8 @@ void initState() {
   /*WidgetsBinding.instance
       .addPostFrameCallback((_) => _refreshIndicatorKey.currentState.show());*/
   //appState.getUserLocation();
-  super.initState();
   
+  super.initState();
 }
 
 Future<void> getDatos()async{

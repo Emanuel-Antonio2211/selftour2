@@ -152,7 +152,7 @@ class _ToursMapaPageState extends State<ToursMapaPage> {
                             infoWindow: InfoWindow(
                               title: '\$ ${double.parse(places[i].price.toString()).toString()}',
                               onTap: (){
-                                Navigator.pushNamed(context, 'detalletour',arguments: places[i]);
+                                Navigator.pushNamed(context, '/detalletour',arguments: places[i]);
                               }
                             ),
                             icon: BitmapDescriptor.defaultMarker,
@@ -283,7 +283,7 @@ class _ToursMapaPageState extends State<ToursMapaPage> {
       return GestureDetector(
         onTap: (){
           
-          Navigator.pushNamed(context, 'detalletour',arguments: tour);
+          Navigator.pushNamed(context, '/detalletour',arguments: tour);
         },
         child: Card(
           child: Column(
@@ -323,7 +323,7 @@ class _ToursMapaPageState extends State<ToursMapaPage> {
     return GestureDetector(
       onTap: (){
         
-        Navigator.pushNamed(context, 'detalletour',arguments: tour);
+        Navigator.pushNamed(context, '/detalletour',arguments: tour);
       },
       child: Card(
         child: Column(

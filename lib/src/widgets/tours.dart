@@ -241,7 +241,7 @@ class _ToursGeneralState extends State<ToursGeneral> {
       child: tarjeta,
       onTap: (){
         print(tour.idtour.toString());
-        Navigator.pushNamed(context, 'detalletour',arguments: tour);
+        Navigator.pushNamed(context, '/detalletour',arguments: tour);
       },
     );
   }

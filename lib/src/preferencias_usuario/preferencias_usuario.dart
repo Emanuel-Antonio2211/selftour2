@@ -100,6 +100,14 @@ class PreferenciasUsuario {
     _prefs.setString('uid', value);
   }
 
+  set idsell(String value){
+    _prefs.setString('idsell', value);
+  }
+
+  get idsell{
+    return _prefs.getString('idsell');
+  }
+
   set originLogin(String value){
     _prefs.setString('originLogin', value);
   }

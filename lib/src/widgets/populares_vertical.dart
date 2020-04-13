@@ -198,7 +198,7 @@ class PopularVertical extends StatelessWidget {
     );
     return GestureDetector(
       onTap: (){
-        Navigator.pushNamed(context, 'detalletour',arguments: tour);
+        Navigator.pushNamed(context, '/detalletour',arguments: tour);
       },
       child: popular
     );
@@ -414,7 +414,7 @@ class PopularGrid extends StatelessWidget {
     return GestureDetector(
       child: popularTour,
       onTap: (){
-        Navigator.pushNamed(context, 'detalletour',arguments: tour);
+        Navigator.pushNamed(context, '/detalletour',arguments: tour);
       },
     );
   }

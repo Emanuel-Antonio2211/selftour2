@@ -200,7 +200,7 @@ class RecienteVertical extends StatelessWidget {
     );
     return GestureDetector(
       onTap: (){
-        Navigator.pushNamed(context, 'detalletour',arguments: tour);
+        Navigator.pushNamed(context, '/detalletour',arguments: tour);
       },
       child: recientes
     );
@@ -417,7 +417,7 @@ class RecienteGrid extends StatelessWidget {
     return GestureDetector(
       child: recienteTour,
       onTap: (){
-        Navigator.pushNamed(context, 'detalletour',arguments: tour);
+        Navigator.pushNamed(context, '/detalletour',arguments: tour);
       },
     );
   }

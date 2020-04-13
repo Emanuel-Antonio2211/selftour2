@@ -2242,23 +2242,27 @@ if(Platform.isAndroid){
                             ),
                           ),
                         ),
-                        Container(
-                          //color: Colors.transparent,
-                          width: size.width * 0.7,
-                          child: TextFormField(
-                            style: TextStyle(color: Colors.transparent),
-                            enabled: false,
-                            initialValue: deviceSesionId,
-                            onSaved: (value){
-                               deviceSesionId = value;
-                              tarjeta.deviceSesionId = deviceSesionId;
-                            },
-                            textCapitalization: TextCapitalization.characters,
-                            keyboardType: TextInputType.text,
-                            decoration: InputDecoration(
-                              disabledBorder: InputBorder.none
-                              //labelText: '$cvc',
-                              //labelStyle: TextStyle(fontFamily: 'Point-SemiBold',color: Colors.grey)
+                        Visibility(
+                          visible: false,
+                          child: Container(
+                            //color: Colors.transparent,
+                            width: size.width * 0.7,
+                            height: size.height * 0.1,
+                            child: TextFormField(
+                              style: TextStyle(color: Colors.transparent),
+                              enabled: false,
+                              initialValue: deviceSesionId,
+                              onSaved: (value){
+                                 deviceSesionId = value;
+                                tarjeta.deviceSesionId = deviceSesionId;
+                              },
+                              textCapitalization: TextCapitalization.characters,
+                              keyboardType: TextInputType.text,
+                              decoration: InputDecoration(
+                                disabledBorder: InputBorder.none
+                                //labelText: '$cvc',
+                                //labelStyle: TextStyle(fontFamily: 'Point-SemiBold',color: Colors.grey)
+                              ),
                             ),
                           ),
                         ),
@@ -2875,7 +2879,7 @@ if(Platform.isAndroid){
                         shape: StadiumBorder(),
                         child: Text('$aceptar',style: TextStyle(color: Colors.white),),
                         onPressed: (){
-                          Navigator.popUntil(context, ModalRoute.withName('detalletour'));
+                          Navigator.popUntil(context, ModalRoute.withName('/detalletour'));
                         },
                       ),
                 

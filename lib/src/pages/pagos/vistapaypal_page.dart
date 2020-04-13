@@ -438,7 +438,7 @@ class _VistaPaypalPageState extends State<VistaPaypalPage> {
                         shape: StadiumBorder(),
                         child: Text(aceptar,style: TextStyle(color: Colors.white),),
                         onPressed: (){
-                          Navigator.popUntil(context, ModalRoute.withName('detalletour'));
+                          Navigator.popUntil(context, ModalRoute.withName('/detalletour'));
                         },
                       ),
                 
