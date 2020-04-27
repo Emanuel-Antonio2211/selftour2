@@ -220,7 +220,7 @@ class _MapaState extends State<Mapa> {
             position: LatLng(double.parse(tour.route[i]['lat']), double.parse(tour.route[i]['lng'])),
             infoWindow: InfoWindow(
               title: '${tour.route[i]['site']}',
-              snippet: '${tour.route[i]['site']}'
+              //snippet: '${tour.route[i]['site']}'
             ),
             icon: BitmapDescriptor.fromBytes(byteData)
           )
@@ -229,7 +229,7 @@ class _MapaState extends State<Mapa> {
       
     }
 
-    if(_marcadores.isEmpty){
+   /* if(_marcadores.isEmpty){
       Future.delayed(Duration(seconds: 2),()async{
         setState(() {
           
@@ -238,8 +238,8 @@ class _MapaState extends State<Mapa> {
       });
     }else{
       print('Datos cargados');
-    }
-    
+    }*/
+    cargarMarcadores();
 
     double x;
     double y;
@@ -744,7 +744,29 @@ class _MapaState extends State<Mapa> {
                             // String origin;
                             // String destination;
                             // String calle;
-                            //String numero;
+                            // String numero;
+                            /*await appState.userLocation().then((result){
+                                // prefs.ciudad = result[0];
+                                // prefs.estado = result[1];
+                                // prefs.pais = result[2];
+                                // origin = result[3];
+                                // destination = result[4];
+                                // calle = result[5];
+                                // numero = result[6];
+
+                                print(result[0]);
+                                print(result[1]);
+                                print(result[2]);
+                                print(result[3]);
+                                print(result[4]);
+                                print(result[5]);
+                                print(result[6]);
+                                print(result[7]);
+                                print(result[8]);
+                                print(result[9]);
+                                print(result[10]);
+                              });*/
+                              
                             final origen = Location(name: '${appState.initialPosition.toString()}',latitude: appState.initialPosition.latitude,longitude: appState.initialPosition.longitude );
                             final destino = Location(name: '${detalletour['site']}',latitude: double.parse(detalletour['lat']) ,longitude: double.parse(detalletour['lng']) );
                             await _directions.startNavigation( origin: origen, destination: destino,mode: NavigationMode.walking,simulateRoute: false,language: "${prefs.idioma}", units: VoiceUnits.metric);

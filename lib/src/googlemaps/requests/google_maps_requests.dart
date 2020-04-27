@@ -4,7 +4,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-import 'package:selftourapp/src/models/mapa_model.dart';
+//import 'package:selftourapp/src/models/mapa_model.dart';
 
 const apiKey = "AIzaSyAAw4woNIssZ0P5Lonws9W-9LTRHRCMyqc";
 

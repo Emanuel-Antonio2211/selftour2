@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:selftourapp/src/models/tour_categoria_model.dart';
+import 'package:selftourapp/src/providers/categorias_providers.dart';
 import 'package:selftourapp/src/translation_class/app_translations.dart';
 
 class PopularVertical extends StatelessWidget {
@@ -8,6 +11,24 @@ class PopularVertical extends StatelessWidget {
   final Function siguientePagina;
   PopularVertical({@required this.listaPopulares,@required this.siguientePagina});
   final _scrollController = ScrollController();
+  final categoriaProvider = CategoriasProvider();
+
+  Future<Null> cargarPopulares()async{
+    final duration = Duration(seconds: 2);
+
+    Timer(duration, (){
+      listaPopulares.clear();
+      categoriaProvider.popularesPag().then((result){
+        for(int i = 0; i < result.length; i++){
+          listaPopulares.add(result[i]);
+        }
+      });
+
+    });
+    print("Lista Cargada");
+    print(listaPopulares);
+    return Future.delayed(duration);
+  }
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -22,12 +43,15 @@ class PopularVertical extends StatelessWidget {
     });
     return Container(
       height: size.height * 0.8,
-      child: ListView.builder(
-        controller: _scrollController,
-        itemCount: listaPopulares.length,
-        itemBuilder: (context,index){
-          return populares(context, listaPopulares[index]);
-        },
+      child: RefreshIndicator(
+        onRefresh: cargarPopulares,
+        child: ListView.builder(
+          controller: _scrollController,
+          itemCount: listaPopulares.length,
+          itemBuilder: (context,index){
+            return populares(context, listaPopulares[index]);
+          },
+        ),
       ),
     );
   }
@@ -210,6 +234,24 @@ class PopularGrid extends StatelessWidget {
   final Function siguientePagina;
   PopularGrid({@required this.listaPopulares,@required this.siguientePagina});
   final _scrollController = ScrollController();
+  final categoriaProvider = CategoriasProvider();
+
+  Future<Null> cargarPopulares()async{
+    final duration = Duration(seconds: 2);
+
+    Timer(duration, (){
+      listaPopulares.clear();
+      categoriaProvider.popularesPag().then((result){
+        for(int i = 0; i < result.length; i++){
+          listaPopulares.add(result[i]);
+        }
+      });
+
+    });
+    print("Lista Cargada");
+    print(listaPopulares);
+    return Future.delayed(duration);
+  }
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -224,13 +266,16 @@ class PopularGrid extends StatelessWidget {
     });
     return Container(
       height: size.height * 0.8,
-      child: GridView.builder(
-        controller: _scrollController,
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
-        itemCount: listaPopulares.length,
-        itemBuilder: (context,i){
-          return popularGrid(context, listaPopulares[i]);
-        },
+      child: RefreshIndicator(
+        onRefresh: cargarPopulares,
+        child: GridView.builder(
+          controller: _scrollController,
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+          itemCount: listaPopulares.length,
+          itemBuilder: (context,i){
+            return popularGrid(context, listaPopulares[i]);
+          },
+        ),
       ),
     );
   }

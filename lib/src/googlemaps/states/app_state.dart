@@ -74,8 +74,12 @@ class AppState with ChangeNotifier{
       placemark[0].country,
       placemark[0].subLocality,
       placemark[0].subAdministrativeArea,
+      placemark[0].isoCountryCode,
+      placemark[0].position.hashCode.toString(),
+      placemark[0].postalCode,
       placemark[0].thoroughfare,
-      placemark[0].subThoroughfare
+      placemark[0].subThoroughfare,
+      placemark[0].name
     ]);
 
     //print(ubicaciones);

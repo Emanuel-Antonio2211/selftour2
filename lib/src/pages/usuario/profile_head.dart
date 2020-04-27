@@ -483,7 +483,7 @@ class _ProfileHeadState extends State<ProfileHead> {
                                   child: FadeInImage(
                                     width: size.width * 0.25,
                                     height: size.height * 0.1,
-                                    image: prefs.photoUrl.toString() == 'null' ? AssetImage('assets/iconoapp/Selftour1.png') : NetworkImage('${prefs.photoUrl.toString()}'), //snapshot.data.photoUrl == null ? AssetImage('assets/iconoapp/Selftour1.png') : NetworkImage('${snapshot.data.photoUrl.toString()}')
+                                    image: prefs.photoUrl == '' ? AssetImage('assets/iconoapp/Selftour1.png') : NetworkImage('${prefs.photoUrl.toString()}'), //snapshot.data.photoUrl == null ? AssetImage('assets/iconoapp/Selftour1.png') : NetworkImage('${snapshot.data.photoUrl.toString()}')
                                     placeholder: AssetImage('assets/loading.gif'),
                                     fit: BoxFit.cover,
                                   ),

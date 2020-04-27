@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
-import 'package:provider/provider.dart';
+//import 'package:provider/provider.dart';
 import 'package:selftourapp/src/googlemaps/states/app_state.dart';
 import 'package:selftourapp/src/models/tour_categoria_model.dart';
 import 'package:selftourapp/src/pages/tours/categorias_page.dart';
@@ -105,7 +105,7 @@ Future<void> getDatos()async{
     theme.copyWith(
       primaryColor: Colors.white,
     );*/
-    final appState = Provider.of<AppState>(context);
+    //final appState = Provider.of<AppState>(context);
 
     /*Future.delayed(Duration(microseconds: 1),()async{
       await appState.userLocation().then((result){

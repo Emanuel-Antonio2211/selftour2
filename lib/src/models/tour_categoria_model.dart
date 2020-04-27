@@ -36,7 +36,7 @@ class InfoTour {
   String name;
   String title = '';
   String description;
-  String shop;
+  int shop;
   String fulldescription;
   Map<String,dynamic> characteristics;
   String requeriments;

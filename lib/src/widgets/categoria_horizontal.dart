@@ -130,16 +130,16 @@ class CategoriaHorizontal extends StatelessWidget {
                           //color: Colors.lightBlue,
                           child: Column(
                             children: <Widget>[
-                              /*Text(
+                              Text(
                                categoria.nameCategory == null ? '':categoria.nameCategory,//categoria.nameCategory
                                 style: TextStyle(
                                   color: Colors.white,
-                                  fontSize: 27.0,
+                                  fontSize: 25.0,
                                   //backgroundColor: Color(0xFF034485),
                                   fontFamily: 'Point-SemiBoldItalic',
-                                ),
-                              ),*/
-                              FutureBuilder(
+                                )
+                              ),
+                              /*FutureBuilder(
                                 future: categoriasProvider.traducir(prefs.idioma == null ? 'es' : prefs.idioma.toString(), categoria.nameCategory),
                                 builder: (BuildContext context, AsyncSnapshot<Map<String,dynamic>> snapshot) {
                                   if(snapshot.hasData){
@@ -161,7 +161,7 @@ class CategoriaHorizontal extends StatelessWidget {
                                   }
                                   
                                 },
-                              ),
+                              ),*/
                               Text(
                                 "${categoria.cant.toString()} tours",
                                 style: TextStyle(

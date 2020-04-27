@@ -6,11 +6,14 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:async';
 import 'package:http/http.dart' as http;
+import 'package:mime_type/mime_type.dart';
 import 'package:selftourapp/src/preferencias_usuario/preferencias_usuario.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:flutter_twitter_login/flutter_twitter_login.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:selftourapp/src/providers/push_notifications_provider.dart';
+import 'package:dio/dio.dart';
+import 'package:http_parser/http_parser.dart';
 //import 'package:selftourapp/src/utils/utils.dart';
 //import 'package:shared_preferences/shared_preferences.dart';
 
@@ -32,6 +35,8 @@ class UsuarioProvider{
   //Se crea una instancia de la clase PreferenciasUsuario
   final prefs = new PreferenciasUsuario();
   //SharedPreferences preferences;
+
+  final dio = Dio();
 
   FirebaseAuth _auth = FirebaseAuth.instance;
   final facebookLogin = new FacebookLogin();
@@ -272,11 +277,11 @@ class UsuarioProvider{
         final AuthCredential credential = FacebookAuthProvider.getCredential(accessToken: token.token );
         myUser =
           await _auth.signInWithCredential(credential);
-        prefs.token = token.toString();
-        prefs.name = myUser.providerData[1].displayName;
-        prefs.email = myUser.providerData[1].email;
-        prefs.phone = myUser.providerData[1].phoneNumber;
-        prefs.photoUrl = myUser.providerData[1].photoUrl;
+        //prefs.token = token.toString();
+        //prefs.name = myUser.providerData[1].displayName;
+        //prefs.email = myUser.providerData[1].email;
+        //prefs.phone = myUser.providerData[1].phoneNumber;
+        //prefs.photoUrl = myUser.providerData[1].photoUrl;
         print("Usuario: ${myUser.email}");
         break;
       case FacebookLoginStatus.cancelledByUser:
@@ -289,6 +294,7 @@ class UsuarioProvider{
       default:
         return myUser;
     }
+    /*
     if(myUser != null){
       // Check is already sign up - Checa si está logueado
       // id myUser.providerData[1].uid
@@ -313,7 +319,7 @@ class UsuarioProvider{
        // FirebaseUser currentUser = user;
         
       }
-    }
+    }*/
     print(myUser);
     return myUser;
   /* if (result.status == FacebookLoginStatus.loggedIn) {
@@ -560,5 +566,112 @@ class UsuarioProvider{
    final decodedResp = json.decode(resp.body);
 
     print(decodedResp);
+  }
+
+  Future<Map<String,dynamic>> actualizarPerfil(String nombreUsuario, String telefono,String fechaNac,String codPostal,String pais,String facebook,String webPag, File img_profile,String token)async{
+    final url = Uri.parse('https://api-users.selftours.app/updateProfile');
+    final mymeType = mime(img_profile.path).split('/'); //image/jpeg
+    /*final datos = {
+        "name": "$nombreUsuario",
+        "phone": "$telefono",
+        "dbirth": "$fechaNac",
+        "_cpostal": "$codPostal",
+        "country": "$pais",
+        "fb": "$facebook",
+        "web": "$webPag",
+        "lang": "${prefs.idioma}",
+        "img_profile": "$img_profile"
+      };*/
+
+     /* final formData = FormData.from(
+        {
+          "name": "$nombreUsuario",
+          "phone": "$telefono",
+          "dbirth": "$fechaNac",
+          "_cpostal": "$codPostal",
+          "country": "$pais",
+          "fb": "$facebook",
+          "web": "$webPag",
+          "lang": "${prefs.idioma}",
+          "img_profile": await http.MultipartFile.fromPath(
+            'file',
+            img_profile.path,
+            contentType: MediaType(
+              mymeType[0],
+              mymeType[1]
+            )
+          )
+        }
+      );*/
+    final uploadRequest = http.MultipartRequest(
+      'PUT',
+      url
+    )
+    ..fields['name']  = '$nombreUsuario'
+    ..fields['phone'] = '$telefono'
+    ..fields['dbirth'] = '$fechaNac'
+    ..fields['_cpostal'] = '$codPostal'
+    ..fields['country']  = '$pais'
+    ..fields['fb'] = '$facebook'
+    ..fields['web'] = '$webPag'
+    ..headers['token'] = '$token'
+    ..fields['lang'] = '${prefs.idioma}';
+
+    /*final resp1 = await dio.put(
+      url,
+      data: formData,
+      options: Options(
+        headers: {
+          //HttpHeaders.contentTypeHeader: "application/form-data",
+          "token": "$token"
+        }
+      )
+    );*/
+
+    /*final resp = await http.put(
+      url,
+      headers: {
+        HttpHeaders.contentTypeHeader: "application/form-data", //application/x-www-form-urlencoded application/form-data
+        "token": "$token"
+      },
+      //encoding: json.encode(datos)
+      body: {
+        "name": "$nombreUsuario",
+        "phone": "$telefono",
+        "dbirth": "$fechaNac",
+        "_cpostal": "$codPostal",
+        "country": "$pais",
+        "fb": "$facebook",
+        "web": "$webPag",
+        "lang": "${prefs.idioma}",
+        "img_profile": "$img_profile"
+      }
+    );*/
+
+    final files = await http.MultipartFile.fromPath(
+            'img_profile',
+            img_profile.path,
+            contentType: MediaType(
+              mymeType[0],
+              mymeType[1]
+            )
+          );
+    uploadRequest.files.add(files);
+    //final streamResponse = await http.Response.fromStream(resp1.data);
+    final streamResponse = await uploadRequest.send();
+    final respuesta = await http.Response.fromStream(streamResponse);
+    if(respuesta.statusCode != 200 && respuesta.statusCode != 201){
+      print(respuesta.body);
+      return null;
+    }
+
+    final decodedResp = json.decode(respuesta.body);
+   // Map<String,dynamic> decodedResp = json.decode(streamResponse.body)?.cast<Map<String, dynamic>>();
+
+    print("Actualizar perfil: ");
+    print(decodedResp);
+
+    return decodedResp;
+
   }
 }

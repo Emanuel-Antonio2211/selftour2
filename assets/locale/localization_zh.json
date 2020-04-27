@@ -174,5 +174,10 @@
     "title_code_security_empty": "未提供卡安全码（CVV2）",
     "title_card_test": "卡号为测试卡，只能在沙盒中使用",
     "title_card_not_points": "所查询的卡积分无效",
-    "title_card_not_valid": "卡安全码（CVV2）无效"
+    "title_card_not_valid": "卡安全码（CVV2）无效",
+    "title_success_update": "数据已更新",
+    "title_fecha_Nac" : "出生日期",
+    "title_facebook": "脸书",
+    "title_webpag": "网页",
+    "title_ejemplo": "例子"
 }

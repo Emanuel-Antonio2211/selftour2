@@ -174,5 +174,10 @@
     "title_code_security_empty": "El código de seguridad de la tarjeta (CVV2) no fue proporcionado",
     "title_card_test": "El número de tarjeta es de prueba, solamente puede usarse en Sandbox",
     "title_card_not_points": "La tarjeta consultada no es valida para puntos",
-    "title_card_not_valid": "El código de seguridad de la tarjeta (CVV2) no es valido"
+    "title_card_not_valid": "El código de seguridad de la tarjeta (CVV2) no es valido",
+    "title_success_update": "Los datos fueron actualizados",
+    "title_fecha_Nac" : "Fecha de Nacimiento",
+    "title_facebook": "Facebook",
+    "title_webpag": "Página Web",
+    "title_ejemplo": "Ejemplo"
 }

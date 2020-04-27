@@ -327,7 +327,7 @@ _toursPage++;
   }
 
 
-  Future<List<InfoTour>> getToursId(int idtour)  async{
+  Future<List<InfoTour>> getToursId(int idtour,String token)async{
    //final id = String.fromCharCode(idtour);
     /*if(_cargando){
       return [];
@@ -337,18 +337,23 @@ _toursPage++;
     //_tourlistPage++;
     //print('Cargando siguientes...');
     final url = Uri.https(
-      _url, 
-      '/tours/${idtour.toInt()}',
+      _url,
+      '/tours/${idtour.toInt()}'
     ); //${idtour.toInt()}
-    final respuestaDetalleTour = await _procesarRespuestaToursId(url);
+    final respuestaDetalleTour = await _procesarRespuestaToursId(url,token);
     popularesTours.addAll(respuestaDetalleTour);
     popularSink(popularesTours);
     //_cargando = false;
     return respuestaDetalleTour;
   }
 
-  Future<List<InfoTour>> _procesarRespuestaToursId(Uri url) async{
-    final respuestaTC = await http.get(url);
+  Future<List<InfoTour>> _procesarRespuestaToursId(Uri url,String token) async{
+    final respuestaTC = await http.get(
+      url,
+      headers: {
+        "token": "$token"
+      }
+    );
     final decodedDataTC = json.decode(respuestaTC.body);
     
     print(decodedDataTC['rows']);

@@ -15,6 +15,7 @@ import 'package:generic_bloc_provider/generic_bloc_provider.dart';
 //import 'package:firebase_auth/firebase_auth.dart';
 import 'package:selftourapp/src/bloc/login_bloc.dart';
 import 'package:selftourapp/src/translation_class/app_translations.dart';
+import 'package:selftourapp/src/providers/categorias_providers.dart';
 
 class SesionPageCompra extends StatefulWidget {
   @override
@@ -25,6 +26,8 @@ class _SesionPageState extends State<SesionPageCompra> {
   LoginBloc userBloc;
   final usuarioProvider = new UsuarioProvider();
   PreferenciasUsuario prefs = new PreferenciasUsuario();
+  final categoriaProvider = CategoriasProvider();
+
   @override
   Widget build(BuildContext context) {
     userBloc = BlocProvider.of<LoginBloc>(context);
@@ -40,7 +43,9 @@ class _SesionPageState extends State<SesionPageCompra> {
       builder: (BuildContext context, AsyncSnapshot<FirebaseUser> snapshot) {
         String inicioSesion = AppTranslations.of(context).text('title_login');
         String crearCuenta = AppTranslations.of(context).text('title_createaccount');
-        if (prefs.name == '' && prefs.email == '') {
+
+        
+       if (prefs.name == '' && prefs.email == '' && prefs.token == '') {
           return Scaffold(
            /* appBar: AppBar(
               elevation: 0.0,
@@ -103,7 +108,7 @@ class _SesionPageState extends State<SesionPageCompra> {
                                     fontWeight: FontWeight.bold),
                                 ),
                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-                                onPressed: (){
+                                onPressed: ()async{
                                   setState(() {
                                     
                                   });
@@ -111,6 +116,20 @@ class _SesionPageState extends State<SesionPageCompra> {
                                   Navigator.push(context, MaterialPageRoute(builder: (BuildContext context){
                                     return Login();
                                   },fullscreenDialog: true));
+                                  if(prefs.token != ''){
+                                    final respuesta = await categoriaProvider.getToursId(detalleTour.idtour, prefs.token);
+                                      if(respuesta.single.shop == 0){
+                                        Navigator.popAndPushNamed(context, 'detallecompra',arguments: detalleTour);
+                                      }else if( prefs.email == respuesta.single.userData['mail']){
+                                        //Navigator.popUntil(context, ModalRoute.withName('detalletour'));
+                                        Navigator.pop(context);
+                                      }else if(respuesta.single.shop != 0){
+                                        //Navigator.popUntil(context, ModalRoute.withName('detalletour'));
+                                        Navigator.pop(context);
+                                      }
+                                  }else{
+                                    print("login no exitoso");
+                                  }
                                 },
                               ),
                           ),
@@ -153,12 +172,32 @@ class _SesionPageState extends State<SesionPageCompra> {
                                     fontWeight: FontWeight.bold),
                                 ),
                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-                                onPressed: (){
+                                onPressed: ()async{
                                   setState(() {
                                     
                                   });
                                   userBloc.signOut();
-                                  userBloc.signInGoogle(context);
+                                 await userBloc.signInGoogle(context).then((result)async{
+                                   if(result){
+                                     if(prefs.token != ''){
+                                       final respuesta = await categoriaProvider.getToursId(detalleTour.idtour, prefs.token);
+                                      if(respuesta.single.shop == 0){
+                                        Navigator.popAndPushNamed(context, 'detallecompra',arguments: detalleTour);
+                                      }else if( prefs.email == respuesta.single.userData['mail']){
+                                        //Navigator.popUntil(context, ModalRoute.withName('detalletour'));
+                                        Navigator.pop(context);
+                                      }else if(respuesta.single.shop != 0){
+                                        //Navigator.popUntil(context, ModalRoute.withName('detalletour'));
+                                        Navigator.pop(context);
+                                      }
+                                     }else{
+                                       print("No hay token");
+                                     }
+                                     
+                                   }else{
+                                     print("Logueo no exitoso");
+                                   }
+                                 });
                                 },
                               ),
                           ),
@@ -198,12 +237,32 @@ class _SesionPageState extends State<SesionPageCompra> {
                                     fontWeight: FontWeight.bold),
                                 ),
                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-                                onPressed: (){
+                                onPressed: ()async{
                                   setState(() {
                                     
                                   });
                                   userBloc.signOut();
-                                  userBloc.signInFacebook(context);
+                                  await userBloc.signInFacebook(context).then((result)async{
+                                    if(result){
+                                     if(prefs.token != ''){
+                                       final respuesta = await categoriaProvider.getToursId(detalleTour.idtour, prefs.token);
+                                      if(respuesta.single.shop == 0){
+                                        Navigator.popAndPushNamed(context, 'detallecompra',arguments: detalleTour);
+                                      }else if( prefs.email == respuesta.single.userData['mail']){
+                                        //Navigator.popUntil(context, ModalRoute.withName('detalletour'));
+                                        Navigator.pop(context);
+                                      }else if(respuesta.single.shop != 0){
+                                        //Navigator.popUntil(context, ModalRoute.withName('detalletour'));
+                                        Navigator.pop(context);
+                                      }
+                                     }else{
+                                       print("No hay token");
+                                     }
+                                     
+                                   }else{
+                                     print("Logueo no exitoso");
+                                   }
+                                  });
                                 },
                               ),
                           ),
@@ -272,7 +331,7 @@ class _SesionPageState extends State<SesionPageCompra> {
                                 '$crearCuenta',
                                 style: TextStyle(fontFamily: 'Point-SemiBold',color: Colors.black, fontSize: 16.0),
                               ),
-                              onPressed: () {
+                              onPressed: () async{
                                 setState(() {
                                   
                                 });
@@ -285,6 +344,16 @@ class _SesionPageState extends State<SesionPageCompra> {
                                     fullscreenDialog: true
                                   ),
                                 );
+                                if(prefs.token != ''){
+                                  final respuesta = await categoriaProvider.getToursId(detalleTour.idtour, prefs.token);
+                                  if(respuesta.single.shop == 0){
+                                    Navigator.popAndPushNamed(context, 'detallecompra',arguments: detalleTour);
+                                  }else if(prefs.email == respuesta.single.userData['mail']){
+                                    Navigator.pop(context);
+                                  }else if(respuesta.single.shop != 0){
+                                    Navigator.pop(context);
+                                  }
+                                }
                               },
                             ),
                           )
@@ -304,13 +373,13 @@ class _SesionPageState extends State<SesionPageCompra> {
               ],
             )
           );
-        } else {
+        }else {
        // String bienvenido = AppTranslations.of(context).text('title_welcome');  
        // String aceptar = AppTranslations.of(context).text('title_accept'); 
        //prefs.iduser != detalleTour.iduser.toString() 
-        return prefs.email != detalleTour.userData['mail'] && prefs.idtour != detalleTour.idtour.toString() ?
+        return detalleTour.shop != 0 || prefs.email == detalleTour.userData['mail'] ? DetalleTourPage():
         //Navigator.pop(context);
-        DetalleCompraPage():DetalleTourPage();
+        DetalleCompraPage();
         }
       },
     );

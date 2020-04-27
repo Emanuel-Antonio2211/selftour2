@@ -131,19 +131,32 @@ class _ToursPopularesState extends State<ToursPopularesPage> {
               stream: categoriasProvider.popularStream,
               //initialData: InitialData,
               builder: (BuildContext context, AsyncSnapshot<List<InfoTour>> snapshot) {
+                final size = MediaQuery.of(context).size;
                 switch(snapshot.connectionState){
                   case ConnectionState.waiting:
-                    return Align(
-                      heightFactor: 34.0,
-                      alignment: Alignment.center,
-                      child: CircularProgressIndicator(),
+                    return SafeArea(
+                      child: Column(
+                        children: <Widget>[
+                          SizedBox(
+                            height: size.height * 0.4,
+                          ),
+                          Center(child: CircularProgressIndicator())
+                        ],
+                      )
                     );
                   break;
                   case ConnectionState.none:
-                    return Align(
-                      heightFactor: 34.0,
-                      alignment: Alignment.center,
-                      child: Text('$noData'),
+                    return SafeArea(
+                      child: Column(
+                        children: <Widget>[
+                          SizedBox(
+                            height: size.height * 0.4,
+                          ),
+                          Center(
+                            child: Text('$noData'),
+                          )
+                        ],
+                      )
                     );
                   break;
                   case ConnectionState.done:
@@ -158,11 +171,32 @@ class _ToursPopularesState extends State<ToursPopularesPage> {
                           },
                         ),
                       );*/
-                    }else{
-                      return Align(
-                        heightFactor: 34.0,
-                        alignment: Alignment.center,
-                        child: Text('$noData'),
+                    }else if(snapshot.data == null){
+                      return SafeArea(
+                        child: Column(
+                          children: <Widget>[
+                            SizedBox(
+                              height: size.height * 0.4,
+                            ),
+                            Center(
+                              child: Text('$noData'),
+                            )
+                          ],
+                        )
+                      );
+                    }
+                    else{
+                      return SafeArea(
+                        child: Column(
+                          children: <Widget>[
+                            SizedBox(
+                              height: size.height * 0.4,
+                            ),
+                            Center(
+                              child: CircularProgressIndicator(),
+                            )
+                          ],
+                        )
                       );
                     }
                   break;
@@ -178,19 +212,47 @@ class _ToursPopularesState extends State<ToursPopularesPage> {
                           },
                         ),
                       );*/
-                    }else{
-                      return Align(
-                        heightFactor: 34.0,
-                        alignment: Alignment.center,
-                        child: Text('$noData'),
+                    }else if(snapshot.data == null){
+                      return SafeArea(
+                        child: Column(
+                          children: <Widget>[
+                            SizedBox(
+                              height: size.height * 0.4,
+                            ),
+                            Center(
+                              child: Text('$noData'),
+                            )
+                          ],
+                        )
+                      );
+                    }
+                    else{
+                      return SafeArea(
+                        child: Column(
+                          children: <Widget>[
+                            SizedBox(
+                              height: size.height * 0.4,
+                            ),
+                            Center(
+                              child: CircularProgressIndicator(),
+                            )
+                          ],
+                        )
                       );
                     }
                   break;
                   default:
-                    return Align(
-                      heightFactor: 34.0,
-                      alignment: Alignment.center,
-                      child: Text('$noData'),
+                    return SafeArea(
+                      child: Column(
+                        children: <Widget>[
+                          SizedBox(
+                            height: size.height * 0.4,
+                          ),
+                          Center(
+                            child: CircularProgressIndicator()
+                          )
+                        ],
+                      )
                     );
                 }
                 /*if(snapshot.hasData){
@@ -228,19 +290,34 @@ class _ToursPopularesState extends State<ToursPopularesPage> {
           StreamBuilder(
             stream: categoriasProvider.popularStream,
             builder: (BuildContext context, AsyncSnapshot<List<InfoTour>> snapshot){
+              final size = MediaQuery.of(context).size;
               switch(snapshot.connectionState){
                 case ConnectionState.waiting:
-                  return Align(
-                    heightFactor: 34.0,
-                    alignment: Alignment.center,
-                    child: CircularProgressIndicator(),
+                  return SafeArea(
+                    child: Column(
+                      children: <Widget>[
+                        SizedBox(
+                          height: size.height * 0.4
+                        ),
+                        Center(
+                          child: CircularProgressIndicator(),
+                        )
+                      ],
+                    )
                   );
                 break;
                 case ConnectionState.none:
-                  return Align(
-                    heightFactor: 34.0,
-                    alignment: Alignment.center,
-                    child: Text('$noData'),
+                  return SafeArea(
+                    child: Column(
+                      children: <Widget>[
+                        SizedBox(
+                          height: size.height * 0.4,
+                        ),
+                        Center(
+                          child:Text('$noData')
+                        )
+                      ],
+                    )
                   );
                 break;
                 case ConnectionState.done:
@@ -255,11 +332,32 @@ class _ToursPopularesState extends State<ToursPopularesPage> {
                         },
                       ),
                     );*/
-                  }else{
-                    return Align(
-                      heightFactor: 34.0,
-                      alignment: Alignment.center,
-                      child: Text('$noData'),
+                  }else if(snapshot.data == null){
+                      return SafeArea(
+                        child: Column(
+                          children: <Widget>[
+                            SizedBox(
+                              height: size.height * 0.4,
+                            ),
+                            Center(
+                              child: Text('$noData'),
+                            )
+                          ],
+                        )
+                      );
+                    }
+                  else{
+                    return SafeArea(
+                      child: Column(
+                        children: <Widget>[
+                          SizedBox(
+                            height: size.height * 0.4,
+                          ),
+                          Center(
+                            child: CircularProgressIndicator(),
+                          )
+                        ],
+                      )
                     );
                   }
                 break;
@@ -275,19 +373,47 @@ class _ToursPopularesState extends State<ToursPopularesPage> {
                         },
                       ),
                     );*/
-                  }else{
-                    return Align(
-                      heightFactor: 34.0,
-                      alignment: Alignment.center,
-                      child: Text('$noData'),
+                  }else if(snapshot.data == null){
+                      return SafeArea(
+                        child: Column(
+                          children: <Widget>[
+                            SizedBox(
+                              height: size.height * 0.4,
+                            ),
+                            Center(
+                              child: Text('$noData'),
+                            )
+                          ],
+                        )
+                      );
+                    }
+                  else{
+                    return SafeArea(
+                      child: Column(
+                        children: <Widget>[
+                          SizedBox(
+                            height: size.height * 0.4,
+                          ),
+                          Center(
+                            child: CircularProgressIndicator(),
+                          )
+                        ],
+                      )
                     );
                   }
                 break;
                 default:
-                  return Align(
-                    heightFactor: 34.0,
-                    alignment: Alignment.center,
-                    child: Text('$noData'),
+                  return SafeArea(
+                    child: Column(
+                      children: <Widget>[
+                        SizedBox(
+                          height: size.height * 0.4,
+                        ),
+                        Center(
+                          child: CircularProgressIndicator(),
+                        )
+                      ],
+                    )
                   );
               }
               

@@ -85,11 +85,11 @@ class LoginBloc with Validators implements Bloc{
   //Los bloc se conectan con la interfaz de usuario
   //Casos de uso
   //1. Sign In a la aplicacion con Facebook
-  signInFacebook(BuildContext context){ //Se va a llamar en la interfaz
+ Future<bool> signInFacebook(BuildContext context)async{ //Se va a llamar en la interfaz
   //String bienvenido = AppTranslations.of(context).text('title_welcome');  
   //String aceptar = AppTranslations.of(context).text('title_accept'); 
-    _authrepository.signInFirebaseFacebook().then((FirebaseUser authUser){
-      
+    _authrepository.signInFirebaseFacebook().then((FirebaseUser authUser)async{
+      /*
       if(authUser.providerData[1].email == mail ){
         _authrepository.usuarioNuevo(authUser.providerData[1].displayName, authUser.providerData[1].email, null, authUser.providerData[1].phoneNumber).then((user){
           Map info = user;
@@ -135,10 +135,89 @@ class LoginBloc with Validators implements Bloc{
             ),
           ),
         );*/
-      }
+      }*/
+
+      await _authrepository.loginUserGoogle(authUser.providerData[0].uid.toString()).then((user)async{
+        final result = user;
+        if(result['_dtu']['msg'] == "Login Successfully"){
+          
+          String token = '';
+          String resultToken = '';
+          for(int i = 0; i < result['_dtu']['provider']['_uit'].length; i++){
+            token = token + result['_dtu']['provider']['_uit'][i].toString()+".";
+            resultToken = token.substring(0,token.length-1);
+          }
+          print("Token: ");
+          print(resultToken);
+          //prefs.token = prefs.token + "${result['_dtu']['provider']['_uit'][0].toString()}" + "${result['_dtu']['provider']['_uit'][1].toString()}" + "${result['_dtu']['provider']['_uit'][2].toString()}";
+          prefs.token = resultToken;
+          final decodedInfoUser = parseJwt(prefs.token.toString());
+          
+          prefs.iduser = decodedInfoUser['id'].toString();
+          prefs.name = result['_dtu']['udt']['name'].toString();
+          prefs.email = authUser.providerData[1].email.toString();
+          prefs.phone = authUser.providerData[1].phoneNumber.toString();
+          prefs.photoUrl = result['_dtu']['udt']['photoURL'].toString();
+          if(authUser != null){
+            // Check is already sign up - Checa si está logueado
+            firebaseMessaging.getToken().then((token){
+              tokenFCM = token;
+              print("Token 1");
+              print(tokenFCM);
+            });
+            
+            prefs.tokenFCM = tokenFCM;
+          /* Stream<String> fcmStream = firebaseMessaging.onTokenRefresh;
+            fcmStream.listen((token){
+              prefs.tokenFCM = token;
+              print("Token Refresh");
+              print(prefs.tokenFCM);
+            });*/
+            final QuerySnapshot result = await Firestore.instance.collection('users').where('email',isEqualTo: prefs.email).getDocuments(); //authUser.providerData[1].email
+            final List<DocumentSnapshot> documents = result.documents;
+            if(documents.length == 0){
+              // Update data to server if new user - Actualiza los datos del servidor
+              // si el usuario es nuevo myUser.providerData[1].uid
+              //authUser.providerData[1].email
+              Firestore.instance.collection('users').document(prefs.email).setData(
+                {
+                  'tokenfcm':"$tokenFCM",
+                  'nickname': prefs.name,//authUser.providerData[1].displayName
+                  'id': prefs.iduser,//authUser.providerData[1].uid
+                  'email': prefs.email,//authUser.providerData[1].email
+                  'photoUrl': prefs.photoUrl,//authUser.providerData[1].photoUrl
+                  'createdAt': DateTime.now().millisecondsSinceEpoch.toString(),
+                  'chattingWith': null
+                }
+              );
+
+              // Write data to local - Escribir los datos en local
+            // FirebaseUser currentUser = user;
+              
+            }else{
+              print("El usuario ya existe");
+              /*Stream<String> fcmStream = firebaseMessaging.onTokenRefresh;
+              fcmStream.listen((token){
+                prefs.tokenFCM = token;
+                print("Token Refresh");
+                print(prefs.tokenFCM);
+              });*/
+            }
+          }
+          print("Datos del usuario decodificado");
+          print(decodedInfoUser);
+          streamFirebase.sink.add(authUser);
+        }else{
+          mostrarAlerta(context, result['_dtu']['msg'].toString() , '', 'assets/error.png'); //result['_dtu']['msg']
+        }
+      }).catchError((error){
+        mostrarAlerta(context, error.toString(), error.toString(), 'assets/error.png');
+      });
     }).catchError((error){
       mostrarAlerta(context, error.toString(), '', 'assets/error.png');
     });
+
+    return true;
   }
   //2. Sign In a la aplicacion con Twitter
   signInTwitter(BuildContext context) async { //Se va a llamar en la interfaz
@@ -162,7 +241,7 @@ class LoginBloc with Validators implements Bloc{
     });
   }
   //3. Sign In a la aplicacion con Google
-signInGoogle(BuildContext context) async { //Se va a llamar en la interfaz
+Future<bool> signInGoogle(BuildContext context) async { //Se va a llamar en la interfaz
   await _authrepository.signInFirebaseGoogle().then((FirebaseUser authUser)async{
    
    /*if(authUser == null){
@@ -215,7 +294,7 @@ signInGoogle(BuildContext context) async { //Se va a llamar en la interfaz
         prefs.name = result['_dtu']['udt']['name'].toString();
         prefs.email = authUser.providerData[1].email.toString();
         prefs.phone = authUser.providerData[1].phoneNumber.toString();
-        prefs.photoUrl = result['_dtu']['udt']['photoURL'].toString();
+        prefs.photoUrl = result['_dtu']['udt']['photoURL'].toString();//result['_dtu']['udt']['photoURL'].toString()
         if(authUser != null){
           // Check is already sign up - Checa si está logueado
           firebaseMessaging.getToken().then((token){
@@ -273,8 +352,10 @@ signInGoogle(BuildContext context) async { //Se va a llamar en la interfaz
     });
      //await usuarioNuevo(myUser.displayName, myUser.email, null, null);
    }).catchError((error){
-     mostrarAlerta(context, error.toString(), error.toString(), 'assets/error.png');
+     //mostrarAlerta(context, error.toString(), error.toString(), 'assets/error.png');
+     print(error.toString());
    });
+   return true;
   }
 Future<void> signInEmail( String email,String pass, BuildContext context)async{
     //final size = MediaQuery.of(context).size;

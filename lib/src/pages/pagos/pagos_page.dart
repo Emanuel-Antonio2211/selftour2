@@ -1086,8 +1086,8 @@ class _MetodoPagoPageState extends State<MetodoPagoPage> {
                         mostrarAlerta(context, openpayNotFunds, '', 'assets/error.png');
                       }
                           else{
-                            prefs.comprado = 'true';
-                            prefs.idtour = detalleTour.idtour.toString();
+                            //prefs.comprado = 'true';
+                            //prefs.idtour = detalleTour.idtour.toString();
                             
                             print("Info: ");
                             print(info);

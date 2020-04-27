@@ -1,8 +1,17 @@
+import 'dart:io';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_progress_button/flutter_progress_button.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:selftourapp/src/googlemaps/states/app_state.dart';
 import 'package:selftourapp/src/preferencias_usuario/preferencias_usuario.dart';
+import 'package:selftourapp/src/providers/usuario_provider.dart';
 import 'package:selftourapp/src/translation_class/app_translations.dart';
+import 'package:selftourapp/src/utils/utils.dart';
+import 'package:selftourapp/src/widgets/tree_size_dot_widget.dart';
 
 class EditInformationPage extends StatefulWidget {
   @override
@@ -12,14 +21,93 @@ class EditInformationPage extends StatefulWidget {
 class _EditInformationPageState extends State<EditInformationPage> {
   PreferenciasUsuario prefs = PreferenciasUsuario();
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  UsuarioProvider _usuarioProvider = UsuarioProvider();
+
+  File foto;
+  String nombre;
+  String telefono;
+  String imgProfile;
+  String fechaNacimiento;
+  String cuentaFacebook;
+  String webPag;
+
+  seleccionarFoto()async{
+   foto = await ImagePicker.pickImage(
+      source: ImageSource.gallery
+    );
+
+    if(foto != null){
+      //limpieza
+      prefs.photoUrl = '';
+    }
+    setState(() {
+        
+    });
+    //prefs.photoUrl = foto?.path;
+    print("Foto");
+    print(foto.path);
+    print(foto);
+  }
+
+  tomarFoto()async{
+   foto = await ImagePicker.pickImage(
+      source: ImageSource.camera
+    );
+
+    if(foto != null){
+      //limpieza
+      prefs.photoUrl = '';
+    }
+    setState(() {
+        
+    });
+    //prefs.photoUrl = foto?.path;
+    print("Foto");
+    print(foto.path);
+    print(foto);
+  }
+
+  Widget _mostrarFoto() {
+    //print(foto!=null);
+    var size = MediaQuery.of(context).size;
+    if (prefs.photoUrl != '') {
+ 
+      return Image( 
+          image: NetworkImage(prefs.photoUrl.toString()),
+        );
+ 
+    } else if(foto != null) {
+      return Image.file(
+          foto,
+          fit: BoxFit.cover,
+          height: size.height * 0.6,
+          width: size.width * 0.4,
+        );
+    }else{
+      return Image( 
+        image: AssetImage('assets/no-image.jpg'),
+        fit: BoxFit.cover,
+        width: size.width * 0.4,
+        height: size.height * 0.4,
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
     String guardar = AppTranslations.of(context).text('title_guardar');
     String editainfo = AppTranslations.of(context).text('title_editainfo');
     String nombre = AppTranslations.of(context).text('title_name');
-    String correo = AppTranslations.of(context).text('title_email');
+    //String correo = AppTranslations.of(context).text('title_email');
     String telefono = AppTranslations.of(context).text('title_telefono');
+    String successDataUpdate = AppTranslations.of(context).text('title_success_update');
+    String fecNacimiento = AppTranslations.of(context).text('title_fecha_Nac');
+    String ctaFacebook = AppTranslations.of(context).text('title_facebook');
+    String paginaWeb = AppTranslations.of(context).text('title_webpag');
+    String ejemplo = AppTranslations.of(context).text('title_ejemplo');
+
+    AppState _appState = AppState();
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -35,9 +123,172 @@ class _EditInformationPageState extends State<EditInformationPage> {
           },
         ),
         actions: <Widget>[
+         /* CircleAvatar(
+            backgroundColor: Color(0xFFD62250),
+            child: IconButton(
+              icon: Icon(
+                Icons.image,
+                color: Colors.white,
+              ),
+              onPressed: seleccionarFoto,
+            ),
+          ),
+          CircleAvatar(
+            backgroundColor: Color(0xFFD62250),
+            child: IconButton(
+              icon: Icon(
+                Icons.camera_alt,
+                color: Colors.white,
+              ),
+              onPressed: tomarFoto,
+            ),
+          ),*/
+
+          /*
           FlatButton(
             child: Text('$guardar',style: TextStyle(color: Colors.red),),
-            onPressed: (){},
+            onPressed: ()async{
+              int codPais;
+              String codPostal;
+              await _appState.userLocation().then((result){
+                print(result[5]);
+                codPostal = result[7].toString();
+                //result[2] == 'Mexico'
+                if(result[5] == 'MX'){
+                  codPais = 200;
+                }else if(result[5] == 'DE'){
+                  codPais = 4;
+                }else if(result[5] == 'JP'){
+                  codPais = 168;
+                }else if(result[5] == 'FR'){
+                  codPais = 136;
+                }else if(result[5] == 'US'){
+                  codPais = 129;
+                }
+              });
+              print(codPais.toString());
+              if(formKey.currentState.validate()){
+                formKey.currentState.save();
+                print("Datos a ingresar");
+                //final mymeType = mime(foto.path).split('/'); //image/jpeg
+               // final imageUploadRequest = http.MultipartRequest()
+              /* final file = await http.MultipartFile.fromPath(
+                 'file',
+                  foto.path,
+                  contentType: MediaType(
+                    mymeType[0],
+                    mymeType[1]
+                  )
+                );*/
+                print(foto.path);
+                print(nombre);
+                print(telefono);
+                
+               await _usuarioProvider.actualizarPerfil(nombre, telefono,fechaNacimiento, codPostal,codPais.toString(),cuentaFacebook,webPag,foto, prefs.token).then((result)async{
+                  final respuesta = result;
+                  setState(() {
+                  
+                  });
+                  prefs.photoUrl = respuesta['dataUser']['data'][0]['img_profile'].toString();
+                  print(prefs.photoUrl);
+                  final QuerySnapshot resultado = await Firestore.instance.collection('users').where('email',isEqualTo: prefs.email).getDocuments();
+                  final List<DocumentSnapshot> documents = resultado.documents;
+                  /*if(documents.single.data['photoUrl'] != ){
+                    Firestore.instance.collection('users').document(prefs.email).updateData({'photoUrl': userEmail});
+                  }else{
+                    print("La foto es igual");
+                  }*/
+
+                  mostrarAviso(context, 'Se actualizó de manera exitosa', '', 'assets/check.jpg');
+                }).catchError((error){
+                  print(error.toString());
+                  mostrarAviso(context, error.toString(), '', 'assets/error.png');
+                });
+
+              }
+              
+            },
+          ),*/
+          Padding(
+            padding: EdgeInsets.only(right: 5.0),
+            child: ProgressButton(
+              defaultWidget: Text(
+                '$guardar',
+                style: TextStyle(
+                  fontFamily: 'Point-SemiBold',
+                  fontSize: 15.0,
+                  color: Colors.white
+                ),
+              ),
+              width: size.width * 0.2,
+              height: size.height * 0.01,
+              borderRadius: 3.0,
+              progressWidget: ThreeSizeDot(),
+              color: Color(0xFFD62250),
+              type: ProgressButtonType.Raised,
+              animate: false,
+              onPressed: ()async{
+                await Future.delayed(Duration(seconds: 2),()async{
+                  int codPais;
+                  String codPostal;
+                  await _appState.userLocation().then((result){
+                    print(result[5]);
+                    codPostal = result[7].toString();
+                    //result[2] == 'Mexico'
+                    if(result[5] == 'MX'){
+                      codPais = 200;
+                    }else if(result[5] == 'DE'){
+                      codPais = 4;
+                    }else if(result[5] == 'JP'){
+                      codPais = 168;
+                    }else if(result[5] == 'FR'){
+                      codPais = 136;
+                    }else if(result[5] == 'US'){
+                      codPais = 129;
+                    }
+                  });
+                  print(codPais.toString());
+                  if(formKey.currentState.validate()){
+                    formKey.currentState.save();
+                    print("Datos a ingresar");
+                    print(foto.path);
+                    print(nombre);
+                    print(telefono);
+                    
+                  await _usuarioProvider.actualizarPerfil(nombre, telefono,fechaNacimiento, codPostal,codPais.toString(),cuentaFacebook,webPag,foto, prefs.token).then((result)async{
+                      final respuesta = result;
+                      setState(() {
+                      
+                      });
+                      prefs.name = respuesta['dataUser']['data'][0]['name'];
+                      prefs.photoUrl = respuesta['dataUser']['data'][0]['img_profile'].toString();
+                      prefs.phone = respuesta['dataUser']['data'][0]['phone'].toString();
+                      prefs.fNac = respuesta['dataUser']['data'][0]['dbirth'].toString();
+                      prefs.accountFacebook = respuesta['dataUser']['data'][0]['fb'].toString();
+                      prefs.pagWeb = respuesta['dataUser']['data'][0]['webpage'].toString();
+                      print(prefs.photoUrl);
+                      final QuerySnapshot resultado = await Firestore.instance.collection('users').where('email',isEqualTo: prefs.email).getDocuments();
+                      final List<DocumentSnapshot> documents = resultado.documents;
+                      if(documents.single.data['photoUrl'] != prefs.photoUrl){
+                        Firestore.instance.collection('users').document(prefs.email).updateData({'photoUrl': prefs.photoUrl});
+                        print("La imagen se actualizó");
+                      }else{
+                        print("La foto es igual");
+                      }
+
+                      //mostrarAviso(context, '$successDataUpdate', '', 'assets/check.jpg');
+                      mostrarAlerta(context, '$successDataUpdate', '', 'assets/check.jpg');
+                    }).catchError((error){
+                      print(error.toString());
+                      //mostrarAviso(context, error.toString(), '', 'assets/error.png');
+                      mostrarAlerta(context, '$successDataUpdate', '', 'assets/error.png');
+                    });
+
+                  }
+                });
+                
+              },
+            ),
           )
         ],
       ),
@@ -45,6 +296,7 @@ class _EditInformationPageState extends State<EditInformationPage> {
         key: formKey,
         child: SingleChildScrollView(
           child: Column(
+            //crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Padding(
                 padding: EdgeInsets.only(left: size.width * 0.02),
@@ -61,10 +313,12 @@ class _EditInformationPageState extends State<EditInformationPage> {
                     children:[ 
                       ClipRRect(
                       borderRadius: BorderRadius.circular(50.0),
-                      child: FadeInImage(
-                        image: prefs.photoUrl.toString() == 'null' ? AssetImage('assets/iconoapp/Selftour1.png') : NetworkImage(prefs.photoUrl.toString()),
-                          placeholder: AssetImage('assets/loading.gif'),
-                        )
+                      child: _mostrarFoto()
+                      /*FadeInImage(
+                        image: _mostrarFoto(), //prefs.photoUrl.toString() != '' ? NetworkImage( prefs.photoUrl.toString()) : ( foto != null ? Image.network(foto.path,fit: BoxFit.fill ) : AssetImage( 'assets/iconoapp/Selftour1.png') ),
+                        placeholder: AssetImage('assets/loading.gif'),
+                        fit: BoxFit.fill,
+                        )*/
                     ),
                     Align(
                         alignment: Alignment.bottomRight,
@@ -75,9 +329,20 @@ class _EditInformationPageState extends State<EditInformationPage> {
                               Icons.camera_alt,
                               color: Colors.white,
                             ),
-                            onPressed: (){
-
-                            },
+                            onPressed: tomarFoto,
+                          ),
+                        ),
+                      ),
+                      Align(
+                        alignment: Alignment.bottomLeft,
+                        child: CircleAvatar(
+                          backgroundColor: Color(0xFFD62250),
+                          child: IconButton(
+                            icon: Icon(
+                              Icons.image,
+                              color: Colors.white,
+                            ),
+                            onPressed: seleccionarFoto,
                           ),
                         ),
                       )
@@ -87,8 +352,9 @@ class _EditInformationPageState extends State<EditInformationPage> {
               ),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: size.width * 0.02),
-                child: TextField(
+                child: TextFormField(
                   keyboardType: TextInputType.text,
+                  initialValue: prefs.name,
                   decoration: InputDecoration(
                     labelText: '$nombre',
                     labelStyle: TextStyle(
@@ -96,12 +362,15 @@ class _EditInformationPageState extends State<EditInformationPage> {
                       color: Colors.black
                     ),
                   ),
+                  onSaved: (String name){
+                    nombre = name;
+                  },
                 ),
               ),
-              SizedBox(height: size.height * 0.04,),
+              /*SizedBox(height: size.height * 0.04,),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: size.width * 0.02),
-                child: TextField(
+                child: TextFormField(
                   keyboardType: TextInputType.emailAddress,
                   decoration: InputDecoration(
                     labelText: '$correo',
@@ -111,21 +380,118 @@ class _EditInformationPageState extends State<EditInformationPage> {
                     )
                   ),
                 ),
-              ),
+              ),*/
               SizedBox(height: size.height * 0.04,),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: size.width * 0.02),
-                child: TextField(
+                child: TextFormField(
                   keyboardType: TextInputType.phone,
+                  initialValue: prefs.phone == null ? '' : prefs.phone,
                   decoration: InputDecoration(
-                    labelText: '$telefono',
+                    labelText: '$telefono *',
                     labelStyle: TextStyle(
                       fontFamily: 'Point-SemiBold',
                       color: Colors.black
                     )
                   ),
+                  onSaved: (String phone){
+                    telefono = phone;
+                  },
                 ),
-              )
+              ),
+              SizedBox(height: size.height * 0.04,),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: size.width * 0.02),
+                child: TextFormField(
+                  keyboardType: TextInputType.datetime,
+                  initialValue: prefs.fNac == null ? '' : prefs.fNac,
+                  decoration: InputDecoration(
+                    labelText: '$fecNacimiento *',
+                    labelStyle: TextStyle(
+                      fontFamily: 'Point-SemiBold',
+                      color: Colors.black
+                    )
+                  ),
+                  onSaved: (String fechNac){
+                    fechaNacimiento = fechNac;
+                  },
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.only(left:size.width * 0.02),
+                child: Container(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    '$ejemplo: AAAA-MM-dd',
+                    style: TextStyle(
+                      fontFamily: 'Point-SemiBold',
+                      color: Colors.black
+                    ),
+                  ),
+                )
+              ),
+              SizedBox(height: size.height * 0.04,),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: size.width * 0.02),
+                child: TextFormField(
+                  keyboardType: TextInputType.text,
+                  initialValue: prefs.accountFacebook == null ? '': prefs.accountFacebook,
+                  decoration: InputDecoration(
+                    labelText: '$ctaFacebook *',
+                    labelStyle: TextStyle(
+                      fontFamily: 'Point-SemiBold',
+                      color: Colors.black
+                    )
+                  ),
+                  onSaved: (String facebook){
+                    cuentaFacebook = facebook;
+                  },
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.only(left:size.width * 0.02),
+                child: Container(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    '$ejemplo: https://facebook.com/',
+                    style: TextStyle(
+                      fontFamily: 'Point-SemiBold',
+                      color: Colors.black
+                    ),
+                  ),
+                )
+              ),
+              SizedBox(height: size.height * 0.04,),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: size.width * 0.02),
+                child: TextFormField(
+                  keyboardType: TextInputType.text,
+                  initialValue: prefs.pagWeb == 'undefined' ? '': prefs.pagWeb,
+                  decoration: InputDecoration(
+                    labelText: '$paginaWeb',
+                    labelStyle: TextStyle(
+                      fontFamily: 'Point-SemiBold',
+                      color: Colors.black
+                    )
+                  ),
+                  onSaved: (String web){
+                    webPag = web;
+                  },
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.only(left:size.width * 0.02),
+                child: Container(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    '$ejemplo: https://mipagina.com/',
+                    style: TextStyle(
+                      fontFamily: 'Point-SemiBold',
+                      color: Colors.black
+                    ),
+                  ),
+                )
+              ),
             ],
           ),
         ),

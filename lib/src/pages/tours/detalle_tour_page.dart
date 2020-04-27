@@ -142,11 +142,12 @@ class _DetalleTourPageState extends State<DetalleTourPage> with SingleTickerProv
         
       ]),*/
       FutureBuilder(
-          future: categoriasProvider.getToursId(tour.idtour),//categoriasProvider.getToursId(tour.idtour)
+          future: categoriasProvider.getToursId(tour.idtour,prefs.token),//categoriasProvider.getToursId(tour.idtour)
           builder: (BuildContext context, AsyncSnapshot<List<InfoTour>> snapshot) {
             //String redSocial = AppTranslations.of(context).text('title_red_social');
             //String noData = AppTranslations.of(context).text('title_nodata');
-            
+            print(snapshot.connectionState);
+            print(snapshot.hasData);
             if(snapshot.hasData){
               return Scaffold(
                 backgroundColor: Colors.white,
@@ -416,7 +417,7 @@ class _DetalleTourPageState extends State<DetalleTourPage> with SingleTickerProv
                                   ),
                                 ),
                               ),//prefs.iduser != snapshot.data.single.iduser.toString()
-                              prefs.email != snapshot.data.single.userData['mail']  && prefs.comprado != 'true' ? Column(
+                              snapshot.data.single.shop == 0 && prefs.email != snapshot.data.single.userData['mail'] ? Column(
                               children: <Widget>[
                                 //_botonesOpcionesUsuario(context,snapshot.data.single),
                                 SizedBox(),
@@ -1106,7 +1107,7 @@ class _DetalleTourPageState extends State<DetalleTourPage> with SingleTickerProv
         ),
         Padding(
           padding: EdgeInsets.only(left: 30.0),//prefs.iduser != detalle.iduser.toString()
-          child: prefs.email != detalle.userData['mail'] && prefs.idtour != detalle.idtour.toString() ? 
+          child: detalle.shop == 0 && prefs.email != detalle.userData['mail'] && prefs.idtour != detalle.idtour.toString() ? 
           Row(
             children: <Widget>[
               GestureDetector(
@@ -1303,7 +1304,7 @@ Widget botonComprar(BuildContext context, InfoTour tour){
   return Container(
     width: size.width * 0.45,
     height: size.height * 0.05, //prefs.iduser != tour.iduser.toString()
-    child: prefs.email != tour.userData['mail'] && prefs.idtour != tour.idtour.toString() ? RaisedButton(
+    child: tour.shop == 0 && prefs.email != tour.userData['mail'] && prefs.idtour != tour.idtour.toString() ? RaisedButton(
       color: Color(0xFF055EEE), //Color(0xFFD62250) Color(0xFFfc5cc8)
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
       textTheme: ButtonTextTheme.primary,
@@ -1555,7 +1556,7 @@ Widget _parrafoInformacion(BuildContext context,InfoTour detalle) {
           )
         ),
 //prefs.iduser.toString() != detalle.iduser.toString() 
-       prefs.email != detalle.userData['mail'] && (prefs.idtour != detalle.idtour.toString()) ? SliverList(
+      detalle.shop == 0 && prefs.email != detalle.userData['mail'] && (prefs.idtour != detalle.idtour.toString()) ? SliverList(
           delegate: SliverChildBuilderDelegate(
             (BuildContext context, int index){
               return Container();
@@ -1705,7 +1706,7 @@ Widget _parrafoInformacion(BuildContext context,InfoTour detalle) {
           delegate: SliverChildBuilderDelegate(
             (BuildContext context, int index){
               //prefs.iduser != detalle.iduser.toString()
-              return prefs.email != detalle.userData['mail'] && (prefs.idtour != detalle.idtour.toString()) ? Container() : Card(
+              return detalle.shop == 0 && prefs.email != detalle.userData['mail'] && (prefs.idtour != detalle.idtour.toString()) ? Container() : Card(
                 child:
                 /*Image.network(
                   galeriaFotos[index],
@@ -1835,7 +1836,7 @@ Widget _botonesOpcionesUsuario(BuildContext context,InfoTour detalleTour){
         Container(
           width: size.width * 0.56,
           height: size.height * 0.07, //prefs.iduser != detalleTour.iduser.toString()
-          child: prefs.idsell.toString() != detalleTour.shop || prefs.email != detalleTour.userData['mail'] && (prefs.idtour != detalleTour.idtour.toString()) ? RaisedButton(
+          child: detalleTour.shop == 0 && prefs.email != detalleTour.userData['mail'] && (prefs.idtour != detalleTour.idtour.toString()) ? RaisedButton(
             color: Color(0xFF055EEE), //Color(0xFFD62250) Color(0xFFfc5cc8)
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
             textTheme: ButtonTextTheme.primary,
@@ -1961,7 +1962,7 @@ Widget _botonesOpcionesUsuario(BuildContext context,InfoTour detalleTour){
           //Image.asset('assets/iconomapa.png',fit: BoxFit.fill,)
         ),//prefs.iduser == detalle.iduser.toString() 
         Center(
-          child: prefs.email == detalle.userData['mail'] && prefs.idtour == detalle.idtour.toString() ? RaisedButton(
+          child: detalle.shop != 0 && prefs.email == detalle.userData['mail'] && prefs.idtour == detalle.idtour.toString() ? RaisedButton(
             child: Text('$navegar',style: TextStyle(fontFamily: 'Point-SemiBold',color: Colors.white),),
             onPressed: (){
               //GoogleMapsServices services = new GoogleMapsServices();

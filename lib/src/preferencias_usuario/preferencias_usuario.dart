@@ -124,6 +124,29 @@ class PreferenciasUsuario {
     _prefs.setString('phone', value);
   }
 
+  set fNac(String value){
+    _prefs.setString('fNac', value);
+  }
+
+  get fNac{
+    return _prefs.getString('fNac');
+  }
+
+  set accountFacebook(String value){
+    _prefs.setString('accountFacebook', value);
+  }
+
+  get accountFacebook{
+    return _prefs.getString('accountFacebook');
+  }
+
+  set pagWeb(String value){
+    _prefs.setString('pagWeb', value);
+  }
+  get pagWeb{
+    return _prefs.getString('pagWeb');
+  }
+
   set photoUrl (String value){
     _prefs.setString('photoUrl', value);
   }

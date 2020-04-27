@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:selftourapp/src/models/tour_categoria_model.dart';
+import 'package:selftourapp/src/providers/categorias_providers.dart';
 import 'package:selftourapp/src/translation_class/app_translations.dart';
 
 class RecienteVertical extends StatelessWidget {
@@ -9,6 +12,24 @@ class RecienteVertical extends StatelessWidget {
 
   RecienteVertical({@required this.listaRecientes, @required this.siguientePagina});
   final _scrollController = ScrollController();
+  final categoriaProvider = CategoriasProvider();
+
+  Future<Null> cargarRecientes()async{
+    final duration = Duration(seconds: 2);
+
+    Timer(duration, (){
+      listaRecientes.clear();
+      categoriaProvider.popularesPag().then((result){
+        for(int i = 0; i < result.length; i++){
+          listaRecientes.add(result[i]);
+        }
+      });
+
+    });
+    print("Lista Cargada");
+    print(listaRecientes);
+    return Future.delayed(duration);
+  }
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -23,12 +44,15 @@ class RecienteVertical extends StatelessWidget {
     });
     return Container(
       height: size.height * 0.8,
-      child: ListView.builder(
-        controller: _scrollController,
-        itemCount: listaRecientes.length,//snapshot.data.length
-        itemBuilder: (context,index){
-          return recientes(context, listaRecientes[index]);
-        },
+      child: RefreshIndicator(
+        onRefresh: cargarRecientes,
+        child: ListView.builder(
+          controller: _scrollController,
+          itemCount: listaRecientes.length,//snapshot.data.length
+          itemBuilder: (context,index){
+            return recientes(context, listaRecientes[index]);
+          },
+        ),
       ),
     );
   }

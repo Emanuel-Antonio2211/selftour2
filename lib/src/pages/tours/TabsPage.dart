@@ -1,7 +1,7 @@
-import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
+//import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:selftourapp/src/models/tour_categoria_model.dart';
+//import 'package:selftourapp/src/models/tour_categoria_model.dart';
 //import 'package:selfttour/src/bloc/provider.dart';
 import 'package:selftourapp/src/pages/tours/busqueda_tour_page.dart';
 import 'package:selftourapp/src/pages/tours/home_page.dart';
