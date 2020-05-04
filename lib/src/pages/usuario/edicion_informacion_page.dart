@@ -6,12 +6,14 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_progress_button/flutter_progress_button.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:selftourapp/src/googlemaps/states/app_state.dart';
 import 'package:selftourapp/src/preferencias_usuario/preferencias_usuario.dart';
 import 'package:selftourapp/src/providers/usuario_provider.dart';
 import 'package:selftourapp/src/translation_class/app_translations.dart';
 import 'package:selftourapp/src/utils/utils.dart';
 import 'package:selftourapp/src/widgets/tree_size_dot_widget.dart';
+import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 
 class EditInformationPage extends StatefulWidget {
   @override
@@ -22,6 +24,7 @@ class _EditInformationPageState extends State<EditInformationPage> {
   PreferenciasUsuario prefs = PreferenciasUsuario();
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
   UsuarioProvider _usuarioProvider = UsuarioProvider();
+  final format = DateFormat('yyyy-MM-dd');
 
   File foto;
   String nombre;
@@ -44,9 +47,9 @@ class _EditInformationPageState extends State<EditInformationPage> {
         
     });
     //prefs.photoUrl = foto?.path;
-    print("Foto");
-    print(foto.path);
-    print(foto);
+    // print("Foto");
+    // print(foto.path);
+    // print(foto);
   }
 
   tomarFoto()async{
@@ -62,9 +65,9 @@ class _EditInformationPageState extends State<EditInformationPage> {
         
     });
     //prefs.photoUrl = foto?.path;
-    print("Foto");
-    print(foto.path);
-    print(foto);
+    // print("Foto");
+    // print(foto.path);
+    // print(foto);
   }
 
   Widget _mostrarFoto() {
@@ -231,6 +234,8 @@ class _EditInformationPageState extends State<EditInformationPage> {
                 await Future.delayed(Duration(seconds: 2),()async{
                   int codPais;
                   String codPostal;
+
+                 // List<String> tokens = List();
                   await _appState.userLocation().then((result){
                     print(result[5]);
                     codPostal = result[7].toString();
@@ -251,10 +256,27 @@ class _EditInformationPageState extends State<EditInformationPage> {
                   if(formKey.currentState.validate()){
                     formKey.currentState.save();
                     print("Datos a ingresar");
-                    print(foto.path);
+                    //print(foto.path);
                     print(nombre);
                     print(telefono);
-                    
+                    /*
+                  /* Firestore.instance.collection('users').document('${prefs.email}').collection('tokensfcm').snapshots().listen((t){
+                      t.documents.forEach((doc){
+                        //print(doc.data.keys); 
+                        //print(doc.data['token']);
+                        
+                      });
+                    });*/
+                    final query = await Firestore.instance.collection('users').document('${prefs.email}').collection('tokensfcm').getDocuments();
+                    print("Resultados");
+                    for(int i = 0; i < query.documents.length; i++){
+                      //print(query.documents[i].data['token']);
+                      tokens.add(query.documents[i].data['token']);
+                    }
+
+                    print(tokens);
+                    */
+
                   await _usuarioProvider.actualizarPerfil(nombre, telefono,fechaNacimiento, codPostal,codPais.toString(),cuentaFacebook,webPag,foto, prefs.token).then((result)async{
                       final respuesta = result;
                       setState(() {
@@ -263,7 +285,7 @@ class _EditInformationPageState extends State<EditInformationPage> {
                       prefs.name = respuesta['dataUser']['data'][0]['name'];
                       prefs.photoUrl = respuesta['dataUser']['data'][0]['img_profile'].toString();
                       prefs.phone = respuesta['dataUser']['data'][0]['phone'].toString();
-                      prefs.fNac = respuesta['dataUser']['data'][0]['dbirth'].toString();
+                      prefs.fNac = DateTime.parse(respuesta['dataUser']['data'][0]['dbirth'].toString()); //.substring(0,10)
                       prefs.accountFacebook = respuesta['dataUser']['data'][0]['fb'].toString();
                       prefs.pagWeb = respuesta['dataUser']['data'][0]['webpage'].toString();
                       print(prefs.photoUrl);
@@ -281,7 +303,7 @@ class _EditInformationPageState extends State<EditInformationPage> {
                     }).catchError((error){
                       print(error.toString());
                       //mostrarAviso(context, error.toString(), '', 'assets/error.png');
-                      mostrarAlerta(context, '$successDataUpdate', '', 'assets/error.png');
+                      mostrarAlerta(context, error.toString(), '', 'assets/error.png');
                     });
 
                   }
@@ -354,13 +376,17 @@ class _EditInformationPageState extends State<EditInformationPage> {
                 padding: EdgeInsets.symmetric(horizontal: size.width * 0.02),
                 child: TextFormField(
                   keyboardType: TextInputType.text,
+                  //autofocus: true, //Sirve para enfocar directamente al primer elemento del formulario
                   initialValue: prefs.name,
                   decoration: InputDecoration(
-                    labelText: '$nombre',
+                    labelText: '$nombre', //OutlineInputBorder UnderlineInputBorder
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.black, width: 0.0)
+                    ),
                     labelStyle: TextStyle(
                       fontFamily: 'Point-SemiBold',
                       color: Colors.black
-                    ),
+                    )
                   ),
                   onSaved: (String name){
                     nombre = name;
@@ -386,36 +412,71 @@ class _EditInformationPageState extends State<EditInformationPage> {
                 padding: EdgeInsets.symmetric(horizontal: size.width * 0.02),
                 child: TextFormField(
                   keyboardType: TextInputType.phone,
-                  initialValue: prefs.phone == null ? '' : prefs.phone,
+                  initialValue: (prefs.phone == "null" || prefs.phone == '' || prefs.phone == null) ? '' : prefs.phone,
                   decoration: InputDecoration(
                     labelText: '$telefono *',
                     labelStyle: TextStyle(
                       fontFamily: 'Point-SemiBold',
                       color: Colors.black
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.black, width: 0.0)
                     )
                   ),
+                  maxLength: 10,
                   onSaved: (String phone){
                     telefono = phone;
                   },
                 ),
               ),
               SizedBox(height: size.height * 0.04,),
+              // Padding(
+              //   padding: EdgeInsets.symmetric(horizontal: size.width * 0.02),
+              //   child: TextFormField(
+              //     keyboardType: TextInputType.datetime,
+              //     initialValue: prefs.fNac == null ? '' : prefs.fNac,
+              //     decoration: InputDecoration(
+              //       labelText: '$fecNacimiento *',
+              //       labelStyle: TextStyle(
+              //         fontFamily: 'Point-SemiBold',
+              //         color: Colors.black
+              //       )
+              //     ),
+              //     maxLength: 10,
+              //     onSaved: (String fechNac){
+              //       fechaNacimiento = fechNac;
+              //     },
+              //   ),
+              // ),
+              
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: size.width * 0.02),
-                child: TextFormField(
-                  keyboardType: TextInputType.datetime,
-                  initialValue: prefs.fNac == null ? '' : prefs.fNac,
+                child: DateTimeField(
+                  format: format,
+                  initialValue: prefs.fNac == null ? DateTime.now() : DateTime.parse(prefs.fNac),
                   decoration: InputDecoration(
-                    labelText: '$fecNacimiento *',
+                    labelText: "$fecNacimiento",
                     labelStyle: TextStyle(
-                      fontFamily: 'Point-SemiBold',
+                      fontFamily: "Point-SemiBold",
                       color: Colors.black
                     )
                   ),
-                  onSaved: (String fechNac){
-                    fechaNacimiento = fechNac;
+                  onShowPicker: (context,currentValue){
+                    return showDatePicker(
+                      context: context, 
+                      initialDate: prefs.fNac == null ? DateTime.now() ?? currentValue : DateTime.parse(prefs.fNac),
+                      firstDate: DateTime(1900), 
+                      lastDate: DateTime(2100),
+                      locale: Locale(prefs.idioma)
+                    );
                   },
-                ),
+                  onSaved: (DateTime date){
+                    fechaNacimiento = date.toString();
+                  },
+                  onChanged: (DateTime dateTime){
+                    print(dateTime.toString());
+                  },
+                )
               ),
               Padding(
                 padding: EdgeInsets.only(left:size.width * 0.02),
@@ -435,12 +496,15 @@ class _EditInformationPageState extends State<EditInformationPage> {
                 padding: EdgeInsets.symmetric(horizontal: size.width * 0.02),
                 child: TextFormField(
                   keyboardType: TextInputType.text,
-                  initialValue: prefs.accountFacebook == null ? '': prefs.accountFacebook,
+                  initialValue: (prefs.accountFacebook == null || prefs.accountFacebook == "null") ? '': prefs.accountFacebook,
                   decoration: InputDecoration(
                     labelText: '$ctaFacebook *',
                     labelStyle: TextStyle(
                       fontFamily: 'Point-SemiBold',
                       color: Colors.black
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.black, width: 0.0)
                     )
                   ),
                   onSaved: (String facebook){
@@ -466,12 +530,15 @@ class _EditInformationPageState extends State<EditInformationPage> {
                 padding: EdgeInsets.symmetric(horizontal: size.width * 0.02),
                 child: TextFormField(
                   keyboardType: TextInputType.text,
-                  initialValue: prefs.pagWeb == 'undefined' ? '': prefs.pagWeb,
+                  initialValue: (prefs.pagWeb == 'undefined' || prefs.pagWeb == null || prefs.pagWeb == "null") ? '': prefs.pagWeb.toString(),
                   decoration: InputDecoration(
                     labelText: '$paginaWeb',
                     labelStyle: TextStyle(
                       fontFamily: 'Point-SemiBold',
                       color: Colors.black
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.black, width: 0.0)
                     )
                   ),
                   onSaved: (String web){

@@ -104,8 +104,11 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                   //labelText: 'Username',
                   hintStyle: TextStyle(color: Colors.grey),
                   //counterText: snapshot.data,
-                  errorText: snapshot.error
-                  ),
+                  errorText: snapshot.error,
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black, width: 0.0)
+                  )
+                ),
                   onChanged: bloc.changeName, //Coloca informacion en el Stream del input
               ),
             ),
@@ -147,7 +150,10 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                 //hintStyle: TextStyle(color: Colors.white),
                 //hintText: 'ejemplo@correo.com',
                 //counterText: snapshot.data,
-                errorText: snapshot.error
+                errorText: snapshot.error,
+                focusedBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.black, width: 0.0)
+                )
               ),
               onChanged: bloc.changeEmail, //Coloca informacion en el Stream del input
             ),
@@ -190,6 +196,9 @@ Widget _password(LoginBloc bloc){
                 icon: Icon(Icons.lock_outline,color: Colors.grey,),
                 //labelText: 'Password',
                 errorText: snapshot.error,
+                focusedBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.black, width: 0.0)
+                )
                 //hintStyle: TextStyle(color: Colors.white),
                 //hintText: 'Password'
               ),
@@ -236,6 +245,9 @@ Widget _passwordConfirm(LoginBloc bloc){
                 labelStyle: TextStyle(fontFamily: 'Point-SemiBold',color: Colors.black),
                 //border: InputBorder.none,
                 icon: Icon(Icons.lock_outline,color: Colors.grey,),
+                focusedBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.black, width: 0.0)
+                ),
                 //labelText: 'Confirmar Password',
                 errorText: bloc.passConf != bloc.pass ? '$errorvalidar' : ' ',
                 //hintStyle: TextStyle(color: Colors.white),
@@ -278,6 +290,9 @@ Widget _telefono(LoginBloc bloc){
                 labelStyle: TextStyle(fontFamily: 'Point-SemiBold',color: Colors.black),
                 //border: InputBorder.none,
                 icon: Icon(Icons.phone,color: Colors.grey,),
+                focusedBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.black, width: 0.0)
+                )
                 //labelText: 'Teléfono',
                 //errorText: snapshot.error,
                 //hintStyle: TextStyle(color: Colors.white),

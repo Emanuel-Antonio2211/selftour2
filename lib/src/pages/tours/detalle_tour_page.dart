@@ -259,7 +259,10 @@ class _DetalleTourPageState extends State<DetalleTourPage> with SingleTickerProv
                         actions: <Widget>[
                           
                           IconButton(
-                            icon: Platform.isIOS ? Icon(Icons.open_in_browser,color: isShrink ? Colors.black:Colors.white,):Icon(Icons.share,color: isShrink ? Colors.black:Colors.white,),
+                            iconSize: 35.0,
+                            icon: Platform.isIOS ? 
+                            Icon(Icons.open_in_browser,color: isShrink ? Colors.black:Colors.white,):
+                            Icon(Icons.share,color: isShrink ? Colors.black:Colors.white,),
                             onPressed: ()async{
                               final DynamicLinkParameters parameters = DynamicLinkParameters(
                                 uriPrefix: 'https://travelselftour.page.link',
@@ -345,33 +348,36 @@ class _DetalleTourPageState extends State<DetalleTourPage> with SingleTickerProv
                               }
                             },
                           )*/
-                        IconButton(
-                            iconSize: 30.0,
-                            color: (snapshot.data.single.favorite == 1 && ( prefs.iduser != "")) ? Colors.red : null,
-                            icon: Icon((snapshot.data.single.favorite == 1 && ( prefs.iduser != "")) ? Icons.favorite : Icons.favorite_border,color: (snapshot.data.single.favorite == 1 && ( prefs.iduser != null && prefs.iduser != "") || isShrink) ? Colors.red : Colors.white,),
+                          IconButton(
+                            iconSize: 35.0,
+                            color: ((snapshot.data.single.favorite == 1) && (isShrink)) ? Colors.red : null,
+                            icon: Icon(
+                              ((snapshot.data.single.favorite == 1) && (isShrink)) ? Icons.favorite : Icons.favorite_border,
+                              color: ( (snapshot.data.single.favorite == 1)  || (isShrink)) ? Colors.red : Colors.white
+                            ),
                             onPressed: () async {
                               
-                            if( prefs.email == '' || prefs.iduser == '' || prefs.token == ''){
-                              
-                              Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context){
-                                  return SesionPageFavorito();
-                                }
-                              ));
-                              
-                            }else{
-                              
-                              if(snapshot.data.single.favorite == 1){
+                              if( prefs.email == '' || prefs.token == ''){
                                 
-                                await categoriasProvider.removerFavorito(prefs.iduser,snapshot.data.single.idtour.toString());
-                                }else{
+                                Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context){
+                                    return SesionPageFavorito();
+                                  }
+                                ));
+                                
+                              }else{
+                                
+                                if(snapshot.data.single.favorite == 1){
                                   
-                                 await categoriasProvider.marcarFavorito(snapshot.data.single.idtour.toString());
+                                  await categoriasProvider.removerFavorito(prefs.iduser,snapshot.data.single.idtour.toString());
+                                  }else{
+                                    
+                                  await categoriasProvider.marcarFavorito(snapshot.data.single.idtour.toString());
+                                  }
                                 }
-                              }
-                              setState(() {
-                                snapshot.data.single.favorite = snapshot.data.single.favorite;
-                              });
+                                setState(() {
+                                  snapshot.data.single.favorite = snapshot.data.single.favorite;
+                                });
                             },
                           )
                         ],

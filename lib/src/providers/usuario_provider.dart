@@ -30,7 +30,7 @@ class UsuarioProvider{
 
   final firebaseMessaging = FirebaseMessaging();
 
-  String tokenFCM = '';
+  String tokenFCM;
 
   //Se crea una instancia de la clase PreferenciasUsuario
   final prefs = new PreferenciasUsuario();
@@ -138,6 +138,7 @@ class UsuarioProvider{
       // id decoded['id'].toString()
       final QuerySnapshot result = await Firestore.instance.collection('users').where('email',isEqualTo: decoded['user'].toString() ).getDocuments(); //user.uid
       final List<DocumentSnapshot> documents = result.documents;
+      final coleccion = Firestore.instance.collection('users').document('${prefs.email}').collection('tokensfcm');
       if(documents.length == 0){
         // Update data to server if new user - Actualiza los datos del servidor
         // si el usuario es nuevo
@@ -153,9 +154,63 @@ class UsuarioProvider{
           }
         );
 
+        Firestore.instance.runTransaction((transaction)async{
+            await transaction.set(
+              coleccion.document(),
+              {
+                'token': tokenFCM
+              }
+            );
+          }).then((result){
+            print(result);
+          }).catchError((error){
+            print(error);
+          });
         // Write data to local - Escribir los datos en local
        // FirebaseUser currentUser = user;
         
+      }else{
+        print("El usuario existe");
+        final QuerySnapshot result = await Firestore.instance.collection('users').where('email',isEqualTo: prefs.email).getDocuments(); //authUser.providerData[1].email
+        final List<DocumentSnapshot> documents = result.documents;
+        final coleccion = Firestore.instance.collection('users').document('${prefs.email}').collection('tokensfcm');
+        //final List<DocumentSnapshot> documentColeccion = coleccion.documents;
+        //documentColeccion.single.data['token'] != prefs.tokenFCM
+
+        
+        if(documents.single.data['tokenfcm'] != prefs.tokenFCM ){
+            
+            // Firestore.instance.collection('users').document(prefs.email).setData(
+            //   {
+            //     'tokenfcm':"$tokenFCM",
+            //     'nickname': prefs.name,//authUser.providerData[1].displayName
+            //     'id': prefs.iduser,//authUser.providerData[1].uid
+            //     'idtokens': tokenFCM,
+            //     'email': prefs.email,//authUser.providerData[1].email
+            //     'photoUrl': prefs.photoUrl,//authUser.providerData[1].photoUrl
+            //     'createdAt': DateTime.now().millisecondsSinceEpoch.toString()
+            //     //'chattingWith': null
+            //   }
+            // );
+          Firestore.instance.collection('users').document(prefs.email).updateData({
+            'tokenfcm': tokenFCM
+          });
+          print("Escribiendo datos");
+          Firestore.instance.runTransaction((transaction)async{
+            await transaction.set(
+              coleccion.document(),
+              {
+                'token': tokenFCM
+              }
+            );
+          }).then((result){
+            print(result);
+          }).catchError((error){
+            print(error);
+          });
+        }else{
+          print("tiene el mismo token fcm");
+        }
       }
     }
       return {'success':true,'token':decodedResp['token']};
@@ -232,16 +287,26 @@ class UsuarioProvider{
       prefs.email = decoded['user'].toString();
       print("Id User: "+prefs.iduser);
       if(decoded['user'] != null){
+        firebaseMessaging.getToken().then((token){
+            tokenFCM = token;
+            print("Token 1");
+            print(tokenFCM);
+          });
+        prefs.tokenFCM = tokenFCM;
+
       // Check is already sign up - Checa si está logueado
       // id myUser.providerData[1].uid
       final QuerySnapshot result = await Firestore.instance.collection('users').where('email',isEqualTo: decoded['user']).getDocuments();
       final List<DocumentSnapshot> documents = result.documents;
+      final coleccion = Firestore.instance.collection('users').document('email').collection('tokensfcm');
+
       if(documents.length == 0){
         // Update data to server if new user - Actualiza los datos del servidor
         // si el usuario es nuevo
         // id myUser.providerData[1].uid
         Firestore.instance.collection('users').document(decoded['user']).setData(
           {
+            'tokenfcm':"$tokenFCM",
             'nickname':decoded['name'],
             'id': decoded['id'],
             'email': decoded['user'],
@@ -251,9 +316,60 @@ class UsuarioProvider{
           }
         );
 
+        Firestore.instance.runTransaction((transaction)async{
+          await transaction.set(
+            coleccion.document(),
+            {
+              'token': tokenFCM
+            }
+          );
+        }).then((result){
+          print(result);
+        }).catchError((error){
+          print(error);
+        });
         // Write data to local - Escribir los datos en local
        // FirebaseUser currentUser = user;
         
+      }else{
+        print("El usuario existe");
+        final QuerySnapshot result = await Firestore.instance.collection('users').where('email',isEqualTo: prefs.email).getDocuments(); //authUser.providerData[1].email
+        final List<DocumentSnapshot> documents = result.documents;
+        final  coleccion = Firestore.instance.collection('users').document('${prefs.email}').collection('tokensfcm');
+        
+        if(documents.single.data['tokenfcm'] != prefs.tokenFCM ){
+                
+          // Firestore.instance.collection('users').document(prefs.email).setData(
+          //   {
+          //     'tokenfcm':"$tokenFCM",
+          //     'nickname': prefs.name,//authUser.providerData[1].displayName
+          //     'id': prefs.iduser,//authUser.providerData[1].uid
+          //     'idtokens': tokenFCM,
+          //     'email': prefs.email,//authUser.providerData[1].email
+          //     'photoUrl': prefs.photoUrl,//authUser.providerData[1].photoUrl
+          //     'createdAt': DateTime.now().millisecondsSinceEpoch.toString()
+          //     //'chattingWith': null
+          //   }
+          // );
+          Firestore.instance.collection('users').document(prefs.email).updateData({
+            'tokenfcm': tokenFCM
+          });
+          print("Escribiendo datos");
+          Firestore.instance.runTransaction((transaction)async{
+            await transaction.set(
+              coleccion.document(),
+              {
+                'token': tokenFCM
+              }
+            );
+          }).then((result){
+            print(result);
+          }).catchError((error){
+            print(error);
+          });
+        }else{
+          print("tiene el mismo token fcm");
+        }
       }
     }
      //TODO: Salvar el token en el storage
@@ -568,9 +684,10 @@ class UsuarioProvider{
     print(decodedResp);
   }
 
-  Future<Map<String,dynamic>> actualizarPerfil(String nombreUsuario, String telefono,String fechaNac,String codPostal,String pais,String facebook,String webPag, File img_profile,String token)async{
+  Future<Map<String,dynamic>> actualizarPerfil([String nombreUsuario, String telefono,String fechaNac,String codPostal,String pais,String facebook,String webPag, File img_profile,String token])async{
     final url = Uri.parse('https://api-users.selftours.app/updateProfile');
-    final mymeType = mime(img_profile.path).split('/'); //image/jpeg
+    
+    //final mymeType = mime( img_profile.path).split('/'); //image/jpeg
     /*final datos = {
         "name": "$nombreUsuario",
         "phone": "$telefono",
@@ -648,17 +765,61 @@ class UsuarioProvider{
       }
     );*/
 
-    final files = await http.MultipartFile.fromPath(
+    /*final files = await http.MultipartFile.fromPath(
             'img_profile',
-            img_profile.path,
+            img_profile?.path,
+            contentType: MediaType(
+              mymeType[0],
+              mymeType[1]
+            )
+          );*/
+
+    /*if(files != null){
+      uploadRequest.files.add(files);
+    }*/
+    if(img_profile != null){
+      final mymeType = mime( img_profile.path).split('/');
+      final files = await http.MultipartFile.fromPath(
+            'img_profile',
+            img_profile?.path,
             contentType: MediaType(
               mymeType[0],
               mymeType[1]
             )
           );
-    uploadRequest.files.add(files);
+      uploadRequest.files.add(files);
+      final streamResponse = await uploadRequest.send();
+      final respuesta = await http.Response.fromStream(streamResponse);
+      if(respuesta.statusCode != 200 && respuesta.statusCode != 201){
+        print(respuesta.body);
+        return null;
+      }
+      final decodedResp = json.decode(respuesta.body);
+      // Map<String,dynamic> decodedResp = json.decode(streamResponse.body)?.cast<Map<String, dynamic>>();
+
+        print("Actualizar perfil: ");
+        print(decodedResp);
+
+        return decodedResp;
+    }else{
+      final streamResponse = await uploadRequest.send();
+      final respuesta = await http.Response.fromStream(streamResponse);
+      if(respuesta.statusCode != 200 && respuesta.statusCode != 201){
+        print(respuesta.body);
+        return null;
+      }
+      final decodedResp = json.decode(respuesta.body);
+      // Map<String,dynamic> decodedResp = json.decode(streamResponse.body)?.cast<Map<String, dynamic>>();
+
+        print("Actualizar perfil: ");
+        print(decodedResp);
+
+        return decodedResp;
+    }
+    
     //final streamResponse = await http.Response.fromStream(resp1.data);
-    final streamResponse = await uploadRequest.send();
+
+    /*final streamResponse = await uploadRequest.send();
     final respuesta = await http.Response.fromStream(streamResponse);
     if(respuesta.statusCode != 200 && respuesta.statusCode != 201){
       print(respuesta.body);
@@ -671,7 +832,7 @@ class UsuarioProvider{
     print("Actualizar perfil: ");
     print(decodedResp);
 
-    return decodedResp;
+    return decodedResp;*/
 
   }
 }

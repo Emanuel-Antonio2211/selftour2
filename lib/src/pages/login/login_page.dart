@@ -167,6 +167,9 @@ Widget _email(LoginBloc bloc){
                 icon: Icon(Icons.mail_outline,color: Colors.grey,),
                 //labelText: 'Email',
                 hintStyle: TextStyle(fontFamily: 'Point-SemiBold',color: Colors.black),
+                focusedBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.black, width: 0.0)
+                )
                 //hintText: 'ejemplo@correo.com',
                 //counterText: snapshot.data,
                // errorText: snapshot.error
@@ -214,6 +217,9 @@ Widget _password(LoginBloc bloc){
                  // labelText: 'Password',
                   errorText: snapshot.error , //snapshot.error,
                   hintStyle: TextStyle(fontFamily: 'Point-SemiBold',color: Colors.black),
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black, width: 0.0)
+                  )
                   //hintText: 'Password'
                 ),
                 onChanged: bloc.changePassword,

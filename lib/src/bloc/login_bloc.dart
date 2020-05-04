@@ -156,7 +156,7 @@ class LoginBloc with Validators implements Bloc{
           prefs.iduser = decodedInfoUser['id'].toString();
           prefs.name = result['_dtu']['udt']['name'].toString();
           prefs.email = authUser.providerData[1].email.toString();
-          prefs.phone = authUser.providerData[1].phoneNumber.toString();
+          //prefs.phone = authUser.providerData[1].phoneNumber.toString();
           prefs.photoUrl = result['_dtu']['udt']['photoURL'].toString();
           if(authUser != null){
             // Check is already sign up - Checa si está logueado
@@ -175,6 +175,7 @@ class LoginBloc with Validators implements Bloc{
             });*/
             final QuerySnapshot result = await Firestore.instance.collection('users').where('email',isEqualTo: prefs.email).getDocuments(); //authUser.providerData[1].email
             final List<DocumentSnapshot> documents = result.documents;
+            final coleccion = Firestore.instance.collection('users').document('${prefs.email}').collection('tokensfcm');
             if(documents.length == 0){
               // Update data to server if new user - Actualiza los datos del servidor
               // si el usuario es nuevo myUser.providerData[1].uid
@@ -191,11 +192,63 @@ class LoginBloc with Validators implements Bloc{
                 }
               );
 
+              Firestore.instance.runTransaction((transaction)async{
+                  await transaction.set(
+                    coleccion.document(),
+                    {
+                      'token': tokenFCM
+                    }
+                  );
+                }).then((result){
+                  print(result);
+                }).catchError((error){
+                  print(error);
+                });
               // Write data to local - Escribir los datos en local
             // FirebaseUser currentUser = user;
               
             }else{
               print("El usuario ya existe");
+              final QuerySnapshot result = await Firestore.instance.collection('users').where('email',isEqualTo: prefs.email).getDocuments(); //authUser.providerData[1].email
+              final List<DocumentSnapshot> documents = result.documents;
+              final coleccion = Firestore.instance.collection('users').document('${prefs.email}').collection('tokensfcm');
+              //final List<DocumentSnapshot> documentColeccion = coleccion.documents;
+              //documentColeccion.single.data['token'] != prefs.tokenFCM
+
+              
+              if(documents.single.data['tokenfcm'] != prefs.tokenFCM ){
+                  
+                  // Firestore.instance.collection('users').document(prefs.email).setData(
+                  //   {
+                  //     'tokenfcm':"$tokenFCM",
+                  //     'nickname': prefs.name,//authUser.providerData[1].displayName
+                  //     'id': prefs.iduser,//authUser.providerData[1].uid
+                  //     'idtokens': tokenFCM,
+                  //     'email': prefs.email,//authUser.providerData[1].email
+                  //     'photoUrl': prefs.photoUrl,//authUser.providerData[1].photoUrl
+                  //     'createdAt': DateTime.now().millisecondsSinceEpoch.toString()
+                  //     //'chattingWith': null
+                  //   }
+                  // );
+                Firestore.instance.collection('users').document(prefs.email).updateData({
+                  'tokenfcm': tokenFCM
+                });
+                print("Escribiendo datos");
+                Firestore.instance.runTransaction((transaction)async{
+                  await transaction.set(
+                    coleccion.document(),
+                    {
+                      'token': tokenFCM
+                    }
+                  );
+                }).then((result){
+                  print(result);
+                }).catchError((error){
+                  print(error);
+                });
+              }else{
+                print("tiene el mismo token fcm");
+              }
               /*Stream<String> fcmStream = firebaseMessaging.onTokenRefresh;
               fcmStream.listen((token){
                 prefs.tokenFCM = token;
@@ -293,7 +346,7 @@ Future<bool> signInGoogle(BuildContext context) async { //Se va a llamar en la i
         prefs.iduser = decodedInfoUser['id'].toString();
         prefs.name = result['_dtu']['udt']['name'].toString();
         prefs.email = authUser.providerData[1].email.toString();
-        prefs.phone = authUser.providerData[1].phoneNumber.toString();
+        //prefs.phone = authUser.providerData[1].phoneNumber.toString();
         prefs.photoUrl = result['_dtu']['udt']['photoURL'].toString();//result['_dtu']['udt']['photoURL'].toString()
         if(authUser != null){
           // Check is already sign up - Checa si está logueado
@@ -312,6 +365,9 @@ Future<bool> signInGoogle(BuildContext context) async { //Se va a llamar en la i
           });*/
           final QuerySnapshot result = await Firestore.instance.collection('users').where('email',isEqualTo: prefs.email).getDocuments(); //authUser.providerData[1].email
           final List<DocumentSnapshot> documents = result.documents;
+
+          final coleccion = Firestore.instance.collection('users').document('email').collection('tokensfcm');
+          //final List<DocumentSnapshot> documentColeccion = coleccion.documents;
           if(documents.length == 0){
             // Update data to server if new user - Actualiza los datos del servidor
             // si el usuario es nuevo myUser.providerData[1].uid
@@ -328,11 +384,64 @@ Future<bool> signInGoogle(BuildContext context) async { //Se va a llamar en la i
               }
             );
 
+            Firestore.instance.runTransaction((transaction)async{
+                  await transaction.set(
+                    coleccion.document(),
+                    {
+                      'token': tokenFCM
+                    }
+                  );
+                }).then((result){
+                  print(result);
+                }).catchError((error){
+                  print(error);
+                });
             // Write data to local - Escribir los datos en local
           // FirebaseUser currentUser = user;
             
           }else{
             print("El usuario ya existe");
+            final QuerySnapshot result = await Firestore.instance.collection('users').where('email',isEqualTo: prefs.email).getDocuments(); //authUser.providerData[1].email
+            final List<DocumentSnapshot> documents = result.documents;
+            final  coleccion = Firestore.instance.collection('users').document('${prefs.email}').collection('tokensfcm');
+            //final List<DocumentSnapshot> documentColeccion = coleccion.documents;
+            //documentColeccion.single.data['token'] != prefs.tokenFCM
+
+            
+            if(documents.single.data['tokenfcm'] != prefs.tokenFCM ){
+                
+                // Firestore.instance.collection('users').document(prefs.email).setData(
+                //   {
+                //     'tokenfcm':"$tokenFCM",
+                //     'nickname': prefs.name,//authUser.providerData[1].displayName
+                //     'id': prefs.iduser,//authUser.providerData[1].uid
+                //     'idtokens': tokenFCM,
+                //     'email': prefs.email,//authUser.providerData[1].email
+                //     'photoUrl': prefs.photoUrl,//authUser.providerData[1].photoUrl
+                //     'createdAt': DateTime.now().millisecondsSinceEpoch.toString()
+                //     //'chattingWith': null
+                //   }
+                // );
+                Firestore.instance.collection('users').document(prefs.email).updateData({
+                  'tokenfcm': tokenFCM
+                });
+                print("Escribiendo datos");
+                Firestore.instance.runTransaction((transaction)async{
+                  await transaction.set(
+                    coleccion.document(),
+                    {
+                      'token': tokenFCM
+                    }
+                  );
+                }).then((result){
+                  print(result);
+                }).catchError((error){
+                  print(error);
+                });
+              }else{
+                print("tiene el mismo token fcm");
+              }
+            
             /*Stream<String> fcmStream = firebaseMessaging.onTokenRefresh;
             fcmStream.listen((token){
               prefs.tokenFCM = token;
@@ -364,6 +473,7 @@ Future<void> signInEmail( String email,String pass, BuildContext context)async{
       if(authUser == null){
        await _authrepository.registerEmail(email, pass).then((user){
           if(user.isEmailVerified){
+
             mostrarAlerta(context, user.isEmailVerified.toString(), '', 'assets/error.png');
           }else{
             mostrarAlerta(context, '$noverificado', '', 'assets/error.png');
@@ -372,7 +482,6 @@ Future<void> signInEmail( String email,String pass, BuildContext context)async{
           mostrarAlerta(context, error.toString(), '', 'assets/error.png');
         });
       }else{
-        
         streamFirebase.sink.add(authUser);
         Navigator.pop(context);
       }

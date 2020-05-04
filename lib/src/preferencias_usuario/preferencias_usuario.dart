@@ -124,8 +124,8 @@ class PreferenciasUsuario {
     _prefs.setString('phone', value);
   }
 
-  set fNac(String value){
-    _prefs.setString('fNac', value);
+  set fNac(DateTime value){
+    _prefs.setString('fNac', value.toString());
   }
 
   get fNac{
