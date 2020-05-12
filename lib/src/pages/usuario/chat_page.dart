@@ -153,11 +153,14 @@ class ChatPageState extends State<ChatPage> {
       });
       listScrollController.animateTo(0.0,duration: Duration(milliseconds: 300),curve: Curves.easeOut);
       //usuarioProvider.enviarNoti(prefs.tokenFCM.toString(),userName,prefs.photoUrl,content,userEmail);
-      Firestore.instance.collection('users').document('${prefs.email}').collection('tokensfcm').snapshots().listen((t){
+      Firestore.instance.collection('users').document('${userEmail.toString()}').collection('tokensfcm').snapshots().listen((t){
         t.documents.forEach((doc){
           //print(doc.data.keys); 
           //print(doc.data['token']);
-          usuarioProvider.enviarNoti(doc.data['token'].toString(),prefs.name.toString(),prefs.photoUrl.toString(),content,email);
+          usuarioProvider.enviarNoti(doc.data['token'].toString(),prefs.name.toString(),prefs.photoUrl.toString(),content,email)
+            .catchError((error){
+              print(error);
+            });
         });
       });
       //final query = await Firestore.instance.collection('users').document('${userEmail.toString()}').collection('tokensfcm').getDocuments();

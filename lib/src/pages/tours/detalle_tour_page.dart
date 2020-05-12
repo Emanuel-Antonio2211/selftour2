@@ -174,9 +174,9 @@ class _DetalleTourPageState extends State<DetalleTourPage> with SingleTickerProv
                         floating: false,
                         pinned: true,
                         flexibleSpace: FlexibleSpaceBar(
-                          titlePadding: EdgeInsets.symmetric(horizontal: 70.0),
+                          titlePadding: EdgeInsets.symmetric(horizontal: 30.0),
                           collapseMode: CollapseMode.parallax,
-                          centerTitle: true,
+                          centerTitle: true, //isShrink ? size.height * 0.08 :  size.height * 0.25,
                           title: Container(
                             width: size.width * 1.0,
                             height: isShrink ? size.height * 0.08 :  size.height * 0.25,
@@ -199,12 +199,15 @@ class _DetalleTourPageState extends State<DetalleTourPage> with SingleTickerProv
                                 ),
                                 Align(
                                   alignment: Alignment.bottomRight,
-                                  child: Text(
-                                    snapshot.data.single.price == null ? 'N / A': ' \$ ${double.parse(snapshot.data.single.price.toString()).toString()}',
-                                    style: TextStyle(
-                                      fontFamily: 'Point-SemiBold',
-                                      fontSize: 13.0,
-                                      color: isShrink ? Colors.transparent: Colors.white
+                                  child: Padding(
+                                    padding: EdgeInsets.only(bottom: 5.0),
+                                    child: Text(
+                                      snapshot.data.single.price == null ? 'N / A': ' \$ ${double.parse(snapshot.data.single.price.toString()).toString()}',
+                                      style: TextStyle(
+                                        fontFamily: 'Point-SemiBold',
+                                        fontSize: 13.0,
+                                        color: isShrink ? Colors.transparent: Colors.white
+                                      ),
                                     ),
                                   ),
                                 ),
