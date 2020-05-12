@@ -132,7 +132,8 @@ class UsuarioProvider{
      if(decodedResp != null){
        
        firebaseMessaging.getToken().then((token){
-         tokenFCM = token;
+         //tokenFCM = token;
+         prefs.tokenFCM = token;
        });
       // Check is already sign up - Checa si está logueado
       // id decoded['id'].toString()
@@ -144,7 +145,7 @@ class UsuarioProvider{
         // si el usuario es nuevo
         Firestore.instance.collection('users').document(decoded['user'].toString()).setData(
           {
-            'tokenfcm': "$tokenFCM",
+            'tokenfcm': "${prefs.tokenFCM.toString()}",
             'nickname':decoded['name'],
             'email': decoded['user'],
             'id': decoded['id'],
@@ -158,7 +159,7 @@ class UsuarioProvider{
             await transaction.set(
               coleccion.document(),
               {
-                'token': tokenFCM
+                'token': prefs.tokenFCM.toString()
               }
             );
           }).then((result){
@@ -193,14 +194,14 @@ class UsuarioProvider{
             //   }
             // );
           Firestore.instance.collection('users').document(prefs.email).updateData({
-            'tokenfcm': tokenFCM
+            'tokenfcm': prefs.tokenFCM.toString()
           });
           print("Escribiendo datos");
           Firestore.instance.runTransaction((transaction)async{
             await transaction.set(
               coleccion.document(),
               {
-                'token': tokenFCM
+                'token': prefs.tokenFCM.toString()
               }
             );
           }).then((result){
@@ -288,11 +289,11 @@ class UsuarioProvider{
       print("Id User: "+prefs.iduser);
       if(decoded['user'] != null){
         firebaseMessaging.getToken().then((token){
-            tokenFCM = token;
+            prefs.tokenFCM = token;
             print("Token 1");
-            print(tokenFCM);
           });
-        prefs.tokenFCM = tokenFCM;
+        
+        print(prefs.tokenFCM);
 
       // Check is already sign up - Checa si está logueado
       // id myUser.providerData[1].uid
@@ -306,7 +307,7 @@ class UsuarioProvider{
         // id myUser.providerData[1].uid
         Firestore.instance.collection('users').document(decoded['user']).setData(
           {
-            'tokenfcm':"$tokenFCM",
+            'tokenfcm':"${prefs.tokenFCM}",
             'nickname':decoded['name'],
             'id': decoded['id'],
             'email': decoded['user'],
@@ -320,7 +321,7 @@ class UsuarioProvider{
           await transaction.set(
             coleccion.document(),
             {
-              'token': tokenFCM
+              'token': prefs.tokenFCM.toString()
             }
           );
         }).then((result){
@@ -352,14 +353,14 @@ class UsuarioProvider{
           //   }
           // );
           Firestore.instance.collection('users').document(prefs.email).updateData({
-            'tokenfcm': tokenFCM
+            'tokenfcm': prefs.tokenFCM.toString()
           });
           print("Escribiendo datos");
           Firestore.instance.runTransaction((transaction)async{
             await transaction.set(
               coleccion.document(),
               {
-                'token': tokenFCM
+                'token': prefs.tokenFCM.toString()
               }
             );
           }).then((result){
@@ -664,6 +665,7 @@ class UsuarioProvider{
         "title":"$nombreUsuario",
         "body":"$contenido"
       },
+      "priority": "high",
       "data":{
         "iduser":"$dataIduser",
         "nickname": "$nombreUsuario",
@@ -834,5 +836,16 @@ class UsuarioProvider{
 
     return decodedResp;*/
 
+  }
+
+  //Método para reestablecer la contraseña
+  Future<void> resetPassword(String email,String languageCode)async{
+    _auth.setLanguageCode(languageCode);
+    _auth.sendPasswordResetEmail(email: email ).whenComplete((){
+      
+    }).catchError((error){
+      print("Error al enviar el correo para resetear contraseña");
+      print("El correo tal vez no existe o no fue encontrado como registrado");
+    });
   }
 }

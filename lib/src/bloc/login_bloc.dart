@@ -161,12 +161,11 @@ class LoginBloc with Validators implements Bloc{
           if(authUser != null){
             // Check is already sign up - Checa si está logueado
             firebaseMessaging.getToken().then((token){
-              tokenFCM = token;
+              //tokenFCM = token;
+              prefs.tokenFCM = token;
               print("Token 1");
-              print(tokenFCM);
             });
-            
-            prefs.tokenFCM = tokenFCM;
+            print(prefs.tokenFCM);
           /* Stream<String> fcmStream = firebaseMessaging.onTokenRefresh;
             fcmStream.listen((token){
               prefs.tokenFCM = token;
@@ -182,7 +181,7 @@ class LoginBloc with Validators implements Bloc{
               //authUser.providerData[1].email
               Firestore.instance.collection('users').document(prefs.email).setData(
                 {
-                  'tokenfcm':"$tokenFCM",
+                  'tokenfcm':"${prefs.tokenFCM.toString()}",
                   'nickname': prefs.name,//authUser.providerData[1].displayName
                   'id': prefs.iduser,//authUser.providerData[1].uid
                   'email': prefs.email,//authUser.providerData[1].email
@@ -196,7 +195,7 @@ class LoginBloc with Validators implements Bloc{
                   await transaction.set(
                     coleccion.document(),
                     {
-                      'token': tokenFCM
+                      'token': prefs.tokenFCM.toString()
                     }
                   );
                 }).then((result){
@@ -231,14 +230,14 @@ class LoginBloc with Validators implements Bloc{
                   //   }
                   // );
                 Firestore.instance.collection('users').document(prefs.email).updateData({
-                  'tokenfcm': tokenFCM
+                  'tokenfcm': prefs.tokenFCM.toString()
                 });
                 print("Escribiendo datos");
                 Firestore.instance.runTransaction((transaction)async{
                   await transaction.set(
                     coleccion.document(),
                     {
-                      'token': tokenFCM
+                      'token': prefs.tokenFCM.toString()
                     }
                   );
                 }).then((result){
@@ -351,12 +350,13 @@ Future<bool> signInGoogle(BuildContext context) async { //Se va a llamar en la i
         if(authUser != null){
           // Check is already sign up - Checa si está logueado
           firebaseMessaging.getToken().then((token){
-            tokenFCM = token;
+            //tokenFCM = token;
+            prefs.tokenFCM = token;
             print("Token 1");
-            print(tokenFCM);
           });
           
-          prefs.tokenFCM = tokenFCM;
+          //prefs.tokenFCM = tokenFCM;
+          print(prefs.tokenFCM);
          /* Stream<String> fcmStream = firebaseMessaging.onTokenRefresh;
           fcmStream.listen((token){
             prefs.tokenFCM = token;
@@ -374,7 +374,7 @@ Future<bool> signInGoogle(BuildContext context) async { //Se va a llamar en la i
             //authUser.providerData[1].email
             Firestore.instance.collection('users').document(prefs.email).setData(
               {
-                'tokenfcm':"$tokenFCM",
+                'tokenfcm':"${prefs.tokenFCM.toString()}",
                 'nickname': prefs.name,//authUser.providerData[1].displayName
                 'id': prefs.iduser,//authUser.providerData[1].uid
                 'email': prefs.email,//authUser.providerData[1].email
@@ -388,7 +388,7 @@ Future<bool> signInGoogle(BuildContext context) async { //Se va a llamar en la i
                   await transaction.set(
                     coleccion.document(),
                     {
-                      'token': tokenFCM
+                      'token': prefs.tokenFCM.toString()
                     }
                   );
                 }).then((result){
@@ -423,14 +423,14 @@ Future<bool> signInGoogle(BuildContext context) async { //Se va a llamar en la i
                 //   }
                 // );
                 Firestore.instance.collection('users').document(prefs.email).updateData({
-                  'tokenfcm': tokenFCM
+                  'tokenfcm': prefs.tokenFCM.toString()
                 });
                 print("Escribiendo datos");
                 Firestore.instance.runTransaction((transaction)async{
                   await transaction.set(
                     coleccion.document(),
                     {
-                      'token': tokenFCM
+                      'token': prefs.tokenFCM.toString()
                     }
                   );
                 }).then((result){

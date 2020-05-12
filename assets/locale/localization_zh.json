@@ -88,7 +88,7 @@
     "title_login": "初始模式",
     "title_errorreg": "註冊錯誤",
     "title_nodatos": "無資料",
-    "title_errorLog": "登錄失敗",
+    "title_errorlog": "登錄失敗",
     "title_erroremail":"電子郵件不正確",
     "title_errorpass": "請超過6個字符",
     "title_errorvalidarpass": "密碼不匹配",
@@ -179,5 +179,6 @@
     "title_fecha_Nac" : "出生日期",
     "title_facebook": "脸书",
     "title_webpag": "网页",
-    "title_ejemplo": "例子"
+    "title_ejemplo": "例子",
+    "title_message": "写你的留言"
 }

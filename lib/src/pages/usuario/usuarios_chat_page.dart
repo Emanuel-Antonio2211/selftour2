@@ -133,7 +133,9 @@ class _ChatUsuariosPageState extends State<ChatUsuariosPage> {
           onPressed: (){
             Navigator.of(context).push(MaterialPageRoute(
               builder: (context){
-                return ChatPage(userId: snapshot['id'].toString(),tokenFCM: snapshot['tokenfcm'].toString(),userEmail: snapshot['email'].toString() ,userName: snapshot['nickname'].toString(),userAvatar: snapshot['photoUrl'].toString(),); //snapshot['id'].toString()
+                //userId: snapshot['id'].toString(),
+                //tokenFCM: snapshot['tokenfcm'].toString(),
+                return ChatPage(userEmail: snapshot['email'].toString() ,userName: snapshot['nickname'].toString(),userAvatar: snapshot['photoUrl'].toString()); //snapshot['id'].toString()
               },
               //settings: RouteSettings(arguments: snapshot['id'].toString())
             ));

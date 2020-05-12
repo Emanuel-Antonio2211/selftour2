@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:generic_bloc_provider/generic_bloc_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -89,22 +90,36 @@ class _MyAppState extends State<MyApp> {
   //Se maneja el estado de la navegación de la aplicación
   final GlobalKey<NavigatorState> navigatorKey = new GlobalKey<NavigatorState>();
   PreferenciasUsuario prefs = PreferenciasUsuario();
+
+  FlutterLocalNotificationsPlugin localNotificationsPlugin;
     
   AppTranslationsDelegate _newLocaleDelegate;
+  PushNotificationProvider pushProvider;
 
   Locale locale;
 
   @override
   void initState() {
     super.initState();
-    
+    /*localNotificationsPlugin = FlutterLocalNotificationsPlugin();
+    final android = AndroidInitializationSettings(
+      "@mipmap/ic_launcher"
+    );
+    final ios = IOSInitializationSettings();
+    final initializationSettings = InitializationSettings(android, ios);
+    localNotificationsPlugin.initialize(
+      initializationSettings,
+      onSelectNotification: (String payload){
+
+      }
+    );*/
     //Aquí se inicializa las notificaciones
-    final pushProvider = new PushNotificationProvider();
+    pushProvider = new PushNotificationProvider();
     pushProvider.initNotification();
     //Se escucha el mensaje de la notificación
     //Y se navega a otra pantalla o a la pantalla en donde se encuentre
     //El contenido del mensaje
-    pushProvider.mensajes.listen((data){
+    /*pushProvider.mensajes.listen((data){
       print('Argumento del push');
       print(data);
       //mostrarAlerta(context, data, data, 'assets/check.png');
@@ -114,7 +129,7 @@ class _MyAppState extends State<MyApp> {
           return ChatUsuariosPage();
         }
       ));
-    });
+    });*/
     prefs.idioma = Locale(ui.window.locale.languageCode);
     _newLocaleDelegate = AppTranslationsDelegate(newLocale: prefs.idioma == null ? Locale('es'):Locale(prefs.idioma));
     application.onLocaleChanged = onLocaleChange;
@@ -182,7 +197,7 @@ class _MyAppState extends State<MyApp> {
        
         debugShowCheckedModeBanner: false,
         //Se maneja el estado del material app
-        //navigatorKey: dynamicLinkProvider.navigationKey,
+        navigatorKey: pushProvider.navigationKey,//navigatorKey
         title: 'SelfTour',
         initialRoute: 'menuprincipal',
         routes: {

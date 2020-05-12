@@ -10,6 +10,8 @@ import 'package:intl/intl.dart';
 //import 'package:selfttour/src/models/tour_categoria_model.dart';
 import 'package:selftourapp/src/pages/usuario/fullFoto_page.dart';
 import 'package:selftourapp/src/preferencias_usuario/preferencias_usuario.dart';
+import 'package:selftourapp/src/providers/usuario_provider.dart';
+import 'package:selftourapp/src/translation_class/app_translations.dart';
 //import 'package:selfttour/src/providers/usuario_provider.dart';
 //import 'package:shared_preferences/shared_preferences.dart';
 
@@ -69,7 +71,7 @@ class ChatPageState extends State<ChatPage> {
   }
   readLocal()async{
     //prefs = await SharedPreferences.getInstance();
-    id = prefs.iduser ?? ''; //prefs.getString('id') ?? ''
+    //id = prefs.iduser ?? ''; //prefs.getString('id') ?? ''
     email = prefs.email ?? '';
     //id.hashCode <= userId.hashCode
     if(email.length <= userEmail.length){
@@ -123,10 +125,10 @@ class ChatPageState extends State<ChatPage> {
     );
   }
 
-  void onSendMessage(String content, int type){
+  void onSendMessage(String content, int type)async{
     //InfoTour detalletour = ModalRoute.of(context).settings.arguments;
     // type: 0 = text, 1 = image, 2 = sticker
-    //final usuarioProvider = UsuarioProvider();
+    final usuarioProvider = UsuarioProvider();
 
     if(content.trim() != ''){
       textEditingController.clear();
@@ -150,7 +152,24 @@ class ChatPageState extends State<ChatPage> {
           );
       });
       listScrollController.animateTo(0.0,duration: Duration(milliseconds: 300),curve: Curves.easeOut);
-      //usuarioProvider.enviarNoti(tokenFCM.toString(),userName,'',content,id);
+      //usuarioProvider.enviarNoti(prefs.tokenFCM.toString(),userName,prefs.photoUrl,content,userEmail);
+      Firestore.instance.collection('users').document('${prefs.email}').collection('tokensfcm').snapshots().listen((t){
+        t.documents.forEach((doc){
+          //print(doc.data.keys); 
+          //print(doc.data['token']);
+          usuarioProvider.enviarNoti(doc.data['token'].toString(),prefs.name.toString(),prefs.photoUrl.toString(),content,email);
+        });
+      });
+      //final query = await Firestore.instance.collection('users').document('${userEmail.toString()}').collection('tokensfcm').getDocuments();
+      //print("Resultados");
+      /*for(int i = 0; i < query.documents.length; i++){
+        //print(query.documents[i].data['token']);
+        //tokens.add(query.documents[i].data['token']);
+        usuarioProvider.enviarNoti(query.documents[i].data['token'].toString(),prefs.name.toString(),prefs.photoUrl.toString(),content,email);
+      }*/
+
+      //print(tokens);
+      //usuarioProvider.enviarNoti(prefs.tokenFCM.toString(),prefs.name.toString(),prefs.photoUrl.toString(),content,email);
     }else{
       //Fluttertoast.showToast(msg: 'Nothing to send');
       print('Nothing to send');
@@ -612,6 +631,7 @@ class ChatPageState extends State<ChatPage> {
   }
 
   Widget buildInput(){
+    String mensaje = AppTranslations.of(context).text('title_message');
     return Container(
       child: Row(
         children: <Widget>[
@@ -643,9 +663,15 @@ class ChatPageState extends State<ChatPage> {
               padding: EdgeInsets.symmetric(horizontal: 10.0),
               child: TextField(
                 style: TextStyle(color: Colors.blue, fontSize: 15.0),
+                toolbarOptions: ToolbarOptions(
+                  copy: false,
+                  cut: false,
+                  paste: false,
+                  selectAll: false
+                ),
                 controller: textEditingController,
                 decoration: InputDecoration.collapsed(
-                  hintText: 'Mensaje...',//Type your message...
+                  hintText: '$mensaje ...',//Type your message...
                   hintStyle: TextStyle(color: Colors.grey), //greyColor
                 ),
                 focusNode: focusNode,

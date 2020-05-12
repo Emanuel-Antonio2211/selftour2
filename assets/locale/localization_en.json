@@ -88,7 +88,7 @@
     "title_login": "Log in",
     "title_errorreg": "Registration Error",
     "title_nodatos": "There is no data",
-    "title_errorLog": "Failed to login",
+    "title_errorlog": "Failed to login",
     "title_erroremail":"The email is not correct",
     "title_errorpass": "More than 6 characters please",
     "title_errorvalidarpass": "The password does not match",
@@ -179,5 +179,6 @@
     "title_fecha_Nac" : "Date of Birth",
     "title_facebook": "Facebook",
     "title_webpag": "Web Page",
-    "title_ejemplo": "Example"
+    "title_ejemplo": "Example",
+    "title_message": "Write your message"
 }

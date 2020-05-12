@@ -88,7 +88,7 @@
     "title_login": "Démarrer",
     "title_errorreg": "Erreur d'inscription",
     "title_nodatos": "Aucune donnée",
-    "title_errorLog": "Échec de la connexion",
+    "title_errorlog": "Échec de la connexion",
     "title_erroremail":"L'email n'est pas correct",
     "title_errorpass": "Plus de 6 personnages s'il vous plaît",
     "title_errorvalidarpass": "Le mot de passe ne correspond pas",
@@ -179,5 +179,6 @@
     "title_fecha_Nac" : "Date de Naissance",
     "title_facebook": "Facebook",
     "title_webpag": "Page Web",
-    "title_ejemplo": "Exemple"
+    "title_ejemplo": "Exemple",
+    "title_message": "Écrivez votre message"
 }

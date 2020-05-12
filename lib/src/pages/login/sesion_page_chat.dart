@@ -309,9 +309,10 @@ class _SesionPageState extends State<SesionPageChat> {
        // String bienvenido = AppTranslations.of(context).text('title_welcome');  
        // String aceptar = AppTranslations.of(context).text('title_accept'); 
        //String foto = 'assets/iconoapp/Selftour1.png';
+       //userId: detalleTour.iduser.toString(),
         return prefs.email != detalleTour.userData['mail'] ?
         
-        ChatPage(userId: detalleTour.iduser.toString(), userEmail:  detalleTour.userData['mail'],userName: detalleTour.userData['name'],userAvatar: detalleTour.userData['img_profile']) //'https://fotos00.levante-emv.com/mmp/2018/11/20/328x206/errores-sacar-fotos.jpg'
+        ChatPage(userEmail: detalleTour.userData['mail'],userName: detalleTour.userData['name'],userAvatar: detalleTour.userData['img_profile']) //'https://fotos00.levante-emv.com/mmp/2018/11/20/328x206/errores-sacar-fotos.jpg'
         :ChatUsuariosPage();
         }
       },
