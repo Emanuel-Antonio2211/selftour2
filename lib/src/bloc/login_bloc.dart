@@ -366,7 +366,7 @@ Future<bool> signInGoogle(BuildContext context) async { //Se va a llamar en la i
           final QuerySnapshot result = await Firestore.instance.collection('users').where('email',isEqualTo: prefs.email).getDocuments(); //authUser.providerData[1].email
           final List<DocumentSnapshot> documents = result.documents;
 
-          final coleccion = Firestore.instance.collection('users').document('email').collection('tokensfcm');
+          final coleccion = Firestore.instance.collection('users').document('${prefs.email}').collection('tokensfcm');
           //final List<DocumentSnapshot> documentColeccion = coleccion.documents;
           if(documents.length == 0){
             // Update data to server if new user - Actualiza los datos del servidor
