@@ -244,10 +244,14 @@ class _VistaPaypalPageState extends State<VistaPaypalPage> {
       String exitopago = AppTranslations.of(context).text('title_exitopago');
       //prefs.idtour = detalleTour.idtour.toString();
       //[PAYID-LZ4PYLI7BG87718955180447, 9X708941B95684058, 5.99, USD, Beer Tour Downtown Mérida, approved, 2020-03-23T18:13:00Z]
-      //print("Respuesta registro pago");
+      print("Respuesta registro pago");
+      // print(prefs.token);
+      // print(detalleTour.idtour.toString());
+      // print(infoDato[2].toString());
       _pagosProvider.registrarPago(prefs.token, detalleTour.idtour.toString(), 'paypal', infoDato[2].toString()).then((result){
         print(result);
       }).catchError((error){
+        print("Error:");
         print(error);
       });
       

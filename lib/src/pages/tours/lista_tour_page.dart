@@ -187,11 +187,8 @@ class _ListaTourPageState extends State<ListaTourPage> with SingleTickerProvider
     //ToursProvider toursProvider = new ToursProvider();
     final categoriasProvider = new CategoriasProvider();
     categoriasProvider.getToursC(categoria.ctidss.toString());
-    void cargarTours(){
-      setState(() {
-        
-      });
-      categoriasProvider.getToursC(categoria.ctidss.toString());
+    void cargarTours()async{
+      await categoriasProvider.getToursC(categoria.ctidss.toString());
     }
     
 
@@ -222,6 +219,7 @@ class _ListaTourPageState extends State<ListaTourPage> with SingleTickerProvider
                             ),
                           )
                         ),
+                        
                       ],
                     );
                   break;
@@ -245,11 +243,11 @@ class _ListaTourPageState extends State<ListaTourPage> with SingleTickerProvider
                     );
                   break;
                   case ConnectionState.done:
-                    if(snapshot.hasData && snapshot.data.length > 0){
+                    if(snapshot.hasData && snapshot.data != null){
                       return ListaToursCategoriaVertical(
                         listaTours: snapshot.data,
-                        siguientePagina: cargarTours,
                         ctid: categoria.ctidss,
+                        siguientePagina: cargarTours
                       );
                     }else if(snapshot.hasError){
                       return Column(
@@ -291,31 +289,11 @@ class _ListaTourPageState extends State<ListaTourPage> with SingleTickerProvider
                     }
                   break;
                   case ConnectionState.active:
-                    if(snapshot.hasData){
-                      return ListaToursCategoriaVertical(
-                        listaTours: snapshot.data,
-                        siguientePagina: cargarTours,
-                        ctid: categoria.ctidss,
-                      );
-                    }else{
-                      return Column(
-                        children: <Widget>[
-                          SafeArea(
-                            child: SizedBox(
-                              height: size.height * 0.4,
-                            ),
-                          ),
-                          Center(
-                            child: Text(
-                              '$noData',
-                              style: TextStyle(
-                                fontFamily: 'Point-SemiBold'
-                              ),
-                            )
-                          ),
-                        ],
-                      );
-                    }
+                    return ListaToursCategoriaVertical(
+                      listaTours: snapshot.data,
+                      ctid: categoria.ctidss,
+                      siguientePagina: cargarTours
+                    );
                   break;
                   default:
                     return Column(
@@ -399,11 +377,8 @@ class _ListaTourPageState extends State<ListaTourPage> with SingleTickerProvider
     //ToursProvider toursProvider = new ToursProvider();
     final categoriasProvider = new CategoriasProvider();
     categoriasProvider.getToursC(categoria.ctidss.toString());
-    void cargarTour(){
-      setState(() {
-        
-      });
-      categoriasProvider.getToursC(categoria.ctidss.toString());
+    void cargarTour()async{
+      await categoriasProvider.getToursC(categoria.ctidss.toString());
     }
     
     return Container(
@@ -431,6 +406,7 @@ class _ListaTourPageState extends State<ListaTourPage> with SingleTickerProvider
                           ),
                         )
                       ),
+                      
                     ],
                   );
                   break;
@@ -457,8 +433,8 @@ class _ListaTourPageState extends State<ListaTourPage> with SingleTickerProvider
                     if(snapshot.hasData){
                       return ListaToursCategoriaGrid(
                         listaTours: snapshot.data,
-                        siguientePagina: cargarTour,
                         ctid: categoria.ctidss,
+                        siguientePagina: cargarTour
                       );
                     }else{
                       return Column(
@@ -481,34 +457,19 @@ class _ListaTourPageState extends State<ListaTourPage> with SingleTickerProvider
                     }
                   break;
                   case ConnectionState.active:
-                    if(snapshot.hasData){
-                      return ListaToursCategoriaGrid(
-                        listaTours: snapshot.data,
-                        siguientePagina: cargarTour,
-                        ctid: categoria.ctidss,
-                      );
-                    }else{
-                      return Column(
-                        children: <Widget>[
-                          SafeArea(
-                            child: SizedBox(
-                              height: size.height * 0.4,
-                            ),
-                          ),
-                          Center(
-                            child: Text(
-                              '$noData',
-                              style: TextStyle(
-                                fontFamily: 'Point-SemiBold'
-                              ),
-                            )
-                          ),
-                        ],
-                      );
-                    }
+                    return ListaToursCategoriaGrid(
+                      listaTours: snapshot.data,
+                      ctid: categoria.ctidss,
+                      siguientePagina: cargarTour
+                    );
                   break;
                   default:
-                    return Column(
+                    return ListaToursCategoriaGrid(
+                      listaTours: snapshot.data,
+                      ctid: categoria.ctidss,
+                      siguientePagina: cargarTour
+                    );
+                   /*return Column(
                     children: <Widget>[
                       SafeArea(
                         child: SizedBox(
@@ -524,7 +485,7 @@ class _ListaTourPageState extends State<ListaTourPage> with SingleTickerProvider
                         )
                       ),
                     ],
-                  );
+                  );*/
                 }
                 /*if(snapshot.hasData){
                   return ListaToursCategoriaGrid(

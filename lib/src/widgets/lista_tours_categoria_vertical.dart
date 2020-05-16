@@ -21,14 +21,11 @@ class ListaToursCategoriaVertical extends StatefulWidget {
 
   final PreferenciasUsuario prefs = PreferenciasUsuario();
 
-  ListaToursCategoriaVertical({ @required this.listaTours,@required this.siguientePagina, this.ctid});
+  ListaToursCategoriaVertical({ @required this.listaTours, this.ctid, this.siguientePagina});
 
   @override
   _ListaToursCategoriaVerticalState createState() => _ListaToursCategoriaVerticalState();
-  final _pageController = ScrollController(
-    //initialPage: 0,
-    //viewportFraction: 0.3
-  );
+  final _pageController = ScrollController();
 }
 
 class _ListaToursCategoriaVerticalState extends State<ListaToursCategoriaVertical> {
@@ -57,7 +54,7 @@ class _ListaToursCategoriaVerticalState extends State<ListaToursCategoriaVertica
     widget._pageController.addListener((){
       if(widget._pageController.position.pixels >= widget._pageController.position.maxScrollExtent - 10){
         //print('Cargar siguientes tours');
-       // widget._pageController.position.didEndScroll();
+        widget._pageController.position.didEndScroll();
         widget.siguientePagina();
       }
     });
@@ -353,7 +350,7 @@ class ListaToursCategoriaGrid extends StatelessWidget {
   final PreferenciasUsuario prefs = PreferenciasUsuario();
   final Function siguientePagina;
   final String ctid;
-  ListaToursCategoriaGrid({@required this.listaTours,@required this.siguientePagina, this.ctid});
+  ListaToursCategoriaGrid({@required this.listaTours,this.ctid,this.siguientePagina});
   final _scrollController = ScrollController();
   Future<Null> cargarTours()async{
     final duration = Duration(seconds: 2);
