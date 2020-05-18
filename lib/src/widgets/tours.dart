@@ -1,6 +1,7 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'dart:async';
 //import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 //import 'package:flutter_advanced_networkimage/provider.dart';
 import 'package:selftourapp/src/models/tour_categoria_model.dart';
@@ -23,9 +24,28 @@ class _ToursGeneralState extends State<ToursGeneral> {
   PreferenciasUsuario prefs = PreferenciasUsuario();
   CategoriasProvider provider = CategoriasProvider();
   final _scrollController = ScrollController();
+  bool isloading = false;
+
   @override
   void initState() {
     super.initState();
+  }
+
+  Future<Null> cargarTours()async{
+    final duration = Duration(seconds: 2);
+
+    Timer(duration, (){
+      widget.listaTours.clear();
+      provider.getTours().then((result){
+        for(int i = 0; i < result.length; i++){
+          widget.listaTours.add(result[i]);
+        }
+      });
+
+    });
+    print("Lista Cargada");
+    print(widget.listaTours);
+    return Future.delayed(duration);
   }
   
   @override
@@ -34,25 +54,75 @@ class _ToursGeneralState extends State<ToursGeneral> {
 
   _scrollController.addListener((){
       if(_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 10){
-        _scrollController.position.didEndScroll();
+        //_scrollController.position.didEndScroll();
         //print('Cargar siguientes categorías');
         //Se ejecuta la función para mostrar la siguiente página
         //de categorías
-        widget.siguientePagina();
+        //widget.siguientePagina();
+        fetchData();
       }
     });
 
     return Container(
        height: size.height * 0.8,
-      child:ListView.builder(
-        scrollDirection: Axis.vertical,
-        controller: _scrollController,
-        itemCount: widget.listaTours.length,
-        itemBuilder: (context,i){
-          return _tarjeta(context,widget.listaTours[i]);
-        },
+      child:Stack(
+        children:<Widget>[ 
+          RefreshIndicator(
+            onRefresh: cargarTours,
+            child: ListView.builder(
+              scrollDirection: Axis.vertical,
+              controller: _scrollController,
+              itemCount: widget.listaTours.length,
+              itemBuilder: (context,i){
+                return _tarjeta(context,widget.listaTours[i]);
+              },
+            ),
+          ),
+          _crearLoading()
+        ]
       )
       );
+  }
+
+  Future<Null> fetchData()async{
+    isloading = true;
+    setState(() {
+      
+    });
+    final duration = Duration(seconds: 2);
+    return Timer(duration,cargar);
+  }
+
+  void cargar(){
+    isloading = false;
+    _scrollController.animateTo(
+      _scrollController.position.pixels + 100,
+      curve: Curves.fastOutSlowIn, 
+      duration: Duration(milliseconds: 250)
+    );
+    widget.siguientePagina();
+  }
+
+  Widget _crearLoading(){
+    if(isloading){
+      return Column(
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: <Widget>[
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              CircularProgressIndicator()
+            ],
+          ),
+          SizedBox(
+            height: 15.0
+          )
+        ],
+      );
+    }else{
+      return Container();
+    }
   }
 
   Widget _tarjeta(BuildContext context,InfoTour tour){

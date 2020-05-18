@@ -6,56 +6,114 @@ import 'package:selftourapp/src/models/tour_categoria_model.dart';
 import 'package:selftourapp/src/providers/categorias_providers.dart';
 import 'package:selftourapp/src/translation_class/app_translations.dart';
 
-class RecienteVertical extends StatelessWidget {
+class RecienteVertical extends StatefulWidget {
   final List<InfoTour> listaRecientes;
   final Function siguientePagina;
 
   RecienteVertical({@required this.listaRecientes, @required this.siguientePagina});
+
+  @override
+  _RecienteVerticalState createState() => _RecienteVerticalState();
+}
+
+class _RecienteVerticalState extends State<RecienteVertical> {
   final _scrollController = ScrollController();
+
   final categoriaProvider = CategoriasProvider();
+
+  bool isloading = false;
 
   Future<Null> cargarRecientes()async{
     final duration = Duration(seconds: 2);
 
     Timer(duration, (){
-      listaRecientes.clear();
-      categoriaProvider.popularesPag().then((result){
+      widget.listaRecientes.clear();
+      categoriaProvider.recientesPag().then((result){
         for(int i = 0; i < result.length; i++){
-          listaRecientes.add(result[i]);
+          widget.listaRecientes.add(result[i]);
         }
       });
 
     });
     print("Lista Cargada");
-    print(listaRecientes);
+    print(widget.listaRecientes);
     return Future.delayed(duration);
   }
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     _scrollController.addListener((){
       if(_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 10){
-        _scrollController.position.didEndScroll();
+        //_scrollController.position.didEndScroll();
         //print('Cargar siguientes categorías');
         //Se ejecuta la función para mostrar la siguiente página
         //de categorías
-        siguientePagina();
+        //widget.siguientePagina();
+        fetchData();
       }
     });
     return Container(
       height: size.height * 0.8,
-      child: RefreshIndicator(
-        onRefresh: cargarRecientes,
-        child: ListView.builder(
-          controller: _scrollController,
-          itemCount: listaRecientes.length,//snapshot.data.length
-          itemBuilder: (context,index){
-            return recientes(context, listaRecientes[index]);
-          },
-        ),
+      child: Stack(
+        children:<Widget>[ 
+          RefreshIndicator(
+            onRefresh: cargarRecientes,
+            child: ListView.builder(
+              controller: _scrollController,
+              itemCount: widget.listaRecientes.length,//snapshot.data.length
+              itemBuilder: (context,index){
+                return recientes(context, widget.listaRecientes[index]);
+              },
+            ),
+          ),
+          _crearLoading()
+        ]
       ),
     );
   }
+
+  Future<Null> fetchData()async{
+    isloading = true;
+    setState(() {
+      
+    });
+    final duration = Duration(seconds: 2);
+    return Timer(duration,cargar);
+  }
+
+  void cargar(){
+    isloading = false;
+    _scrollController.animateTo(
+      _scrollController.position.pixels + 100,
+      curve: Curves.fastOutSlowIn, 
+      duration: Duration(milliseconds: 250)
+    );
+    widget.siguientePagina();
+  }
+
+  Widget _crearLoading(){
+    if(isloading){
+      return Column(
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: <Widget>[
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              CircularProgressIndicator()
+            ],
+          ),
+          SizedBox(
+            height: 15.0
+          )
+        ],
+      );
+    }else{
+      return Container();
+    }
+  }
+
   Widget recientes(BuildContext context, InfoTour tour){
     final size = MediaQuery.of(context).size;
     //PreferenciasUsuario prefs = PreferenciasUsuario();
@@ -231,35 +289,116 @@ class RecienteVertical extends StatelessWidget {
   }
 }
 
-class RecienteGrid extends StatelessWidget {
+class RecienteGrid extends StatefulWidget {
   final List<InfoTour> listaRecientes;
   final Function siguientePagina;
 
   RecienteGrid({@required this.listaRecientes, @required this.siguientePagina});
+
+  @override
+  _RecienteGridState createState() => _RecienteGridState();
+}
+
+class _RecienteGridState extends State<RecienteGrid> {
   final _scrollController = ScrollController();
+
+  final categoriaProvider = CategoriasProvider();
+
+  bool isloading = false;
+
+  Future<Null> cargarRecientes()async{
+    final duration = Duration(seconds: 2);
+
+    Timer(duration, (){
+      widget.listaRecientes.clear();
+      categoriaProvider.recientesPag().then((result){
+        for(int i = 0; i < result.length; i++){
+          widget.listaRecientes.add(result[i]);
+        }
+      });
+
+    });
+    print("Lista Cargada");
+    print(widget.listaRecientes);
+    return Future.delayed(duration);
+  }
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     _scrollController.addListener((){
       if(_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 10){
-        _scrollController.position.didEndScroll();
+        //_scrollController.position.didEndScroll();
         //print('Cargar siguientes categorías');
         //Se ejecuta la función para mostrar la siguiente página
         //de categorías
-        siguientePagina();
+        //widget.siguientePagina();
+        fetchData();
       }
     });
     return Container(
       height: size.height * 0.8,
-      child: GridView.builder(
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
-        itemCount: listaRecientes.length,//snapshot.data.length
-        itemBuilder: (context,i){
-          return recienteGrid(context, listaRecientes[i]);
-        },
+      child: Stack(
+        children:<Widget>[
+          RefreshIndicator(
+            onRefresh: cargarRecientes,
+            child: GridView.builder(
+              scrollDirection: Axis.vertical,
+              controller: _scrollController,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+              itemCount: widget.listaRecientes.length,//snapshot.data.length
+              itemBuilder: (context,i){
+                return recienteGrid(context, widget.listaRecientes[i]);
+              },
+            ),
+          ),
+          _crearLoading()
+        ]
       ),
     );
   }
+
+  Future<Null> fetchData()async{
+    isloading = true;
+    setState(() {
+      
+    });
+    final duration = Duration(seconds: 2);
+    return Timer(duration,cargar);
+  }
+
+  void cargar(){
+    isloading = false;
+    _scrollController.animateTo(
+      _scrollController.position.pixels + 100,
+      curve: Curves.fastOutSlowIn, 
+      duration: Duration(milliseconds: 250)
+    );
+    widget.siguientePagina();
+  }
+
+  Widget _crearLoading(){
+    if(isloading){
+      return Column(
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: <Widget>[
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              CircularProgressIndicator()
+            ],
+          ),
+          SizedBox(
+            height: 15.0
+          )
+        ],
+      );
+    }else{
+      return Container();
+    }
+  }
+
   Widget recienteGrid(BuildContext context,InfoTour tour){
     final size = MediaQuery.of(context).size;
     String valoracion = AppTranslations.of(context).text('title_puntuacion');

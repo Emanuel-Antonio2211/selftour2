@@ -6,55 +6,113 @@ import 'package:selftourapp/src/models/tour_categoria_model.dart';
 import 'package:selftourapp/src/providers/categorias_providers.dart';
 import 'package:selftourapp/src/translation_class/app_translations.dart';
 
-class PopularVertical extends StatelessWidget {
+class PopularVertical extends StatefulWidget {
   final List<InfoTour> listaPopulares;
   final Function siguientePagina;
   PopularVertical({@required this.listaPopulares,@required this.siguientePagina});
+
+  @override
+  _PopularVerticalState createState() => _PopularVerticalState();
+}
+
+class _PopularVerticalState extends State<PopularVertical> {
   final _scrollController = ScrollController();
+
   final categoriaProvider = CategoriasProvider();
+
+  bool isloading = false;
 
   Future<Null> cargarPopulares()async{
     final duration = Duration(seconds: 2);
 
     Timer(duration, (){
-      listaPopulares.clear();
+      widget.listaPopulares.clear();
       categoriaProvider.popularesPag().then((result){
         for(int i = 0; i < result.length; i++){
-          listaPopulares.add(result[i]);
+          widget.listaPopulares.add(result[i]);
         }
       });
 
     });
     print("Lista Cargada");
-    print(listaPopulares);
+    print(widget.listaPopulares);
     return Future.delayed(duration);
   }
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     _scrollController.addListener((){
       if(_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 10){
-        _scrollController.position.didEndScroll();
+        //_scrollController.position.didEndScroll();
         //print('Cargar siguientes categorías');
         //Se ejecuta la función para mostrar la siguiente página
         //de categorías
-        siguientePagina();
+        //widget.siguientePagina();
+        fetchData();
       }
     });
     return Container(
       height: size.height * 0.8,
-      child: RefreshIndicator(
-        onRefresh: cargarPopulares,
-        child: ListView.builder(
-          controller: _scrollController,
-          itemCount: listaPopulares.length,
-          itemBuilder: (context,index){
-            return populares(context, listaPopulares[index]);
-          },
+      child: Stack(
+        children: <Widget> [ 
+          RefreshIndicator(
+          onRefresh: cargarPopulares,
+          child: ListView.builder(
+            controller: _scrollController,
+            itemCount: widget.listaPopulares.length,
+            itemBuilder: (context,index){
+              return populares(context, widget.listaPopulares[index]);
+            },
+          ),
         ),
+        _crearLoading()
+        ]
       ),
     );
   }
+
+  Future<Null> fetchData()async{
+    isloading = true;
+    setState(() {
+      
+    });
+    final duration = Duration(seconds: 2);
+    return Timer(duration,cargar);
+  }
+
+  void cargar(){
+    isloading = false;
+    _scrollController.animateTo(
+      _scrollController.position.pixels + 100,
+      curve: Curves.fastOutSlowIn, 
+      duration: Duration(milliseconds: 250)
+    );
+    widget.siguientePagina();
+  }
+
+  Widget _crearLoading(){
+    if(isloading){
+      return Column(
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: <Widget>[
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              CircularProgressIndicator()
+            ],
+          ),
+          SizedBox(
+            height: 15.0
+          )
+        ],
+      );
+    }else{
+      return Container();
+    }
+  }
+
   Widget populares(BuildContext context, InfoTour tour){
     final size = MediaQuery.of(context).size;
     //PreferenciasUsuario prefs = PreferenciasUsuario();
@@ -229,29 +287,39 @@ class PopularVertical extends StatelessWidget {
   }
 }
 
-class PopularGrid extends StatelessWidget {
+class PopularGrid extends StatefulWidget {
   final List<InfoTour> listaPopulares;
   final Function siguientePagina;
   PopularGrid({@required this.listaPopulares,@required this.siguientePagina});
+
+  @override
+  _PopularGridState createState() => _PopularGridState();
+}
+
+class _PopularGridState extends State<PopularGrid> {
   final _scrollController = ScrollController();
+
   final categoriaProvider = CategoriasProvider();
+
+  bool isloading = false;
 
   Future<Null> cargarPopulares()async{
     final duration = Duration(seconds: 2);
 
     Timer(duration, (){
-      listaPopulares.clear();
+      widget.listaPopulares.clear();
       categoriaProvider.popularesPag().then((result){
         for(int i = 0; i < result.length; i++){
-          listaPopulares.add(result[i]);
+          widget.listaPopulares.add(result[i]);
         }
       });
 
     });
     print("Lista Cargada");
-    print(listaPopulares);
+    print(widget.listaPopulares);
     return Future.delayed(duration);
   }
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -261,24 +329,73 @@ class PopularGrid extends StatelessWidget {
         //print('Cargar siguientes categorías');
         //Se ejecuta la función para mostrar la siguiente página
         //de categorías
-        siguientePagina();
+        //widget.siguientePagina();
+        fetchData();
       }
     });
     return Container(
       height: size.height * 0.8,
-      child: RefreshIndicator(
-        onRefresh: cargarPopulares,
-        child: GridView.builder(
-          controller: _scrollController,
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
-          itemCount: listaPopulares.length,
-          itemBuilder: (context,i){
-            return popularGrid(context, listaPopulares[i]);
-          },
-        ),
+      child: Stack(
+        children:<Widget>[ 
+          RefreshIndicator(
+            onRefresh: cargarPopulares,
+            child: GridView.builder(
+              scrollDirection: Axis.vertical,
+              controller: _scrollController,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+              itemCount: widget.listaPopulares.length,
+              itemBuilder: (context,i){
+                return popularGrid(context, widget.listaPopulares[i]);
+              },
+            ),
+          ),
+          _crearLoading()
+        ]
       ),
     );
   }
+
+  Future<Null> fetchData()async{
+    isloading = true;
+    setState(() {
+      
+    });
+    final duration = Duration(seconds: 2);
+    return Timer(duration,cargar);
+  }
+
+  void cargar(){
+    isloading = false;
+    _scrollController.animateTo(
+      _scrollController.position.pixels + 100,
+      curve: Curves.fastOutSlowIn, 
+      duration: Duration(milliseconds: 250)
+    );
+    widget.siguientePagina();
+  }
+
+  Widget _crearLoading(){
+    if(isloading){
+      return Column(
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: <Widget>[
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              CircularProgressIndicator()
+            ],
+          ),
+          SizedBox(
+            height: 15.0
+          )
+        ],
+      );
+    }else{
+      return Container();
+    }
+  }
+
   Widget popularGrid(BuildContext context,InfoTour tour){
     final size = MediaQuery.of(context).size;
     String valoracion = AppTranslations.of(context).text('title_puntuacion');

@@ -1,37 +1,115 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'dart:async';
 import 'package:selftourapp/src/models/tour_categoria_model.dart';
 import 'package:selftourapp/src/translation_class/app_translations.dart';
+import 'package:selftourapp/src/providers/categorias_providers.dart';
 
-class RecomendadoVertical extends StatelessWidget {
+class RecomendadoVertical extends StatefulWidget {
   final List<InfoTour> listaRecomendados;
   final Function siguientePagina;
   RecomendadoVertical({@required this.listaRecomendados, @required this.siguientePagina});
+
+  @override
+  _RecomendadoVerticalState createState() => _RecomendadoVerticalState();
+}
+
+class _RecomendadoVerticalState extends State<RecomendadoVertical> {
   final _scrollController = ScrollController();
+  final categoriasProvider = CategoriasProvider();
+  bool isloading = false;
+
+  Future<Null> cargarRecomendados()async{
+    final duration = Duration(seconds: 2);
+
+    Timer(duration, (){
+      widget.listaRecomendados.clear();
+      categoriasProvider.recomendadosPag().then((result){
+        for(int i = 0; i < result.length; i++){
+          widget.listaRecomendados.add(result[i]);
+        }
+      });
+
+    });
+    print("Lista Cargada");
+    print(widget.listaRecomendados);
+    return Future.delayed(duration);
+  }
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     _scrollController.addListener((){
       if(_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 10){
-        _scrollController.position.didEndScroll();
+        //_scrollController.position.didEndScroll();
         //print('Cargar siguientes categorías');
         //Se ejecuta la función para mostrar la siguiente página
         //de categorías
-        siguientePagina();
+        //widget.siguientePagina();
+        fetchData();
       }
     });
     return Container(
       height: size.height * 0.8,
-      child: ListView.builder(
-        controller: _scrollController,
-        itemCount: listaRecomendados.length,//snapshot.data.length
-        itemBuilder: (context,index){
-          return recomendados(context, listaRecomendados[index]);
-        },
+      child: Stack(
+        children:<Widget> [ 
+          RefreshIndicator(
+            onRefresh: cargarRecomendados,
+            child: ListView.builder(
+              controller: _scrollController,
+              itemCount: widget.listaRecomendados.length,//snapshot.data.length
+              itemBuilder: (context,index){
+                return recomendados(context, widget.listaRecomendados[index]);
+              },
+            ),
+          ),
+          _crearLoading()
+        ]
       ),
     );
   }
+
+  Future<Null> fetchData()async{
+    isloading = true;
+    setState(() {
+      
+    });
+    final duration = Duration(seconds: 2);
+    return Timer(duration,cargar);
+  }
+
+  void cargar(){
+    isloading = false;
+    _scrollController.animateTo(
+      _scrollController.position.pixels + 100,
+      curve: Curves.fastOutSlowIn, 
+      duration: Duration(milliseconds: 250)
+    );
+    widget.siguientePagina();
+  }
+
+  Widget _crearLoading(){
+    if(isloading){
+      return Column(
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: <Widget>[
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              CircularProgressIndicator()
+            ],
+          ),
+          SizedBox(
+            height: 15.0
+          )
+        ],
+      );
+    }else{
+      return Container();
+    }
+  }
+
   Widget recomendados(BuildContext context, InfoTour tour){
     final size = MediaQuery.of(context).size;
     //PreferenciasUsuario prefs = PreferenciasUsuario();
@@ -207,35 +285,113 @@ class RecomendadoVertical extends StatelessWidget {
   }
 }
 
-class RecomendadoGrid extends StatelessWidget {
+class RecomendadoGrid extends StatefulWidget {
   final List<InfoTour> listaRecomendados;
   final Function siguientePagina;
   RecomendadoGrid({@required this.listaRecomendados, @required this.siguientePagina});
+
+  @override
+  _RecomendadoGridState createState() => _RecomendadoGridState();
+}
+
+class _RecomendadoGridState extends State<RecomendadoGrid> {
   final _scrollController = ScrollController();
+  bool isloading = false;
+  final categoriasProvider = CategoriasProvider();
+
+  Future<Null> cargarRecomendados()async{
+    final duration = Duration(seconds: 2);
+
+    Timer(duration, (){
+      widget.listaRecomendados.clear();
+      categoriasProvider.recomendadosPag().then((result){
+        for(int i = 0; i < result.length; i++){
+          widget.listaRecomendados.add(result[i]);
+        }
+      });
+
+    });
+    print("Lista Cargada");
+    print(widget.listaRecomendados);
+    return Future.delayed(duration);
+  }
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     _scrollController.addListener((){
       if(_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 10){
-        _scrollController.position.didEndScroll();
+        //_scrollController.position.didEndScroll();
         //print('Cargar siguientes categorías');
         //Se ejecuta la función para mostrar la siguiente página
         //de categorías
-        siguientePagina();
+        //widget.siguientePagina();
+        fetchData();
       }
     });
     return Container(
       height: size.height * 0.8,
-      child: GridView.builder(
-        controller: _scrollController,
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
-        itemCount: listaRecomendados.length,//snapshot.data.length
-        itemBuilder: (context,i){
-          return recomendadoGrid(context, listaRecomendados[i]);
-        },
+      child: Stack(
+        children:<Widget>[ 
+          RefreshIndicator(
+            onRefresh: cargarRecomendados,
+            child: GridView.builder(
+              scrollDirection: Axis.vertical,
+              controller: _scrollController,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+              itemCount: widget.listaRecomendados.length,//snapshot.data.length
+              itemBuilder: (context,i){
+                return recomendadoGrid(context, widget.listaRecomendados[i]);
+              },
+            ),
+          ),
+          _crearLoading()
+        ]
       ),
     );
   }
+
+  Future<Null> fetchData()async{
+    isloading = true;
+    setState(() {
+      
+    });
+    final duration = Duration(seconds: 2);
+    return Timer(duration,cargar);
+  }
+
+  void cargar(){
+    isloading = false;
+    _scrollController.animateTo(
+      _scrollController.position.pixels + 100,
+      curve: Curves.fastOutSlowIn, 
+      duration: Duration(milliseconds: 250)
+    );
+    widget.siguientePagina();
+  }
+
+  Widget _crearLoading(){
+    if(isloading){
+      return Column(
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: <Widget>[
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              CircularProgressIndicator()
+            ],
+          ),
+          SizedBox(
+            height: 15.0
+          )
+        ],
+      );
+    }else{
+      return Container();
+    }
+  }
+
   Widget recomendadoGrid(BuildContext context,InfoTour tour){
     final size = MediaQuery.of(context).size;
     String valoracion = AppTranslations.of(context).text('title_puntuacion');
