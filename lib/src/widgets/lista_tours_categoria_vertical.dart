@@ -17,10 +17,6 @@ class ListaToursCategoriaVertical extends StatefulWidget {
   final Function siguientePagina;
   final String ctid;
 
-  final CategoriasProvider provider = CategoriasProvider();
-
-  final PreferenciasUsuario prefs = PreferenciasUsuario();
-
   ListaToursCategoriaVertical({ @required this.listaTours, this.ctid, this.siguientePagina});
 
   @override
@@ -29,22 +25,27 @@ class ListaToursCategoriaVertical extends StatefulWidget {
 }
 
 class _ListaToursCategoriaVerticalState extends State<ListaToursCategoriaVertical> {
+  final CategoriasProvider provider = CategoriasProvider();
+  final PreferenciasUsuario prefs = PreferenciasUsuario();
   bool isloading = false;
+  
   Future<Null> cargarTours()async{
     final duration = Duration(seconds: 2);
 
-    Timer(duration, (){
+    Timer(duration, ()async{
       //Se borra la lista para generar otra
       widget.listaTours.clear();
-      widget.provider.getToursC(widget.ctid).then((datos){
+      await provider.getToursC(widget.ctid).then((datos){
+        final listaToursC = new ListaToursC.fromJsonList(datos['Tours']['data']);
         for(int i = 0; i<datos.length; i++){
-          widget.listaTours.add(datos[i]);
+          widget.listaTours.add(listaToursC.itemsTours[i]);
         }
       });
       print("Ctid");
       print(widget.ctid);
     });
-
+    print("Lista");
+    print(widget.listaTours);
     return Future.delayed(duration);
   }
 
@@ -83,7 +84,7 @@ class _ListaToursCategoriaVerticalState extends State<ListaToursCategoriaVertica
     );
   }
 
-  Future<Null> fetchData()async{
+  Future fetchData()async{
     isloading = true;
     setState(() {
       
@@ -93,13 +94,28 @@ class _ListaToursCategoriaVerticalState extends State<ListaToursCategoriaVertica
   }
 
   void cargar(){
-    isloading = false;
+    setState(() {
+      
+    });
+    //isloading = false;
     widget._pageController.animateTo(
       widget._pageController.position.pixels + 100,
       curve: Curves.fastOutSlowIn, 
       duration: Duration(milliseconds: 250)
     );
-    widget.siguientePagina();
+    //widget.siguientePagina();
+    provider.getToursC(widget.ctid).then((result){
+      final listaToursC = new ListaToursC.fromJsonList(result['Tours']['data']);
+      for(int i = 0; i < listaToursC.itemsTours.length; i++){
+        widget.listaTours.add(listaToursC.itemsTours[i]);
+        setState(() {
+          isloading = false;
+        });
+        
+      }
+    });
+    print("Lista paginado");
+    print(widget.listaTours);
   }
 
   Widget _crearLoading(){
@@ -407,20 +423,23 @@ class _ListaToursCategoriaGridState extends State<ListaToursCategoriaGrid> {
   final PreferenciasUsuario prefs = PreferenciasUsuario();
   bool isloading = false;
   final _scrollController = ScrollController();
-
+  
   Future<Null> cargarTours()async{
     final duration = Duration(seconds: 2);
 
-    Timer(duration, (){
+    Timer(duration, ()async{
       //Se borra la lista para generar otra
       widget.listaTours.clear();
-      categoriasProvider.getToursC(widget.ctid).then((datos){
-        for(int i = 0; i<datos.length; i++){
-          widget.listaTours.add(datos[i]);
+      await categoriasProvider.getToursC(widget.ctid).then((datos){
+        final listaToursC = new ListaToursC.fromJsonList(datos['Tours']['data']);
+        for(int i = 0; i<listaToursC.itemsTours.length; i++){
+          widget.listaTours.add(listaToursC.itemsTours[i]);
         }
       });
       print("Ctid");
       print(widget.ctid);
+      print("Lista");
+      print(widget.listaTours);
     });
 
     return Future.delayed(duration);
@@ -474,7 +493,7 @@ class _ListaToursCategoriaGridState extends State<ListaToursCategoriaGrid> {
     );
   }
 
-  Future<Null> fetchData()async{
+  Future fetchData()async{
     isloading = true;
     setState(() {
       
@@ -484,13 +503,28 @@ class _ListaToursCategoriaGridState extends State<ListaToursCategoriaGrid> {
   }
 
   void cargar(){
-    isloading = false;
+    setState(() {
+      
+    });
     _scrollController.animateTo(
       _scrollController.position.pixels + 100,
       curve: Curves.fastOutSlowIn, 
       duration: Duration(milliseconds: 250)
     );
-    widget.siguientePagina();
+    //widget.siguientePagina();
+    categoriasProvider.getToursC(widget.ctid).then((result){
+      final listaToursC = new ListaToursC.fromJsonList(result['Tours']['data']);
+      for(int i = 0; i < listaToursC.itemsTours.length; i++){
+        widget.listaTours.add(listaToursC.itemsTours[i]);
+        setState(() {
+          isloading = false;
+        });
+        
+      }
+    });
+    print("Lista paginado");
+    print(widget.listaTours);
+    
   }
 
   Widget _crearLoading(){

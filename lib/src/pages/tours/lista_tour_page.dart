@@ -187,8 +187,11 @@ class _ListaTourPageState extends State<ListaTourPage> with SingleTickerProvider
     //ToursProvider toursProvider = new ToursProvider();
     final categoriasProvider = new CategoriasProvider();
     categoriasProvider.getToursC(categoria.ctidss.toString());
-    void cargarTours()async{
-      await categoriasProvider.getToursC(categoria.ctidss.toString());
+    Future<List<InfoTour>> cargarTours()async{
+      ListaToursC listaToursC;
+      final result = await categoriasProvider.getToursC(categoria.ctidss.toString());
+      listaToursC = new ListaToursC.fromJsonList(result['Tours']['data']);
+      return listaToursC.itemsTours;
     }
     
 
@@ -196,11 +199,15 @@ class _ListaTourPageState extends State<ListaTourPage> with SingleTickerProvider
           child: Column(
           children: <Widget>[
             StreamBuilder(
-              stream: categoriasProvider.tourCStream,//categoriasProvider.getToursC(categoria.ctidss.toString())
-              builder: (BuildContext context, AsyncSnapshot<List<InfoTour>> snapshot) {
+              stream: categoriasProvider.tourCategoryStream,//categoriasProvider.getToursC(categoria.ctidss.toString())
+              builder: (BuildContext context, AsyncSnapshot<Map<String,dynamic>> snapshot) {
                 String noData = AppTranslations.of(context).text('title_nodata');
                 print("Snapshot: ");
                 print(snapshot);
+              //   print("Containskey Tours: ");
+              //   print(snapshot.data.containsKey('Tours'));
+              //  print("Containskey dataTours: ");
+              //  print(snapshot.data.containsKey('dataTours'));
                 
                 switch(snapshot.connectionState){
                   case ConnectionState.waiting:
@@ -211,15 +218,17 @@ class _ListaTourPageState extends State<ListaTourPage> with SingleTickerProvider
                             height: size.height * 0.4,
                           ),
                         ),
+                        // Center(
+                        //   child: Text(
+                        //     '$noData',
+                        //     style: TextStyle(
+                        //       fontFamily: 'Point-SemiBold'
+                        //     ),
+                        //   )
+                        // ),
                         Center(
-                          child: Text(
-                            '$noData',
-                            style: TextStyle(
-                              fontFamily: 'Point-SemiBold'
-                            ),
-                          )
+                          child: CircularProgressIndicator()
                         ),
-                        
                       ],
                     );
                   break;
@@ -243,13 +252,35 @@ class _ListaTourPageState extends State<ListaTourPage> with SingleTickerProvider
                     );
                   break;
                   case ConnectionState.done:
-                    if(snapshot.hasData && snapshot.data != null){
+                   
+                    if(snapshot.data.containsKey('Tours')){
+                      final listaToursC = new ListaToursC.fromJsonList(snapshot.data['Tours']['data']);
+                      //final ningunDato = snapshot.data['dataTours']['msg'].toString();
                       return ListaToursCategoriaVertical(
-                        listaTours: snapshot.data,
+                        listaTours: listaToursC.itemsTours,
                         ctid: categoria.ctidss,
                         siguientePagina: cargarTours
                       );
-                    }else if(snapshot.hasError){
+                    }else if(snapshot.data.containsKey('dataTours')){
+                      return Column(
+                        children: <Widget>[
+                          SafeArea(
+                            child: SizedBox(
+                              height: size.height * 0.4
+                            ),
+                          ),
+                          Center(
+                            child: Text(
+                              '$noData',
+                              style: TextStyle(
+                                fontFamily: 'Point-SemiBold'
+                              ),
+                            )
+                          ),
+                        ],
+                      );
+                      //snapshot.data['dataTours']['msg'] == "Any registered"
+                    }else{
                       return Column(
                         children: <Widget>[
                           SafeArea(
@@ -268,12 +299,40 @@ class _ListaTourPageState extends State<ListaTourPage> with SingleTickerProvider
                         ],
                       );
                     }
-                    else{
+                  break;
+                  case ConnectionState.active:
+                    
+                    if(snapshot.data.containsKey('Tours')){
+                      final listaToursC = new ListaToursC.fromJsonList(snapshot.data['Tours']['data']);
+                      return ListaToursCategoriaVertical(
+                        listaTours: listaToursC.itemsTours,
+                        ctid: categoria.ctidss,
+                        siguientePagina: cargarTours
+                      );
+                    }else if(snapshot.data.containsKey('dataTours')){
                       return Column(
                         children: <Widget>[
                           SafeArea(
                             child: SizedBox(
-                              height: size.height * 0.4,
+                              height: size.height * 0.4
+                            ),
+                          ),
+                          Center(
+                            child: Text(
+                              '$noData',
+                              style: TextStyle(
+                                fontFamily: 'Point-SemiBold'
+                              ),
+                            )
+                          ),
+                        ],
+                      );
+                    }else{
+                      return Column(
+                        children: <Widget>[
+                          SafeArea(
+                            child: SizedBox(
+                              height: size.height * 0.4
                             ),
                           ),
                           Center(
@@ -288,13 +347,6 @@ class _ListaTourPageState extends State<ListaTourPage> with SingleTickerProvider
                       );
                     }
                   break;
-                  case ConnectionState.active:
-                    return ListaToursCategoriaVertical(
-                      listaTours: snapshot.data,
-                      ctid: categoria.ctidss,
-                      siguientePagina: cargarTours
-                    );
-                  break;
                   default:
                     return Column(
                       children: <Widget>[
@@ -304,12 +356,7 @@ class _ListaTourPageState extends State<ListaTourPage> with SingleTickerProvider
                           ),
                         ),
                         Center(
-                          child: Text(
-                            '$noData',
-                            style: TextStyle(
-                              fontFamily: 'Point-SemiBold'
-                            ),
-                          )
+                          child: CircularProgressIndicator()
                         ),
                       ],
                     );
@@ -377,8 +424,15 @@ class _ListaTourPageState extends State<ListaTourPage> with SingleTickerProvider
     //ToursProvider toursProvider = new ToursProvider();
     final categoriasProvider = new CategoriasProvider();
     categoriasProvider.getToursC(categoria.ctidss.toString());
-    void cargarTour()async{
-      await categoriasProvider.getToursC(categoria.ctidss.toString());
+    // void cargarTour()async{
+    //   await categoriasProvider.getToursC(categoria.ctidss.toString());
+    // }
+
+    Future<List<InfoTour>> cargarTour()async{
+      ListaToursC listaToursC;
+      final result = await categoriasProvider.getToursC(categoria.ctidss.toString());
+      listaToursC = new ListaToursC.fromJsonList(result['Tours']['data']);
+      return listaToursC.itemsTours;
     }
     
     return Container(
@@ -387,8 +441,8 @@ class _ListaTourPageState extends State<ListaTourPage> with SingleTickerProvider
         child: Column(
           children: <Widget>[
             StreamBuilder(
-              stream: categoriasProvider.tourCStream,//categoriasProvider.getToursC(categoria.ctidss.toString())
-              builder: (BuildContext context, AsyncSnapshot<List> snapshot) {
+              stream: categoriasProvider.tourCategoryStream,//categoriasProvider.getToursC(categoria.ctidss.toString())
+              builder: (BuildContext context, AsyncSnapshot<Map<String,dynamic>> snapshot) {
                 switch(snapshot.connectionState){
                   case ConnectionState.waiting:
                     return Column(
@@ -399,12 +453,7 @@ class _ListaTourPageState extends State<ListaTourPage> with SingleTickerProvider
                         ),
                       ),
                       Center(
-                        child: Text(
-                          '$noData',
-                          style: TextStyle(
-                            fontFamily: 'Point-SemiBold'
-                          ),
-                        )
+                        child: CircularProgressIndicator()
                       ),
                       
                     ],
@@ -430,11 +479,30 @@ class _ListaTourPageState extends State<ListaTourPage> with SingleTickerProvider
                   );
                   break;
                   case ConnectionState.done:
-                    if(snapshot.hasData){
+                    if(snapshot.data.containsKey('Tours')){
+                      final listaToursC = new ListaToursC.fromJsonList(snapshot.data['Tours']['data']);
                       return ListaToursCategoriaGrid(
-                        listaTours: snapshot.data,
+                        listaTours: listaToursC.itemsTours,
                         ctid: categoria.ctidss,
                         siguientePagina: cargarTour
+                      );
+                    } else if(snapshot.data.containsKey('dataTours')){
+                      return Column(
+                        children: <Widget>[
+                          SafeArea(
+                            child: SizedBox(
+                              height: size.height * 0.4,
+                            ),
+                          ),
+                          Center(
+                            child: Text(
+                              '$noData',
+                              style: TextStyle(
+                                fontFamily: 'Point-SemiBold'
+                              ),
+                            )
+                          ),
+                        ],
                       );
                     }else{
                       return Column(
@@ -457,19 +525,54 @@ class _ListaTourPageState extends State<ListaTourPage> with SingleTickerProvider
                     }
                   break;
                   case ConnectionState.active:
-                    return ListaToursCategoriaGrid(
-                      listaTours: snapshot.data,
-                      ctid: categoria.ctidss,
-                      siguientePagina: cargarTour
-                    );
+                    if(snapshot.data.containsKey('Tours')){
+                      final listaToursC = new ListaToursC.fromJsonList(snapshot.data['Tours']['data']);
+                      return ListaToursCategoriaGrid(
+                        listaTours: listaToursC.itemsTours,
+                        ctid: categoria.ctidss,
+                        siguientePagina: cargarTour
+                      );
+                    }else if(snapshot.data.containsKey('dataTours')){
+                      return Column(
+                        children: <Widget>[
+                          SafeArea(
+                            child: SizedBox(
+                              height: size.height * 0.4,
+                            ),
+                          ),
+                          Center(
+                            child: Text(
+                              '$noData',
+                              style: TextStyle(
+                                fontFamily: 'Point-SemiBold'
+                              ),
+                            )
+                          ),
+                        ],
+                      );
+                    }else{
+                      return Column(
+                        children: <Widget>[
+                          SafeArea(
+                            child: SizedBox(
+                              height: size.height * 0.4,
+                            ),
+                          ),
+                          Center(
+                            child: Text(
+                              '$noData',
+                              style: TextStyle(
+                                fontFamily: 'Point-SemiBold'
+                              ),
+                            )
+                          ),
+                        ],
+                      );
+                    }
+                    
                   break;
                   default:
-                    return ListaToursCategoriaGrid(
-                      listaTours: snapshot.data,
-                      ctid: categoria.ctidss,
-                      siguientePagina: cargarTour
-                    );
-                   /*return Column(
+                    return Column(
                     children: <Widget>[
                       SafeArea(
                         child: SizedBox(
@@ -477,15 +580,10 @@ class _ListaTourPageState extends State<ListaTourPage> with SingleTickerProvider
                         ),
                       ),
                       Center(
-                        child: Text(
-                          '$noData',
-                          style: TextStyle(
-                            fontFamily: 'Point-SemiBold'
-                          ),
-                        )
+                        child: CircularProgressIndicator()
                       ),
                     ],
-                  );*/
+                  );
                 }
                 /*if(snapshot.hasData){
                   return ListaToursCategoriaGrid(

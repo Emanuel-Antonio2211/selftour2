@@ -44,6 +44,7 @@ class CategoriasProvider{
   final _recientesStreamController               = StreamController<List<InfoTour>>.broadcast();
   final _recomendadosStreamController            = BehaviorSubject<List<InfoTour>>();
   final _tourCStreamController                   = StreamController<List<InfoTour>>.broadcast();
+  final _tourCategoryStreamController            = StreamController<Map<String,dynamic>>.broadcast();
 
   //Lo agregamos a la tubería
   Function(List<Categoria>) get categoriasSink => _categoriaStreamController.sink.add;
@@ -52,6 +53,7 @@ class CategoriasProvider{
   Function(List<InfoTour>) get recomendadosSink => _recomendadosStreamController.sink.add;
   Function(List<InfoTour>) get tourCSink => _tourCStreamController.sink.add;
 
+  Function(Map<String,dynamic>) get tourCategorySink => _tourCategoryStreamController.sink.add;
   
   //Escuchamos a los elementos que se están emitiendo
   Stream<List<Categoria>> get categoriasStream => _categoriaStreamController.stream;
@@ -59,6 +61,9 @@ class CategoriasProvider{
   Stream<List<InfoTour>> get recienteStream => _recientesStreamController.stream;
   Stream<List<InfoTour>> get recomendadoStream => _recomendadosStreamController.stream;
   Stream<List<InfoTour>> get tourCStream => _tourCStreamController.stream;
+
+  Stream<Map<String,dynamic>> get tourCategoryStream => _tourCategoryStreamController.stream;
+
   //Cerramos el stream cuando ya no se necesite
   void disposeStream(){
     _categoriaStreamController?.close();
@@ -67,9 +72,11 @@ class CategoriasProvider{
     _recientesStreamController?.close();
     _recomendadosStreamController?.close();
     _tourCStreamController?.close();
+
+    _tourCategoryStreamController?.close();
   }
 
-  Future<List<InfoTour>> getToursC(String ctidss) async{
+  Future<Map<String,dynamic>> getToursC(String ctidss) async{
    String _url = 'api-users.selftours.app';
     _toursPage++;
     final url = Uri.https(
@@ -80,9 +87,12 @@ class CategoriasProvider{
      });
     //a6151c55-8897-434a-acc9-a82c16efbd48
     final respuestaTourC = await _procesarRespuestaToursC(url);
-    _toursC.addAll(respuestaTourC);
+    //_toursC.addAll(respuestaTourC);
     
-    tourCSink(_toursC);
+    //tourCSink(_toursC);
+    
+    tourCategorySink(respuestaTourC);
+    
     //listTourCSink(_toursC);
     //_cargando = false;
     return respuestaTourC;
@@ -115,14 +125,16 @@ class CategoriasProvider{
   }
   
    */
-  Future<List<InfoTour>> _procesarRespuestaToursC(Uri url) async{
+  Future<Map<String,dynamic>> _procesarRespuestaToursC(Uri url) async{
     final respuestaTC = await http.get(url);
     final decodedDataTC = json.decode(respuestaTC.body);
-    print(decodedDataTC['Tours']['data']);
-    final listaToursC = new ListaToursC.fromJsonList(decodedDataTC['Tours']['data']);
+    
+    //final listaToursC = new ListaToursC.fromJsonList(decodedDataTC['Tours']['data']);
+    //print(respuestaTourC['Tours']['data']);
+    //print(decodedDataTC);
     //print(listaToursC.itemsTours);
-    return //[];
-    listaToursC.itemsTours;
+    return decodedDataTC; //[];
+    //listaToursC.itemsTours;
   }
 
   /*
