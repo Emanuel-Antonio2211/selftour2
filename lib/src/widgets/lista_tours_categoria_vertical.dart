@@ -37,7 +37,7 @@ class _ListaToursCategoriaVerticalState extends State<ListaToursCategoriaVertica
       widget.listaTours.clear();
       await provider.getToursC(widget.ctid).then((datos){
         final listaToursC = new ListaToursC.fromJsonList(datos['Tours']['data']);
-        for(int i = 0; i<datos.length; i++){
+        for(int i = 0; i<listaToursC.itemsTours.length; i++){
           widget.listaTours.add(listaToursC.itemsTours[i]);
         }
       });
