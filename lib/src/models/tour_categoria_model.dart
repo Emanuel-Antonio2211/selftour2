@@ -54,6 +54,7 @@ class InfoTour {
   String state;
   String country;
   String foto;
+  List<String> galeriaFotos;
   String gallery;
   String map_tour;
   Map<String,dynamic> temporada;
@@ -112,6 +113,7 @@ class InfoTour {
     this.country,
     this.foto,
     this.gallery,
+    this.galeriaFotos,
     this.map_tour,
     this.temporada,
     this.picture,
@@ -164,6 +166,7 @@ class InfoTour {
     country       = json['country'];
     foto          = json['photo'];
     gallery       = json['gallery'];
+    
     map_tour      = json['map_tour'];
     temporada     = json['days_and_season'];
     picture       = json['picture'];

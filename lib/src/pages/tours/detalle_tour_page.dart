@@ -43,6 +43,7 @@ import 'package:selftourapp/src/models/tour_categoria_model.dart';
 import 'package:selftourapp/src/providers/categorias_providers.dart';
 import 'package:selftourapp/src/translation_class/app_translations.dart';
 import 'package:selftourapp/src/widgets/informacion_tour.dart';
+import 'package:selftourapp/src/widgets/swiper_widget.dart';
 
 class DetalleTourPage extends StatefulWidget {
   @override
@@ -638,6 +639,7 @@ class _DetalleTourPageState extends State<DetalleTourPage> with SingleTickerProv
     }
     return Container(
         child: Swiper(
+        scrollDirection: Axis.horizontal,
         autoplay: false,
        // pageSnapping: false,
        /* controller: PageController(
@@ -706,6 +708,11 @@ class _DetalleTourPageState extends State<DetalleTourPage> with SingleTickerProv
           alignment: Alignment.bottomLeft,
           builder: SwiperPagination.fraction
         ),*/
+        pagination: SwiperPaginationWidget(
+          margin: EdgeInsets.only(top: 10.0,left: 10.0,bottom: 6.0),
+          alignment: Alignment.bottomLeft,
+          builder: SwiperPaginationWidget.fraction
+        ),
         control: SwiperControl(
           size: 20.0,
           color: Colors.white

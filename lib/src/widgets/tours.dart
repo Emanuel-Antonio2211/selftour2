@@ -138,6 +138,7 @@ class _ToursGeneralState extends State<ToursGeneral> {
           children: <Widget>[
             Stack(
               children: <Widget>[
+                /*
                 ClipRRect(
                   borderRadius: BorderRadius.circular(5.0),
                   child: Stack(
@@ -151,7 +152,7 @@ class _ToursGeneralState extends State<ToursGeneral> {
                       )*/
 
                       CachedNetworkImage(
-                        imageUrl: "${tour.gallery.toString()}",
+                        imageUrl: "${tour.galeriaFotos[0].toString()}",
                         //errorWidget: (context, url, error)=>Icon(Icons.error),
                         //cacheManager: baseCacheManager,
                         useOldImageOnUrlChange: true,
@@ -185,7 +186,7 @@ class _ToursGeneralState extends State<ToursGeneral> {
                       )*/
                     ]
                   ),
-                ),
+                ),*/
                 ClipRRect(
                   borderRadius: BorderRadius.circular(5.0),
                   child: Container(

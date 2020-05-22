@@ -232,9 +232,11 @@ class CategoriasProvider{
 */
 _toursPage++;
     //Se define la url del proveedor de la lista de tours
+    //?page=${_toursPage.toString()}&items=3
     final url = Uri.https(
       _url, 
-      '/tourshome',{
+      '/tours',
+      {
         'page': '${_toursPage.toString()}',
         'items': '5'
       }
@@ -258,8 +260,8 @@ _toursPage++;
       }*/
       );
     //Se recibe los datos decodificados del json
-    Map<String,dynamic> decodedDataTours = json.decode(respuestaTours.body);
-    //print(decodedDataTours['tours'][0]['data_tour']);
+    final decodedDataTours = json.decode(respuestaTours.body);
+    print(decodedDataTours['tours'][0]['data_tour']);
     final tours = new ListaToursC.fromJsonList(decodedDataTours['tours'][0]['data_tour']);
     //print(tours.itemsTours);
     return tours.itemsTours;
