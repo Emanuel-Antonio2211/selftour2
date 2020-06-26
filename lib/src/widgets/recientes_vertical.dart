@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:selftourapp/src/googlemaps/states/app_state.dart';
 import 'package:selftourapp/src/models/tour_categoria_model.dart';
 import 'package:selftourapp/src/providers/categorias_providers.dart';
 import 'package:selftourapp/src/translation_class/app_translations.dart';
@@ -20,20 +21,32 @@ class _RecienteVerticalState extends State<RecienteVertical> {
   final _scrollController = ScrollController();
 
   final categoriaProvider = CategoriasProvider();
-
+  String state;
+  String codCountry;
+  AppState _appState = AppState();
   bool isloading = false;
+
+  @override
+  void initState() {
+    
+    super.initState();
+    
+  }
 
   Future<Null> cargarRecientes()async{
     final duration = Duration(seconds: 2);
 
     Timer(duration, (){
       widget.listaRecientes.clear();
-      categoriaProvider.recientesPag().then((result){
-        for(int i = 0; i < result.length; i++){
-          widget.listaRecientes.add(result[i]);
-        }
+      _appState.userLocation().then((value)async{
+        state = value[1].toString();
+        codCountry = value[5].toString();
+       final result = await categoriaProvider.recientesPag(state,codCountry);
+        final recientes = ListaToursC.fromJsonList(result['tours'][0]['data_tour']);
+        for(int i = 0; i < recientes.itemsTours.length; i++){
+            widget.listaRecientes.add(recientes.itemsTours[i]);
+          }
       });
-
     });
     print("Lista Cargada");
     print(widget.listaRecientes);
@@ -50,7 +63,7 @@ class _RecienteVerticalState extends State<RecienteVertical> {
         //Se ejecuta la función para mostrar la siguiente página
         //de categorías
         //widget.siguientePagina();
-        fetchData();
+        //fetchData();
       }
     });
     return Container(
@@ -62,18 +75,19 @@ class _RecienteVerticalState extends State<RecienteVertical> {
             child: ListView.builder(
               controller: _scrollController,
               itemCount: widget.listaRecientes.length,//snapshot.data.length
+              physics: AlwaysScrollableScrollPhysics(),
               itemBuilder: (context,index){
                 return recientes(context, widget.listaRecientes[index]);
               },
             ),
           ),
-          _crearLoading()
+          //_crearLoading()
         ]
       ),
     );
   }
 
-  Future<Null> fetchData()async{
+  Future fetchData()async{
     isloading = true;
     setState(() {
       
@@ -303,20 +317,32 @@ class _RecienteGridState extends State<RecienteGrid> {
   final _scrollController = ScrollController();
 
   final categoriaProvider = CategoriasProvider();
-
+  String state;
+  String codCountry;
+  AppState _appState = AppState();
   bool isloading = false;
+
+  @override
+  void initState() {
+    
+    super.initState();
+    
+  }
 
   Future<Null> cargarRecientes()async{
     final duration = Duration(seconds: 2);
 
     Timer(duration, (){
       widget.listaRecientes.clear();
-      categoriaProvider.recientesPag().then((result){
-        for(int i = 0; i < result.length; i++){
-          widget.listaRecientes.add(result[i]);
+      _appState.userLocation().then((value)async{
+        state = value[1].toString();
+        codCountry = value[5].toString();
+        final result = await categoriaProvider.recientesPag(state,codCountry);
+        final recientes = ListaToursC.fromJsonList(result['tours'][0]['data_tour']);
+        for(int i = 0; i < recientes.itemsTours.length; i++){
+          widget.listaRecientes.add(recientes.itemsTours[i]);
         }
       });
-
     });
     print("Lista Cargada");
     print(widget.listaRecientes);
@@ -333,7 +359,7 @@ class _RecienteGridState extends State<RecienteGrid> {
         //Se ejecuta la función para mostrar la siguiente página
         //de categorías
         //widget.siguientePagina();
-        fetchData();
+        //fetchData();
       }
     });
     return Container(
@@ -346,19 +372,20 @@ class _RecienteGridState extends State<RecienteGrid> {
               scrollDirection: Axis.vertical,
               controller: _scrollController,
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+              physics: AlwaysScrollableScrollPhysics(),
               itemCount: widget.listaRecientes.length,//snapshot.data.length
               itemBuilder: (context,i){
                 return recienteGrid(context, widget.listaRecientes[i]);
               },
             ),
           ),
-          _crearLoading()
+          //_crearLoading()
         ]
       ),
     );
   }
 
-  Future<Null> fetchData()async{
+  Future fetchData()async{
     isloading = true;
     setState(() {
       

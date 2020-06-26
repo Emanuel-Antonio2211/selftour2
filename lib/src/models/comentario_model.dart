@@ -26,6 +26,9 @@ class Comment {
   String name;
   String mail;
   String imgProfile;
+  int value;
+  int totalComentarios;
+  Map<String,dynamic> valoracion;
 
   Comment({
     this.commentary,
@@ -33,15 +36,21 @@ class Comment {
     this.name,
     this.mail,
     this.imgProfile,
+    this.value,
+    this.totalComentarios,
+    this.valoracion
   });
 
   //Voy a llamar cuando quiero generar una instancia que viene en un mapa
   // en formato json
   Comment.fromJsonMap(Map<String,dynamic> json){
-    commentary  = json['commentary'];
-    dateComment = json['dateComment'];
-    name        = json['name'];
-    mail        = json['mail'];
-    imgProfile  = json['img_profile'];
+    commentary        = json['commentary'];
+    dateComment       = json['dateComment'];
+    name              = json['name'];
+    mail              = json['mail'];
+    imgProfile        = json['img_profile'];
+    value             = json['value'];
+    totalComentarios  = json['comentarios'];
+    valoracion        = json['valoracion'];
   }
 }

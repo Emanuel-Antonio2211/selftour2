@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:selftourapp/src/googlemaps/states/app_state.dart';
 import 'dart:async';
 //import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 //import 'package:flutter_advanced_networkimage/provider.dart';
@@ -12,9 +13,8 @@ import 'package:selftourapp/src/translation_class/app_translations.dart';
 class ToursGeneral extends StatefulWidget {
   //final categoriasProvider = new CategoriasProvider();
   final List<InfoTour> listaTours;
-  final Function siguientePagina;
 
-  ToursGeneral({@required this.listaTours,@required this.siguientePagina});
+  ToursGeneral({@required this.listaTours});
 
   @override
   _ToursGeneralState createState() => _ToursGeneralState();
@@ -25,10 +25,14 @@ class _ToursGeneralState extends State<ToursGeneral> {
   CategoriasProvider provider = CategoriasProvider();
   final _scrollController = ScrollController();
   bool isloading = false;
+  String state;
+  String codCountry;
+  AppState _appState = AppState();
 
   @override
   void initState() {
     super.initState();
+    
   }
 
   Future<Null> cargarTours()async{
@@ -36,9 +40,13 @@ class _ToursGeneralState extends State<ToursGeneral> {
 
     Timer(duration, (){
       widget.listaTours.clear();
-      provider.getTours().then((result){
-        for(int i = 0; i < result.length; i++){
-          widget.listaTours.add(result[i]);
+      _appState.userLocation().then((value)async{
+        state = value[1].toString();
+        codCountry = value[5].toString();
+        final result = await provider.getTours(state,codCountry);
+        final tours = new ListaToursC.fromJsonList(result['tours'][0]['data_tour']);
+        for(int i = 0; i < tours.itemsTours.length; i++){
+          widget.listaTours.add(tours.itemsTours[i]);
         }
       });
 
@@ -72,6 +80,7 @@ class _ToursGeneralState extends State<ToursGeneral> {
             child: ListView.builder(
               scrollDirection: Axis.vertical,
               controller: _scrollController,
+              physics: AlwaysScrollableScrollPhysics(),
               itemCount: widget.listaTours.length,
               itemBuilder: (context,i){
                 return _tarjeta(context,widget.listaTours[i]);
@@ -84,7 +93,7 @@ class _ToursGeneralState extends State<ToursGeneral> {
       );
   }
 
-  Future<Null> fetchData()async{
+  Future fetchData()async{
     isloading = true;
     setState(() {
       
@@ -94,13 +103,31 @@ class _ToursGeneralState extends State<ToursGeneral> {
   }
 
   void cargar(){
-    isloading = false;
+    setState(() {
+      isloading = false;
+    });
+    
     _scrollController.animateTo(
       _scrollController.position.pixels + 100,
-      curve: Curves.fastOutSlowIn, 
+      curve: Curves.fastOutSlowIn,
       duration: Duration(milliseconds: 250)
     );
-    widget.siguientePagina();
+    //ListaToursC result;
+      _appState.userLocation().then((value)async{
+        state = value[1].toString();
+        codCountry = value[5].toString();
+        await provider.getTours(state,codCountry).then((result){
+          setState(() {
+            isloading = false;
+          });
+          final resp = ListaToursC.fromJsonList(result['tours'][0]['data_tour']);
+          for(int i = 0; i < resp.itemsTours.length; i++){
+            widget.listaTours.add(resp.itemsTours[i]);
+          }
+        });
+        
+      });
+    //widget.siguientePagina();
   }
 
   Widget _crearLoading(){
@@ -138,7 +165,6 @@ class _ToursGeneralState extends State<ToursGeneral> {
           children: <Widget>[
             Stack(
               children: <Widget>[
-                /*
                 ClipRRect(
                   borderRadius: BorderRadius.circular(5.0),
                   child: Stack(
@@ -152,7 +178,7 @@ class _ToursGeneralState extends State<ToursGeneral> {
                       )*/
 
                       CachedNetworkImage(
-                        imageUrl: "${tour.galeriaFotos[0].toString()}",
+                        imageUrl: "${tour.gallery.toString()}",
                         //errorWidget: (context, url, error)=>Icon(Icons.error),
                         //cacheManager: baseCacheManager,
                         useOldImageOnUrlChange: true,
@@ -186,7 +212,7 @@ class _ToursGeneralState extends State<ToursGeneral> {
                       )*/
                     ]
                   ),
-                ),*/
+                ),
                 ClipRRect(
                   borderRadius: BorderRadius.circular(5.0),
                   child: Container(

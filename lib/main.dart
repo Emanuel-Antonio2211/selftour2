@@ -47,7 +47,7 @@ import 'package:selftourapp/src/pages/registro_page.dart';
 
 import 'package:selftourapp/src/pages/usuario/Inicio_page.dart';
 import 'package:selftourapp/src/pages/usuario/tourscomprados_page.dart';
-import 'package:selftourapp/src/pages/usuario/usuarios_chat_page.dart';
+//import 'package:selftourapp/src/pages/usuario/usuarios_chat_page.dart';
 import 'package:selftourapp/src/preferencias_usuario/preferencias_usuario.dart';
 import 'package:selftourapp/src/providers/push_notifications_provider.dart';
 import 'package:selftourapp/src/translation_class/app_translations_delegate.dart';

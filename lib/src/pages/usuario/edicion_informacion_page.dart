@@ -34,52 +34,63 @@ class _EditInformationPageState extends State<EditInformationPage> {
   String cuentaFacebook;
   String webPag;
 
+  @override
+  void initState() { 
+    super.initState();
+    _usuarioProvider.obtenerDatosUsuario(prefs.token.toString());
+  }
+
   seleccionarFoto()async{
    foto = await ImagePicker.pickImage(
       source: ImageSource.gallery
     );
-
-    if(foto != null){
-      //limpieza
-      prefs.photoUrl = '';
-    }
     setState(() {
         
     });
+    if(foto != null){
+      //limpieza
+      //prefs.photoUrl = '';
+      prefs.photoEditar = '';
+      //fotoUrl = null;
+    }
     //prefs.photoUrl = foto?.path;
-    // print("Foto");
+    print("Foto");
     // print(foto.path);
-    // print(foto);
+    print(foto);
+    print(prefs.photoEditar);
   }
 
   tomarFoto()async{
-   foto = await ImagePicker.pickImage(
+    foto = await ImagePicker.pickImage(
       source: ImageSource.camera
     );
-
-    if(foto != null){
-      //limpieza
-      prefs.photoUrl = '';
-    }
     setState(() {
         
     });
+    if(foto != null){
+      //limpieza
+      //prefs.photoUrl = '';
+      //fotoUrl = null;
+      prefs.photoEditar = '';
+    }
+    
     //prefs.photoUrl = foto?.path;
-    // print("Foto");
+    print("Foto");
     // print(foto.path);
-    // print(foto);
+    print(foto);
+    print(prefs.photoEditar);
   }
 
-  Widget _mostrarFoto() {
+  Widget _mostrarFoto(String fotoUrl){
     //print(foto!=null);
     var size = MediaQuery.of(context).size;
-    if (prefs.photoUrl != '') {
- 
+    if(fotoUrl != '') {
+      //prefs.photoUrl.toString()
       return Image( 
-          image: NetworkImage(prefs.photoUrl.toString()),
+          image: NetworkImage(fotoUrl),
         );
  
-    } else if(foto != null) {
+    }else if(foto != null) {
       return Image.file(
           foto,
           fit: BoxFit.cover,
@@ -109,6 +120,7 @@ class _EditInformationPageState extends State<EditInformationPage> {
     String ctaFacebook = AppTranslations.of(context).text('title_facebook');
     String paginaWeb = AppTranslations.of(context).text('title_webpag');
     String ejemplo = AppTranslations.of(context).text('title_ejemplo');
+
 
     AppState _appState = AppState();
     return Scaffold(
@@ -298,6 +310,7 @@ class _EditInformationPageState extends State<EditInformationPage> {
                         print("La foto es igual");
                       }
 
+                      await _usuarioProvider.obtenerDatosUsuario(prefs.token.toString());
                       //mostrarAviso(context, '$successDataUpdate', '', 'assets/check.jpg');
                       mostrarAlerta(context, '$successDataUpdate', '', 'assets/check.jpg');
                     }).catchError((error){
@@ -317,249 +330,283 @@ class _EditInformationPageState extends State<EditInformationPage> {
       body: Form(
         key: formKey,
         child: SingleChildScrollView(
-          child: Column(
-            //crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Padding(
-                padding: EdgeInsets.only(left: size.width * 0.02),
-                child: Text('$editainfo',style: TextStyle(
-                  fontFamily: 'Point-SemiBold',
-                  fontSize: 25.0
-                )),
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: size.width * 0.1),
-                child: CircleAvatar(
-                  radius: 50.0,
-                  child: Stack(
-                    children:[ 
-                      ClipRRect(
-                      borderRadius: BorderRadius.circular(50.0),
-                      child: _mostrarFoto()
-                      /*FadeInImage(
-                        image: _mostrarFoto(), //prefs.photoUrl.toString() != '' ? NetworkImage( prefs.photoUrl.toString()) : ( foto != null ? Image.network(foto.path,fit: BoxFit.fill ) : AssetImage( 'assets/iconoapp/Selftour1.png') ),
-                        placeholder: AssetImage('assets/loading.gif'),
-                        fit: BoxFit.fill,
-                        )*/
+          child: StreamBuilder(
+            stream: _usuarioProvider.streamEdition,
+            builder: (context, AsyncSnapshot<Map<String,dynamic>> snapshot) {
+              final datosUsuario = snapshot.data;
+              
+              if(!snapshot.hasData){
+                return Column(
+                  children: <Widget>[
+                    SizedBox(
+                      height: size.height * 0.34,
                     ),
-                    Align(
-                        alignment: Alignment.bottomRight,
-                        child: CircleAvatar(
-                          backgroundColor: Color(0xFFD62250),
-                          child: IconButton(
-                            icon: Icon(
-                              Icons.camera_alt,
-                              color: Colors.white,
-                            ),
-                            onPressed: tomarFoto,
+                    Center(
+                      child: CircularProgressIndicator(),
+                    )
+                  ],
+                );
+              }else{
+                prefs.photoEditar = datosUsuario['dataUser']['data'][0]['img_profile'].toString();
+                return Column(
+                //crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Padding(
+                      padding: EdgeInsets.only(left: size.width * 0.02),
+                      child: Text('$editainfo',style: TextStyle(
+                        fontFamily: 'Point-SemiBold',
+                        fontSize: 25.0
+                      )),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: size.width * 0.1),
+                      child: CircleAvatar(
+                        radius: 50.0,
+                        child: Stack(
+                          children:[ 
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(50.0),
+                              child: //_mostrarFoto(prefs.photoEditar.toString())
+                              (foto != null) ? Image.file(
+                                foto,
+                                fit: BoxFit.cover,
+                                height: size.height * 0.6,
+                                width: size.width * 0.4,
+                              ):
+                              Image( 
+                                image: NetworkImage(prefs.photoEditar.toString()),
+                                height: size.height * 0.6,
+                                width: size.width * 0.4
+                              )
+                            /*FadeInImage(
+                              image: _mostrarFoto(), //prefs.photoUrl.toString() != '' ? NetworkImage( prefs.photoUrl.toString()) : ( foto != null ? Image.network(foto.path,fit: BoxFit.fill ) : AssetImage( 'assets/iconoapp/Selftour1.png') ),
+                              placeholder: AssetImage('assets/loading.gif'),
+                              fit: BoxFit.fill,
+                              )*/
                           ),
+                          Align(
+                              alignment: Alignment.bottomRight,
+                              child: CircleAvatar(
+                                backgroundColor: Color(0xFFD62250),
+                                child: IconButton(
+                                  icon: Icon(
+                                    Icons.camera_alt,
+                                    color: Colors.white,
+                                  ),
+                                  onPressed: tomarFoto
+                                ),
+                              ),
+                            ),
+                            Align(
+                              alignment: Alignment.bottomLeft,
+                              child: CircleAvatar(
+                                backgroundColor: Color(0xFFD62250),
+                                child: IconButton(
+                                  icon: Icon(
+                                    Icons.image,
+                                    color: Colors.white,
+                                  ),
+                                  onPressed: seleccionarFoto
+                                ),
+                              ),
+                            )
+                          ]
                         ),
                       ),
-                      Align(
-                        alignment: Alignment.bottomLeft,
-                        child: CircleAvatar(
-                          backgroundColor: Color(0xFFD62250),
-                          child: IconButton(
-                            icon: Icon(
-                              Icons.image,
-                              color: Colors.white,
-                            ),
-                            onPressed: seleccionarFoto,
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: size.width * 0.02),
+                      child: TextFormField(
+                        keyboardType: TextInputType.text,
+                        //autofocus: true, //Sirve para enfocar directamente al primer elemento del formulario
+                        initialValue: datosUsuario['dataUser']['data'][0]['name'].toString(),//prefs.name
+                        decoration: InputDecoration(
+                          labelText: '$nombre', //OutlineInputBorder UnderlineInputBorder
+                          focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: Colors.black, width: 0.0)
+                          ),
+                          labelStyle: TextStyle(
+                            fontFamily: 'Point-SemiBold',
+                            color: Colors.black
+                          )
+                        ),
+                        onSaved: (String name){
+                          nombre = name;
+                        },
+                      ),
+                    ),
+                    /*SizedBox(height: size.height * 0.04,),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: size.width * 0.02),
+                      child: TextFormField(
+                        keyboardType: TextInputType.emailAddress,
+                        decoration: InputDecoration(
+                          labelText: '$correo',
+                          labelStyle: TextStyle(
+                            fontFamily: 'Point-SemiBold',
+                            color: Colors.black
+                          )
+                        ),
+                      ),
+                    ),*/
+                    SizedBox(height: size.height * 0.04,),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: size.width * 0.02),
+                      child: TextFormField(
+                        keyboardType: TextInputType.phone, //datosUsuario['dataUser']['data'][0]
+                        initialValue: datosUsuario['dataUser']['data'][0]['phone'] == null ? '':datosUsuario['dataUser']['data'][0]['phone'].toString(),//prefs.phone //(prefs.phone == "null" || prefs.phone == '' || prefs.phone == null) ? '' : prefs.phone
+                        decoration: InputDecoration(
+                          labelText: '$telefono *',
+                          labelStyle: TextStyle(
+                            fontFamily: 'Point-SemiBold',
+                            color: Colors.black
+                          ),
+                          focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: Colors.black, width: 0.0)
+                          )
+                        ),
+                        maxLength: 10,
+                        onSaved: (String phone){
+                          telefono = phone;
+                        },
+                      ),
+                    ),
+                    SizedBox(height: size.height * 0.04,),
+                    // Padding(
+                    //   padding: EdgeInsets.symmetric(horizontal: size.width * 0.02),
+                    //   child: TextFormField(
+                    //     keyboardType: TextInputType.datetime,
+                    //     initialValue: prefs.fNac == null ? '' : prefs.fNac,
+                    //     decoration: InputDecoration(
+                    //       labelText: '$fecNacimiento *',
+                    //       labelStyle: TextStyle(
+                    //         fontFamily: 'Point-SemiBold',
+                    //         color: Colors.black
+                    //       )
+                    //     ),
+                    //     maxLength: 10,
+                    //     onSaved: (String fechNac){
+                    //       fechaNacimiento = fechNac;
+                    //     },
+                    //   ),
+                    // ),
+                    
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: size.width * 0.02),
+                      child: DateTimeField(
+                        format: format,
+                        initialValue: datosUsuario['dataUser']['data'][0]['dbirth'] == null ? DateTime.now() : DateTime.parse(datosUsuario['dataUser']['data'][0]['dbirth']),//prefs.fNac == null ? DateTime.now() : DateTime.parse(prefs.fNac)
+                        decoration: InputDecoration(
+                          labelText: "$fecNacimiento",
+                          labelStyle: TextStyle(
+                            fontFamily: "Point-SemiBold",
+                            color: Colors.black
+                          )
+                        ),
+                        onShowPicker: (context,currentValue){
+                          return showDatePicker(
+                            context: context, 
+                            initialDate: datosUsuario['dataUser']['data'][0]['dbirth'] == null ? DateTime.now() ?? currentValue : DateTime.parse(datosUsuario['dataUser']['data'][0]['dbirth']),
+                            firstDate: DateTime(1900), 
+                            lastDate: DateTime(2100),
+                            locale: Locale(prefs.idioma)
+                          );
+                        },
+                        onSaved: (DateTime date){
+                          fechaNacimiento = date.toString();
+                        },
+                        onChanged: (DateTime dateTime){
+                          print(dateTime.toString());
+                        },
+                      )
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(left:size.width * 0.02),
+                      child: Container(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          '$ejemplo: AAAA-MM-dd',
+                          style: TextStyle(
+                            fontFamily: 'Point-SemiBold',
+                            color: Colors.black
                           ),
                         ),
                       )
-                    ]
-                  ),
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: size.width * 0.02),
-                child: TextFormField(
-                  keyboardType: TextInputType.text,
-                  //autofocus: true, //Sirve para enfocar directamente al primer elemento del formulario
-                  initialValue: prefs.name,
-                  decoration: InputDecoration(
-                    labelText: '$nombre', //OutlineInputBorder UnderlineInputBorder
-                    focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black, width: 0.0)
                     ),
-                    labelStyle: TextStyle(
-                      fontFamily: 'Point-SemiBold',
-                      color: Colors.black
-                    )
-                  ),
-                  onSaved: (String name){
-                    nombre = name;
-                  },
-                ),
-              ),
-              /*SizedBox(height: size.height * 0.04,),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: size.width * 0.02),
-                child: TextFormField(
-                  keyboardType: TextInputType.emailAddress,
-                  decoration: InputDecoration(
-                    labelText: '$correo',
-                    labelStyle: TextStyle(
-                      fontFamily: 'Point-SemiBold',
-                      color: Colors.black
-                    )
-                  ),
-                ),
-              ),*/
-              SizedBox(height: size.height * 0.04,),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: size.width * 0.02),
-                child: TextFormField(
-                  keyboardType: TextInputType.phone,
-                  initialValue: (prefs.phone == "null" || prefs.phone == '' || prefs.phone == null) ? '' : prefs.phone,
-                  decoration: InputDecoration(
-                    labelText: '$telefono *',
-                    labelStyle: TextStyle(
-                      fontFamily: 'Point-SemiBold',
-                      color: Colors.black
+                    SizedBox(height: size.height * 0.04,),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: size.width * 0.02),
+                      child: TextFormField(
+                        keyboardType: TextInputType.text,
+                        initialValue: (datosUsuario['dataUser']['data'][0]['fb'] == null || datosUsuario['dataUser']['data'][0]['fb'] == "") ? '': datosUsuario['dataUser']['data'][0]['fb'].toString(),
+                        //(prefs.accountFacebook == null || prefs.accountFacebook == "null") ? '': prefs.accountFacebook
+                        decoration: InputDecoration(
+                          labelText: '$ctaFacebook *',
+                          labelStyle: TextStyle(
+                            fontFamily: 'Point-SemiBold',
+                            color: Colors.black
+                          ),
+                          focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: Colors.black, width: 0.0)
+                          )
+                        ),
+                        onSaved: (String facebook){
+                          cuentaFacebook = facebook;
+                        },
+                      ),
                     ),
-                    focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black, width: 0.0)
-                    )
-                  ),
-                  maxLength: 10,
-                  onSaved: (String phone){
-                    telefono = phone;
-                  },
-                ),
-              ),
-              SizedBox(height: size.height * 0.04,),
-              // Padding(
-              //   padding: EdgeInsets.symmetric(horizontal: size.width * 0.02),
-              //   child: TextFormField(
-              //     keyboardType: TextInputType.datetime,
-              //     initialValue: prefs.fNac == null ? '' : prefs.fNac,
-              //     decoration: InputDecoration(
-              //       labelText: '$fecNacimiento *',
-              //       labelStyle: TextStyle(
-              //         fontFamily: 'Point-SemiBold',
-              //         color: Colors.black
-              //       )
-              //     ),
-              //     maxLength: 10,
-              //     onSaved: (String fechNac){
-              //       fechaNacimiento = fechNac;
-              //     },
-              //   ),
-              // ),
-              
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: size.width * 0.02),
-                child: DateTimeField(
-                  format: format,
-                  initialValue: prefs.fNac == null ? DateTime.now() : DateTime.parse(prefs.fNac),
-                  decoration: InputDecoration(
-                    labelText: "$fecNacimiento",
-                    labelStyle: TextStyle(
-                      fontFamily: "Point-SemiBold",
-                      color: Colors.black
-                    )
-                  ),
-                  onShowPicker: (context,currentValue){
-                    return showDatePicker(
-                      context: context, 
-                      initialDate: prefs.fNac == null ? DateTime.now() ?? currentValue : DateTime.parse(prefs.fNac),
-                      firstDate: DateTime(1900), 
-                      lastDate: DateTime(2100),
-                      locale: Locale(prefs.idioma)
-                    );
-                  },
-                  onSaved: (DateTime date){
-                    fechaNacimiento = date.toString();
-                  },
-                  onChanged: (DateTime dateTime){
-                    print(dateTime.toString());
-                  },
-                )
-              ),
-              Padding(
-                padding: EdgeInsets.only(left:size.width * 0.02),
-                child: Container(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    '$ejemplo: AAAA-MM-dd',
-                    style: TextStyle(
-                      fontFamily: 'Point-SemiBold',
-                      color: Colors.black
+                    Padding(
+                      padding: EdgeInsets.only(left:size.width * 0.02),
+                      child: Container(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          '$ejemplo: https://facebook.com/',
+                          style: TextStyle(
+                            fontFamily: 'Point-SemiBold',
+                            color: Colors.black
+                          ),
+                        ),
+                      )
                     ),
-                  ),
-                )
-              ),
-              SizedBox(height: size.height * 0.04,),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: size.width * 0.02),
-                child: TextFormField(
-                  keyboardType: TextInputType.text,
-                  initialValue: (prefs.accountFacebook == null || prefs.accountFacebook == "null") ? '': prefs.accountFacebook,
-                  decoration: InputDecoration(
-                    labelText: '$ctaFacebook *',
-                    labelStyle: TextStyle(
-                      fontFamily: 'Point-SemiBold',
-                      color: Colors.black
+                    SizedBox(height: size.height * 0.04,),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: size.width * 0.02),
+                      child: TextFormField(
+                        keyboardType: TextInputType.text,
+                        initialValue: (datosUsuario['dataUser']['data'][0]['webpage'] == 'undefined' || datosUsuario['dataUser']['data'][0]['webpage'] == null || datosUsuario['dataUser']['data'][0]['webpage'] == "") ? '': datosUsuario['dataUser']['data'][0]['webpage'].toString(),
+                        //(prefs.pagWeb == 'undefined' || prefs.pagWeb == null || prefs.pagWeb == "null") ? '': prefs.pagWeb.toString()
+                        decoration: InputDecoration(
+                          labelText: '$paginaWeb',
+                          labelStyle: TextStyle(
+                            fontFamily: 'Point-SemiBold',
+                            color: Colors.black
+                          ),
+                          focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: Colors.black, width: 0.0)
+                          )
+                        ),
+                        onSaved: (String web){
+                          webPag = web;
+                        },
+                      ),
                     ),
-                    focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black, width: 0.0)
-                    )
-                  ),
-                  onSaved: (String facebook){
-                    cuentaFacebook = facebook;
-                  },
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(left:size.width * 0.02),
-                child: Container(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    '$ejemplo: https://facebook.com/',
-                    style: TextStyle(
-                      fontFamily: 'Point-SemiBold',
-                      color: Colors.black
+                    Padding(
+                      padding: EdgeInsets.only(left:size.width * 0.02),
+                      child: Container(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          '$ejemplo: https://mipagina.com/',
+                          style: TextStyle(
+                            fontFamily: 'Point-SemiBold',
+                            color: Colors.black
+                          ),
+                        ),
+                      )
                     ),
-                  ),
-                )
-              ),
-              SizedBox(height: size.height * 0.04,),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: size.width * 0.02),
-                child: TextFormField(
-                  keyboardType: TextInputType.text,
-                  initialValue: (prefs.pagWeb == 'undefined' || prefs.pagWeb == null || prefs.pagWeb == "null") ? '': prefs.pagWeb.toString(),
-                  decoration: InputDecoration(
-                    labelText: '$paginaWeb',
-                    labelStyle: TextStyle(
-                      fontFamily: 'Point-SemiBold',
-                      color: Colors.black
-                    ),
-                    focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black, width: 0.0)
-                    )
-                  ),
-                  onSaved: (String web){
-                    webPag = web;
-                  },
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(left:size.width * 0.02),
-                child: Container(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    '$ejemplo: https://mipagina.com/',
-                    style: TextStyle(
-                      fontFamily: 'Point-SemiBold',
-                      color: Colors.black
-                    ),
-                  ),
-                )
-              ),
-            ],
+                  ],
+                );
+              }
+            }
           ),
         ),
       ),

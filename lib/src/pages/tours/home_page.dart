@@ -3,6 +3,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 //import 'package:provider/provider.dart';
 import 'package:selftourapp/src/googlemaps/states/app_state.dart';
+import 'package:selftourapp/src/models/categoria_model.dart';
 import 'package:selftourapp/src/models/tour_categoria_model.dart';
 import 'package:selftourapp/src/pages/tours/categorias_page.dart';
 import 'package:selftourapp/src/pages/tours/tours_populares_page.dart';
@@ -27,7 +28,9 @@ class _IndexPageState extends State<IndexPage>{
   PreferenciasUsuario prefs = PreferenciasUsuario();
   CategoriasProvider categorias = CategoriasProvider();
   ScrollController _scrollController;
-  AppState appState;
+  String state;
+  String codCountry;
+  AppState _appState = AppState();
   bool lastStatus = true;
 
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
@@ -50,16 +53,21 @@ class _IndexPageState extends State<IndexPage>{
 void initState() { 
   _scrollController = ScrollController();
   _scrollController.addListener(scrollListener);
-  categorias.getCategoria();
-  categorias.verPopulares();
-  categorias.verRecientes();
-  categorias.verRecomendados();
+  
   //_refresh();
   /*WidgetsBinding.instance
       .addPostFrameCallback((_) => _refreshIndicatorKey.currentState.show());*/
   //appState.getUserLocation();
   
   super.initState();
+  _appState.userLocation().then((value){
+    state = value[1].toString();
+    codCountry = value[5].toString();
+    categorias.getCategoria();
+    categorias.verPopulares(state,codCountry);
+    categorias.verRecientes(state,codCountry);
+    categorias.verRecomendados(state,codCountry);
+  });
 }
 
 Future<void> getDatos()async{
@@ -67,9 +75,9 @@ Future<void> getDatos()async{
     
   });
   await categorias.getCategoria();
-  await categorias.verPopulares();
-  await categorias.verRecientes();
-  await categorias.verRecomendados();
+  await categorias.verPopulares(state,codCountry);
+  await categorias.verRecientes(state,codCountry);
+  await categorias.verRecomendados(state,codCountry);
 }
 
 /*Future<Null> _refresh() {
@@ -86,9 +94,9 @@ Future<void> getDatos()async{
       
     });
     await categorias.getCategoria();
-    await categorias.verPopulares();
-    await categorias.verRecientes();
-    await categorias.verRecomendados();
+    await categorias.verPopulares(state,codCountry);
+    await categorias.verRecientes(state,codCountry);
+    await categorias.verRecomendados(state,codCountry);
     print("Datos actualizados");
     return null;
   }
@@ -98,6 +106,10 @@ Future<void> getDatos()async{
   Widget build(BuildContext context) {
     //final ThemeData theme = Theme.of(context);
     //final appBarTheme = AppBarTheme();
+  
+    // print("Estado: ");
+    // print(state);
+
     /*appBarTheme.copyWith(
       color: Colors.white,
       brightness: Brightness.light
@@ -656,18 +668,19 @@ Future<void> getDatos()async{
   }
 
   Widget _categoriaImagenes(){
-    
     var size = MediaQuery.of(context).size;
+    String noData = AppTranslations.of(context).text('title_nodata');
     return StreamBuilder(
       stream: categorias.categoriasStream,//categorias.categoriasStream //categorias.getCategoria()
-      builder: (BuildContext context, AsyncSnapshot<List> snapshot) {
+      builder: (BuildContext context, AsyncSnapshot<Map<String,dynamic>> snapshot) {
+        
         //Aquí evalúa si tiene datos
         switch(snapshot.connectionState){
           case ConnectionState.waiting:
             return Container(
               height: size.height * 0.28 ,//size.height * 0.1
               child: Center(
-                child: Container()
+                child: CircularProgressIndicator()
               ),
             );
           break;
@@ -675,16 +688,42 @@ Future<void> getDatos()async{
             return Container(
               height: size.height * 0.28 ,//size.height * 0.1
               child: Center(
-                child: Container()
+                child: Text(
+                  "$noData",
+                  style: TextStyle(
+                    fontFamily: 'Point-SemiBold'
+                  ),
+                )
               ),
             );
           break;
           case ConnectionState.done:
+            
             if(snapshot.hasData){
-              return CategoriaHorizontal(
-                categorias: snapshot.data,
-                siguientePagina: categorias.getCategoria,
-              );
+              final resp = snapshot.data['categories'];
+              if(resp['data'] == null){
+                return Column(
+                  children: <Widget>[
+                    SizedBox(
+                      height: size.height * 0.28,
+                    ),
+                    Center(
+                      child: Text(
+                        "$noData",
+                        style: TextStyle(
+                          fontFamily: 'Point-SemiBold'
+                        ),
+                      ),
+                    )
+                  ],
+                );
+              }else{
+                final categorias = new Categorias.fromJsonList(snapshot.data['categories']['data']);
+                return CategoriaHorizontal(
+                  categorias: categorias.items,
+                );
+              }
+              
               /*CardSwiper(
               categorias: snapshot.data,
             );*/
@@ -692,22 +731,46 @@ Future<void> getDatos()async{
               return Container(
                 height: size.height * 0.28,//size.height * 0.1
                 child: Center(
-                  child: Container()
+                  child: CircularProgressIndicator()
                 ),
               );
             }
           break;
           case ConnectionState.active:
-            return CategoriaHorizontal(
-              categorias: snapshot.data,
-              siguientePagina: categorias.getCategoria,
-            );
+            
+            if(snapshot.hasData){
+              final resp = snapshot.data['categories'];
+              if(resp['data'] == null){
+                return Column(
+                  children: <Widget>[
+                    SizedBox(
+                      height: size.height * 0.28,
+                    ),
+                    Center(
+                      child: Text(
+                        "$noData",
+                        style: TextStyle(
+                          fontFamily: 'Point-SemiBold'
+                        ),
+                      ),
+                    )
+                  ],
+                );
+              }else{
+                final categorias = new Categorias.fromJsonList(snapshot.data['categories']['data']);
+                return CategoriaHorizontal(
+                  categorias: categorias.items
+                );
+              }
+              
+            }
+            
           break;
           default:
             return Container(
               height: size.height * 0.28 ,//size.height * 0.1
               child: Center(
-                child: Container()
+                child: CircularProgressIndicator()
               ),
             );
         }
@@ -801,18 +864,19 @@ Future<void> getDatos()async{
   }
 
   Widget _imagenespopularesTours(){
-    
     var size = MediaQuery.of(context).size;
+    String noData = AppTranslations.of(context).text('title_nodata');
     return StreamBuilder(
       stream: categorias.popularStream,
       //initialData: InitialData,
-      builder: (BuildContext context, AsyncSnapshot<List<InfoTour>> snapshot) {
+      builder: (BuildContext context, AsyncSnapshot<Map<String,dynamic>> snapshot) {
+        
         switch(snapshot.connectionState){
           case ConnectionState.waiting:
             return Container(
               height: size.height * 0.28,//size.height * 0.1
               child: Center(
-                child: Container()
+                child: CircularProgressIndicator()
               ),
             );
           break;
@@ -820,13 +884,39 @@ Future<void> getDatos()async{
             return Container(
               height: size.height * 0.28,//size.height * 0.1
               child: Center(
-                child: Container()
+                child: Text(
+                  "$noData",
+                  style: TextStyle(
+                    fontFamily: 'Point-SemiBold'
+                  ),
+                )
               ),
             );
           break;
           case ConnectionState.done:
+            
             if(snapshot.hasData){
-              return ToursPopulares(listaPopulares: snapshot.data,);
+              if(snapshot.data['tours'][0]['data_tour'] == null){
+                return Column(
+                  children: <Widget>[
+                    SizedBox(
+                      height: size.height * 0.28,
+                    ),
+                    Center(
+                      child: Text(
+                        "$noData",
+                        style: TextStyle(
+                          fontFamily: 'Point-SemiBold'
+                        ),
+                      ),
+                    )
+                  ],
+                );
+              }else{
+                final populares = ListaToursC.fromJsonList(snapshot.data['tours'][0]['data_tour']);
+                return ToursPopulares(listaPopulares: populares.itemsTours,);
+              }
+              
               /*CardSwiper(
               categorias: snapshot.data,
             );*/
@@ -834,19 +924,39 @@ Future<void> getDatos()async{
               return Container(
                 height: size.height * 0.28,//size.height * 0.1
                 child: Center(
-                  child: Container()
+                  child: CircularProgressIndicator()
                 ),
               );
             }
           break;
           case ConnectionState.active:
-            return ToursPopulares(listaPopulares: snapshot.data,);
+            if(snapshot.data['tours'][0]['data_tour'] == null){
+              return Column(
+                children: <Widget>[
+                  SizedBox(
+                    height: size.height * 0.28,
+                  ),
+                  Center(
+                    child: Text(
+                      "$noData",
+                      style: TextStyle(
+                        fontFamily: 'Point-SemiBold'
+                      ),
+                    ),
+                  )
+                ],
+              );
+            }else{
+              final populares = ListaToursC.fromJsonList(snapshot.data['tours'][0]['data_tour']);
+              return ToursPopulares(listaPopulares: populares.itemsTours,);
+            }
+            
           break;
           default:
             return Container(
               height: size.height * 0.28,//size.height * 0.1
               child: Center(
-                child: Container()
+                child: CircularProgressIndicator()
               ),
             );
 
@@ -924,18 +1034,18 @@ Future<void> getDatos()async{
   }
 
   Widget _imagenesrecientesTours(){
-    
     var size = MediaQuery.of(context).size;
+    String noData = AppTranslations.of(context).text('title_nodata');
     return StreamBuilder(
       stream: categorias.recienteStream,
       //initialData: InitialData,
-      builder: (BuildContext context, AsyncSnapshot<List<InfoTour>> snapshot) {
+      builder: (BuildContext context, AsyncSnapshot<Map<String,dynamic>> snapshot) {
         switch(snapshot.connectionState){
           case ConnectionState.waiting:
             return Container(
               height: size.height * 0.28,
               child: Center(
-                child: Container()
+                child: CircularProgressIndicator()
               ),
             );
           break;
@@ -943,13 +1053,38 @@ Future<void> getDatos()async{
             return Container(
               height: size.height * 0.28,
               child: Center(
-                child: Container()
+                child: Text(
+                  "$noData",
+                  style: TextStyle(
+                    fontFamily: 'Point-SemiBold'
+                  ),
+                )
               ),
             );
           break;
           case ConnectionState.done:
             if(snapshot.hasData){
-              return ToursRecientes(listaRecientes: snapshot.data,);
+              if(snapshot.data['tours'][0]['data_tour'] == null){
+                return Column(
+                  children: <Widget>[
+                    SizedBox(
+                      height: size.height * 0.28,
+                    ),
+                    Center(
+                      child: Text(
+                        "$noData",
+                        style: TextStyle(
+                          fontFamily: 'Point-SemiBold'
+                        ),
+                      ),
+                    )
+                  ],
+                );
+              }else{
+                final recientes = ListaToursC.fromJsonList(snapshot.data['tours'][0]['data_tour']);
+                return ToursRecientes(listaRecientes: recientes.itemsTours,);
+            }
+            
               /*CardSwiper(
               categorias: snapshot.data,
             );*/
@@ -957,19 +1092,53 @@ Future<void> getDatos()async{
               return Container(
                 height: size.height * 0.28,
                 child: Center(
-                  child: Container()
+                  child: CircularProgressIndicator()
                 ),
               );
             }
           break;
           case ConnectionState.active:
-            return ToursRecientes(listaRecientes: snapshot.data,);
+            if(snapshot.hasData){
+              if(snapshot.data['tours'][0]['data_tour'] == null){
+                return Column(
+                  children: <Widget>[
+                    SizedBox(
+                      height: size.height * 0.28,
+                    ),
+                    Center(
+                      child: Text(
+                        "$noData",
+                        style: TextStyle(
+                          fontFamily: 'Point-SemiBold'
+                        ),
+                      ),
+                    )
+                  ],
+                );
+              }else{
+                final recientes = ListaToursC.fromJsonList(snapshot.data['tours'][0]['data_tour']);
+                return ToursRecientes(listaRecientes: recientes.itemsTours,);
+              }
+              
+            }else{
+              return Column(
+                children: <Widget>[
+                  SizedBox(
+                    height: size.height * 0.28,
+                  ),
+                  Center(
+                    child: CircularProgressIndicator()
+                  )
+                ],
+              );
+            }
+            
           break;
           default:
             return Container(
               height: size.height * 0.28,
               child: Center(
-                child: Container()
+                child: CircularProgressIndicator()
               ),
             );
         }
@@ -1006,12 +1175,13 @@ Future<void> getDatos()async{
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Text(AppTranslations.of(context).text('title_recomiendes_tours'),
-                            style: TextStyle(
-                              fontSize: 18.0, 
-                              fontFamily: 'Point-ExtraBold',
-                              fontStyle: FontStyle.italic
-                        )
+                  Text(
+                    AppTranslations.of(context).text('title_recomiendes_tours'),
+                    style: TextStyle(
+                      fontSize: 18.0, 
+                      fontFamily: 'Point-ExtraBold',
+                      fontStyle: FontStyle.italic
+                    )
                   ),
                   /*SizedBox(
                     width: 18.0,
@@ -1034,8 +1204,8 @@ Future<void> getDatos()async{
             height: size.height * 0.01,
           ),
           Column(
-              children: <Widget>[
-                _imagenesrecomendadosTours()
+            children: <Widget>[
+              _imagenesrecomendadosTours()
             ],
           )
         ],
@@ -1045,17 +1215,17 @@ Future<void> getDatos()async{
 
   Widget _imagenesrecomendadosTours(){
     var size = MediaQuery.of(context).size;
-    
+    String noData = AppTranslations.of(context).text('title_nodata');
     return StreamBuilder(
       stream: categorias.recomendadoStream,
       //initialData: InitialData,
-      builder: (BuildContext context, AsyncSnapshot<List<InfoTour>> snapshot) {
+      builder: (BuildContext context, AsyncSnapshot<Map<String,dynamic>> snapshot) {
         switch(snapshot.connectionState){
           case ConnectionState.waiting:
             return Container(
               height: size.height * 0.28,
               child: Center(
-                child: Container()
+                child: CircularProgressIndicator()
               ),
             );
           break;
@@ -1063,30 +1233,86 @@ Future<void> getDatos()async{
             return Container(
               height: size.height * 0.28,
               child: Center(
-                child: Container()
+                child: Text(
+                  "$noData",
+                  style: TextStyle(
+                    fontFamily: 'Point-SemiBold'
+                  ),
+                )
               ),
             );
           break;
           case ConnectionState.done:
+            
             if(snapshot.hasData){
-              return ToursRecomendados(listaRecomendados: snapshot.data);
+              if(snapshot.data['tours'][0]['data_tour'] == null){
+                return Column(
+                  children: <Widget>[
+                    SizedBox(
+                      height: size.height * 0.28,
+                    ),
+                    Center(
+                      child: Text(
+                        "$noData",
+                        style: TextStyle(
+                          fontFamily: 'Point-SemiBold'
+                        ),
+                      ),
+                    )
+                  ],
+                );
+              }else{
+                final recomendados = ListaToursC.fromJsonList(snapshot.data['tours'][0]['data_tour']);
+                return ToursRecomendados(listaRecomendados: recomendados.itemsTours);
+              }
+              
             }else{
               return Container(
                 height: size.height * 0.28,
                 child: Center(
-                  child: Container()
+                  child: CircularProgressIndicator()
                 ),
               );
             }
           break;
           case ConnectionState.active:
-            return ToursRecomendados(listaRecomendados: snapshot.data);
+            if(snapshot.hasData){
+              if(snapshot.data['tours'][0]['data_tour'] == null){
+                return Column(
+                  children: <Widget>[
+                    SizedBox(
+                      height: size.height * 0.28,
+                    ),
+                    Center(
+                      child: Text(
+                        "$noData",
+                        style: TextStyle(
+                          fontFamily: 'Point-SemiBold'
+                        ),
+                      ),
+                    )
+                  ],
+                );
+              }else{
+                final recomendados = ListaToursC.fromJsonList(snapshot.data['tours'][0]['data_tour']);
+                return ToursRecomendados(listaRecomendados: recomendados.itemsTours);
+              }
+              
+            }else{
+              return Container(
+                height: size.height * 0.28,
+                child: Center(
+                  child: CircularProgressIndicator()
+                ),
+              );
+            }
+            
           break;
           default:
             return Container(
               height: size.height * 0.28,
               child: Center(
-                child: Container()
+                child: CircularProgressIndicator()
               ),
             );
         }

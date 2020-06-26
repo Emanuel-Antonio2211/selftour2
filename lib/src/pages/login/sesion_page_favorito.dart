@@ -6,6 +6,8 @@ import 'package:selftourapp/src/bloc/provider.dart';
 import 'package:selftourapp/src/models/tour_categoria_model.dart';
 import 'package:selftourapp/src/pages/create_account/create_account_page.dart';
 import 'package:selftourapp/src/pages/login/login_page.dart';
+import 'package:selftourapp/src/preferencias_usuario/preferencias_usuario.dart';
+import 'package:selftourapp/src/providers/categorias_providers.dart';
 //import 'package:selftourapp/src/pages/pagos/pagos_page.dart';
 //import 'package:selftourapp/src/pages/usuario/chat_page.dart';
 import 'package:selftourapp/src/providers/usuario_provider.dart';
@@ -22,6 +24,8 @@ class SesionPageFavorito extends StatefulWidget {
 class _SesionPageState extends State<SesionPageFavorito> {
   LoginBloc userBloc;
   final usuarioProvider = new UsuarioProvider();
+  final prefs = PreferenciasUsuario();
+  CategoriasProvider _categoriasProvider = CategoriasProvider();
 
   @override
   Widget build(BuildContext context) {
@@ -109,6 +113,9 @@ class _SesionPageState extends State<SesionPageFavorito> {
                               Navigator.push(context, MaterialPageRoute(builder: (BuildContext context){
                                 return Login();
                               },fullscreenDialog: true));
+                              /*if(prefs.token == ''){
+                                final respuesta = await _categoriasProvider
+                              }*/
                             },
                           ),
                       ),

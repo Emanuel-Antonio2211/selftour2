@@ -656,27 +656,27 @@ class _MapaState extends State<Mapa> {
               GestureDetector(
                 onTap: ()async{
                   _acercar(double.parse(detalletour['lat']) ,double.parse( detalletour['lng']));
-          final Uint8List markerIcon = await getBytesFromCanvas(140, 20,'${detalletour['site'].toString()}');
-          //final http.Response response = await http.get(detalletour['gallery'][0]['url'].toString());
-          //final File markerImageFile = await DefaultCacheManager().getSingleFile(imageUrl);
-       setState(() {
-        _marcadores.add(
-          Marker(
-            consumeTapEvents: true,
-            visible: true,
-            markerId: markerId,
-            position: LatLng(double.parse(detalletour['lat']), double.parse(detalletour['lng'])),
-            infoWindow: infoWindow,
-            icon: BitmapDescriptor.fromBytes(markerIcon),
-            onTap: (){
-              
-            }
-          )
+                    final Uint8List markerIcon = await getBytesFromCanvas(140, 20,'${detalletour['site'].toString()}');
+                    //final http.Response response = await http.get(detalletour['gallery'][0]['url'].toString());
+                    //final File markerImageFile = await DefaultCacheManager().getSingleFile(imageUrl);
+                  setState(() {
+                    _marcadores.add(
+                      Marker(
+                        consumeTapEvents: true,
+                        visible: true,
+                        markerId: markerId,
+                        position: LatLng(double.parse(detalletour['lat']), double.parse(detalletour['lng'])),
+                        infoWindow: infoWindow,
+                        icon: BitmapDescriptor.fromBytes(markerIcon),
+                        onTap: (){
+                          
+                        }
+                      )
 
-         
-        );
-        
-       });
+                    
+                    );
+                    
+                  });
                 },
                 child: ClipRRect(
                   borderRadius: BorderRadius.only(topLeft: Radius.circular(5.0),topRight: Radius.circular(5.0)),
@@ -803,18 +803,73 @@ class _MapaState extends State<Mapa> {
                         },
                         child: Text('$navegar',style: TextStyle(color: Colors.white,fontFamily: 'Point-SemiBold',fontSize: 10.0),),
                         itemBuilder: (context){
+                          String caminando = AppTranslations.of(context).text('title_walking');
+                          String bicicleta = AppTranslations.of(context).text('title_bicycle');
+                          String auto = AppTranslations.of(context).text('title_car');
+
                           return [
                             PopupMenuItem(
                               value: 1,
-                              child: Icon(Icons.directions_walk),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: <Widget>[
+                                  Icon(
+                                    Icons.directions_walk,
+                                    color: Color(0xFFD62250)
+                                  ),
+                                  SizedBox(
+                                    width: size.width * 0.02,
+                                  ),
+                                  Text(
+                                    "$caminando",
+                                    style: TextStyle(
+                                      fontFamily: 'Point-SemiBold'
+                                    ),
+                                  )
+                                ],
+                              ),
                             ),
                             PopupMenuItem(
                               value: 2,
-                              child: Icon(Icons.directions_bike),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: <Widget>[
+                                  Icon(
+                                    Icons.directions_bike,
+                                    color: Color(0xFFD62250)
+                                  ),
+                                  SizedBox(
+                                    width: size.width * 0.02,
+                                  ),
+                                  Text(
+                                    "$bicicleta",
+                                    style: TextStyle(
+                                      fontFamily: 'Point-SemiBold'
+                                    ),
+                                  )
+                                ],
+                              ),
                             ),
                             PopupMenuItem(
                               value: 3,
-                              child: Icon(Icons.drive_eta),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: <Widget>[
+                                  Icon(
+                                    Icons.drive_eta,
+                                    color: Color(0xFFD62250)
+                                  ),
+                                  SizedBox(
+                                    width: size.width * 0.02,
+                                  ),
+                                  Text(
+                                    "$auto",
+                                    style: TextStyle(
+                                      fontFamily: 'Point-SemiBold'
+                                    ),
+                                  )
+                                ],
+                              ),
                             ),
                           ];
                         },

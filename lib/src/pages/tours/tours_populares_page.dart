@@ -1,5 +1,6 @@
 //import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:selftourapp/src/googlemaps/states/app_state.dart';
 //import 'package:material_design_icons_flutter/icon_map.dart';
 import 'package:selftourapp/src/models/tour_categoria_model.dart';
 import 'package:selftourapp/src/preferencias_usuario/preferencias_usuario.dart';
@@ -15,18 +16,26 @@ class ToursPopularesPage extends StatefulWidget {
 class _ToursPopularesState extends State<ToursPopularesPage> {
   CategoriasProvider categoriasProvider = CategoriasProvider();
   PreferenciasUsuario prefs = PreferenciasUsuario();
-  
+  AppState _appState = AppState();
+  String state;
+  String codCountry;
   int currentIndex = 0;
 
   @override
   void initState() { 
-    categoriasProvider.popularesPag();
+    
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     //final size = MediaQuery.of(context).size;
+    _appState.userLocation().then((value){
+      state = value[1].toString();
+      codCountry = value[5].toString();
+      categoriasProvider.popularesPag(state,codCountry);
+    });
+    
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -124,14 +133,28 @@ class _ToursPopularesState extends State<ToursPopularesPage> {
   Widget lista(){
     //final size = MediaQuery.of(context).size;
     String noData = AppTranslations.of(context).text('title_nodata');
+    Future<List<InfoTour>> cargarTour()async{
+      //ListaToursC listaToursC;
+      ListaToursC result;
+      _appState.userLocation().then((value)async{
+        state = value[1].toString();
+        codCountry = value[5].toString();
+        final resultado = await categoriasProvider.popularesPag(state,codCountry);
+        result = ListaToursC.fromJsonList(resultado['tours'][0]['data_tour']);
+      });
+      
+      // listaToursC = new ListaToursC.fromJsonList(result['Tours']['data']);
+      return result.itemsTours;
+    }
     return SingleChildScrollView(
         child: Column(
           children: <Widget>[
             StreamBuilder(
               stream: categoriasProvider.popularStream,
               //initialData: InitialData,
-              builder: (BuildContext context, AsyncSnapshot<List<InfoTour>> snapshot) {
+              builder: (BuildContext context, AsyncSnapshot<Map<String,dynamic>> snapshot) {
                 final size = MediaQuery.of(context).size;
+                
                 switch(snapshot.connectionState){
                   case ConnectionState.waiting:
                     return SafeArea(
@@ -161,7 +184,27 @@ class _ToursPopularesState extends State<ToursPopularesPage> {
                   break;
                   case ConnectionState.done:
                     if(snapshot.hasData){
-                      return PopularVertical(listaPopulares: snapshot.data, siguientePagina: categoriasProvider.popularesPag);
+                      if(snapshot.data['tours'][0]['data_tour'] == null){
+                        return Column(
+                          children: <Widget>[
+                            SizedBox(
+                              height: size.height * 0.34,
+                            ),
+                            Center(
+                              child: Text(
+                                "$noData",
+                                style: TextStyle(
+                                  fontFamily: 'Point-SemiBold'
+                                ),
+                              ),
+                            )
+                          ],
+                        );
+                      }else{
+                        final populares = ListaToursC.fromJsonList(snapshot.data['tours'][0]['data_tour']);
+                        return PopularVertical(listaPopulares: populares.itemsTours, siguientePagina: cargarTour);
+                      }
+                      
                       /*Container(
                         height: size.height * 0.8,
                         child: ListView.builder(
@@ -171,21 +214,7 @@ class _ToursPopularesState extends State<ToursPopularesPage> {
                           },
                         ),
                       );*/
-                    }else if(snapshot.data == null){
-                      return SafeArea(
-                        child: Column(
-                          children: <Widget>[
-                            SizedBox(
-                              height: size.height * 0.4,
-                            ),
-                            Center(
-                              child: Text('$noData'),
-                            )
-                          ],
-                        )
-                      );
-                    }
-                    else{
+                    }else{
                       return SafeArea(
                         child: Column(
                           children: <Widget>[
@@ -202,7 +231,27 @@ class _ToursPopularesState extends State<ToursPopularesPage> {
                   break;
                   case ConnectionState.active:
                     if(snapshot.hasData){
-                      return PopularVertical(listaPopulares: snapshot.data, siguientePagina: categoriasProvider.popularesPag);
+                      if(snapshot.data['tours'][0]['data_tour'] == null){
+                        return Column(
+                          children: <Widget>[
+                            SizedBox(
+                              height: size.height * 0.34,
+                            ),
+                            Center(
+                              child: Text(
+                                "$noData",
+                                style: TextStyle(
+                                  fontFamily: 'Point-SemiBold'
+                                ),
+                              ),
+                            )
+                          ],
+                        );
+                      }else{
+                        final populares = ListaToursC.fromJsonList(snapshot.data['tours'][0]['data_tour']);
+                        return PopularVertical(listaPopulares: populares.itemsTours, siguientePagina: cargarTour);
+                      }
+                      
                       /*Container(
                         height: size.height * 0.8,
                         child: ListView.builder(
@@ -212,21 +261,7 @@ class _ToursPopularesState extends State<ToursPopularesPage> {
                           },
                         ),
                       );*/
-                    }else if(snapshot.data == null){
-                      return SafeArea(
-                        child: Column(
-                          children: <Widget>[
-                            SizedBox(
-                              height: size.height * 0.4,
-                            ),
-                            Center(
-                              child: Text('$noData'),
-                            )
-                          ],
-                        )
-                      );
-                    }
-                    else{
+                    }else{
                       return SafeArea(
                         child: Column(
                           children: <Widget>[
@@ -284,12 +319,26 @@ class _ToursPopularesState extends State<ToursPopularesPage> {
   Widget grid(){
     //final size = MediaQuery.of(context).size;
     String noData = AppTranslations.of(context).text('title_nodata');
+
+    Future<List<InfoTour>> cargarTour()async{
+      //ListaToursC listaToursC;
+      ListaToursC result;
+      _appState.userLocation().then((value)async{
+        state = value[1].toString();
+        codCountry = value[5].toString();
+       final resultado = await categoriasProvider.popularesPag(state,codCountry);
+       result = ListaToursC.fromJsonList(resultado['tours'][0]['data_tour']);
+      });
+      
+      // listaToursC = new ListaToursC.fromJsonList(result['Tours']['data']);
+      return result.itemsTours;
+    }
     return SingleChildScrollView(
       child: Column(
         children: <Widget>[
           StreamBuilder(
             stream: categoriasProvider.popularStream,
-            builder: (BuildContext context, AsyncSnapshot<List<InfoTour>> snapshot){
+            builder: (BuildContext context, AsyncSnapshot<Map<String,dynamic>> snapshot){
               final size = MediaQuery.of(context).size;
               switch(snapshot.connectionState){
                 case ConnectionState.waiting:
@@ -314,7 +363,12 @@ class _ToursPopularesState extends State<ToursPopularesPage> {
                           height: size.height * 0.4,
                         ),
                         Center(
-                          child:Text('$noData')
+                          child:Text(
+                            '$noData',
+                            style: TextStyle(
+                              fontFamily: 'Point-SemiBold'
+                            ),
+                          )
                         )
                       ],
                     )
@@ -322,7 +376,27 @@ class _ToursPopularesState extends State<ToursPopularesPage> {
                 break;
                 case ConnectionState.done:
                   if(snapshot.hasData){
-                    return PopularGrid(listaPopulares: snapshot.data, siguientePagina: categoriasProvider.popularesPag);
+                    if(snapshot.data['tours'][0]['data_tour'] == null){
+                      return Column(
+                        children: <Widget>[
+                          SizedBox(
+                            height: size.height * 0.34,
+                          ),
+                          Center(
+                            child: Text(
+                              "$noData",
+                              style: TextStyle(
+                                fontFamily: 'Point-SemiBold'
+                              ),
+                            ),
+                          )
+                        ],
+                      );
+                    }else{
+                      final populares = ListaToursC.fromJsonList(snapshot.data['tours'][0]['data_tour']);
+                      return PopularGrid(listaPopulares: populares.itemsTours, siguientePagina: cargarTour);
+                    }
+                    
                     /*Container(
                       height: size.height * 0.8,
                       child: ListView.builder(
@@ -332,21 +406,7 @@ class _ToursPopularesState extends State<ToursPopularesPage> {
                         },
                       ),
                     );*/
-                  }else if(snapshot.data == null){
-                      return SafeArea(
-                        child: Column(
-                          children: <Widget>[
-                            SizedBox(
-                              height: size.height * 0.4,
-                            ),
-                            Center(
-                              child: Text('$noData'),
-                            )
-                          ],
-                        )
-                      );
-                    }
-                  else{
+                  }else{
                     return SafeArea(
                       child: Column(
                         children: <Widget>[
@@ -363,7 +423,27 @@ class _ToursPopularesState extends State<ToursPopularesPage> {
                 break;
                 case ConnectionState.active:
                   if(snapshot.hasData){
-                    return PopularGrid(listaPopulares: snapshot.data, siguientePagina: categoriasProvider.popularesPag);
+                    if(snapshot.data['tours'][0]['data_tour'] == null){
+                      return Column(
+                        children: <Widget>[
+                          SizedBox(
+                            height: size.height * 0.34,
+                          ),
+                          Center(
+                            child: Text(
+                              "$noData",
+                              style: TextStyle(
+                                fontFamily: 'Point-SemiBold'
+                              ),
+                            ),
+                          )
+                        ],
+                      );
+                    }else{
+                      final populares = ListaToursC.fromJsonList(snapshot.data['tours'][0]['data_tour']);
+                      return PopularGrid(listaPopulares: populares.itemsTours, siguientePagina: cargarTour);
+                    }
+                    
                     /*Container(
                       height: size.height * 0.8,
                       child: ListView.builder(
@@ -373,21 +453,7 @@ class _ToursPopularesState extends State<ToursPopularesPage> {
                         },
                       ),
                     );*/
-                  }else if(snapshot.data == null){
-                      return SafeArea(
-                        child: Column(
-                          children: <Widget>[
-                            SizedBox(
-                              height: size.height * 0.4,
-                            ),
-                            Center(
-                              child: Text('$noData'),
-                            )
-                          ],
-                        )
-                      );
-                    }
-                  else{
+                  }else{
                     return SafeArea(
                       child: Column(
                         children: <Widget>[

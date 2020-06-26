@@ -1,5 +1,6 @@
 //import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:selftourapp/src/googlemaps/states/app_state.dart';
 import 'package:selftourapp/src/models/tour_categoria_model.dart';
 import 'package:selftourapp/src/preferencias_usuario/preferencias_usuario.dart';
 import 'package:selftourapp/src/providers/categorias_providers.dart';
@@ -15,17 +16,25 @@ class _ToursRecomendadosPageState extends State<ToursRecomendadosPage> {
   CategoriasProvider categoriasProvider = CategoriasProvider();
   PreferenciasUsuario prefs = PreferenciasUsuario();
   int currentIndex = 0;
+  String state;
+  String codCountry;
+  AppState _appState = AppState();
 
   @override
   void initState() {
-    categoriasProvider.recomendadosPag();
+    
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     //final size = MediaQuery.of(context).size;
-
+    _appState.userLocation().then((value){
+      state = value[1].toString();
+      codCountry = value[5].toString();
+      categoriasProvider.recomendadosPag(state,codCountry);
+    });
+    
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -89,33 +98,82 @@ class _ToursRecomendadosPageState extends State<ToursRecomendadosPage> {
   }
 
   Widget lista(){
-    //final size = MediaQuery.of(context).size;
+    final size = MediaQuery.of(context).size;
     String noData = AppTranslations.of(context).text('title_nodata');
+    Future<List<InfoTour>> cargarTour()async{
+      //ListaToursC listaToursC;
+      ListaToursC result;
+      _appState.userLocation().then((value)async{
+        state = value[1].toString();
+        codCountry = value[5].toString();
+        final resultado = await categoriasProvider.recomendadosPag(state,codCountry);
+        result = ListaToursC.fromJsonList(resultado['tours'][0]['data_tour']);
+      });
+      
+      // listaToursC = new ListaToursC.fromJsonList(result['Tours']['data']);
+      return result.itemsTours;
+    }
     return SingleChildScrollView(
         child: Column(
           children: <Widget>[
             StreamBuilder(
               stream: categoriasProvider.recomendadoStream,
               //initialData: InitialData,
-              builder: (BuildContext context, AsyncSnapshot<List<InfoTour>> snapshot) {
+              builder: (BuildContext context, AsyncSnapshot<Map<String,dynamic>> snapshot) {
                 switch(snapshot.connectionState){
                   case ConnectionState.waiting:
-                    return Align(
-                      heightFactor: 34.0,
-                      alignment: Alignment.center,
-                      child: CircularProgressIndicator(),
-                    );
+                    return Column(
+                    children: <Widget>[
+                      SafeArea(
+                        child: SizedBox(
+                          height: size.height * 0.4,
+                        ),
+                      ),
+                      Center(child: CircularProgressIndicator()),
+                    ],
+                  );
                   break;
                   case ConnectionState.none:
-                    return Align(
-                      heightFactor: 34.0,
-                      alignment: Alignment.center,
-                      child: Text('$noData'),
-                    );
+                    return Column(
+                    children: <Widget>[
+                      SafeArea(
+                        child: SizedBox(
+                          height: size.height * 0.4,
+                        ),
+                      ),
+                      Center(child: Text(
+                        '$noData',
+                        style: TextStyle(
+                          fontFamily: 'Point-SemiBold'
+                        ),
+                        )
+                      ),
+                    ],
+                  );
                   break;
                   case ConnectionState.done:
                     if(snapshot.hasData){
-                      return RecomendadoVertical(listaRecomendados: snapshot.data, siguientePagina: categoriasProvider.recomendadosPag);
+                      if(snapshot.data['tours'][0]['data_tour'] == null){
+                        return Column(
+                          children: <Widget>[
+                            SizedBox(
+                              height: size.height * 0.34,
+                            ),
+                            Center(
+                              child: Text(
+                                "$noData",
+                                style: TextStyle(
+                                  fontFamily: 'Point-SemiBold'
+                                ),
+                              ),
+                            )
+                          ],
+                        );
+                      }else{
+                        final recomendados = ListaToursC.fromJsonList(snapshot.data['tours'][0]['data_tour']);
+                        return RecomendadoVertical(listaRecomendados: recomendados.itemsTours, siguientePagina: cargarTour );
+                      }
+                      
                     /* Container(
                         height: size.height * 0.8,
                         child: ListView.builder(
@@ -126,16 +184,41 @@ class _ToursRecomendadosPageState extends State<ToursRecomendadosPage> {
                         ),
                       );*/
                     }else{
-                      return Align(
-                        heightFactor: 34.0,
-                        alignment: Alignment.center,
-                        child: Text('$noData'),
+                      return Column(
+                        children: <Widget>[
+                          SafeArea(
+                            child: SizedBox(
+                              height: size.height * 0.4,
+                            ),
+                          ),
+                          Center(child: CircularProgressIndicator()),
+                        ],
                       );
                     }
                   break;
                   case ConnectionState.active:
                     if(snapshot.hasData){
-                      return RecomendadoVertical(listaRecomendados: snapshot.data, siguientePagina: categoriasProvider.recomendadosPag);
+                      if(snapshot.data['tours'][0]['data_tour'] == null){
+                        return Column(
+                          children: <Widget>[
+                            SizedBox(
+                              height: size.height * 0.34,
+                            ),
+                            Center(
+                              child: Text(
+                                "$noData",
+                                style: TextStyle(
+                                  fontFamily: 'Point-SemiBold'
+                                ),
+                              ),
+                            )
+                          ],
+                        );
+                      }else{
+                        final recomendados = ListaToursC.fromJsonList(snapshot.data['tours'][0]['data_tour']);
+                        return RecomendadoVertical(listaRecomendados: recomendados.itemsTours, siguientePagina: cargarTour );
+                      }
+                      
                     /* Container(
                         height: size.height * 0.8,
                         child: ListView.builder(
@@ -146,19 +229,29 @@ class _ToursRecomendadosPageState extends State<ToursRecomendadosPage> {
                         ),
                       );*/
                     }else{
-                      return Align(
-                        heightFactor: 34.0,
-                        alignment: Alignment.center,
-                        child: Text('$noData'),
+                      return Column(
+                        children: <Widget>[
+                          SafeArea(
+                            child: SizedBox(
+                              height: size.height * 0.4,
+                            ),
+                          ),
+                          Center(child: CircularProgressIndicator()),
+                        ],
                       );
                     }
                   break;
                   default:
-                    return Align(
-                      heightFactor: 34.0,
-                      alignment: Alignment.center,
-                      child: Text('$noData'),
-                    );
+                    return Column(
+                    children: <Widget>[
+                      SafeArea(
+                        child: SizedBox(
+                          height: size.height * 0.4,
+                        ),
+                      ),
+                      Center(child: CircularProgressIndicator()),
+                    ],
+                  );
                 }
                 /*if(snapshot.hasData){
                   return RecomendadoVertical(listaRecomendados: snapshot.data, siguientePagina: categoriasProvider.recomendadosPag);
@@ -333,58 +426,140 @@ class _ToursRecomendadosPageState extends State<ToursRecomendadosPage> {
   }*/
 
   Widget grid(){
-    //final size = MediaQuery.of(context).size;
+    final size = MediaQuery.of(context).size;
     String noData = AppTranslations.of(context).text('title_nodata');
+    Future<List<InfoTour>> cargarTour()async{
+      //ListaToursC listaToursC;
+      ListaToursC result;
+      _appState.userLocation().then((value)async{
+        state = value[1].toString();
+        codCountry = value[5].toString();
+        final resultado = await categoriasProvider.recomendadosPag(state,codCountry);
+        result = ListaToursC.fromJsonList(resultado['tours'][0]['data_tour']);
+      });
+      
+      // listaToursC = new ListaToursC.fromJsonList(result['Tours']['data']);
+      return result.itemsTours;
+    }
     return SingleChildScrollView(
       child: Column(
         children: <Widget>[
           StreamBuilder(
             stream: categoriasProvider.recomendadoStream,
-            builder: (BuildContext context, AsyncSnapshot<List<InfoTour>> snapshot){
+            builder: (BuildContext context, AsyncSnapshot<Map<String,dynamic>> snapshot){
               switch(snapshot.connectionState){
                 case ConnectionState.waiting:
-                  return Align(
-                    heightFactor: 34.0,
-                    alignment: Alignment.center,
-                    child: CircularProgressIndicator(),
+                  return Column(
+                    children: <Widget>[
+                      SafeArea(
+                        child: SizedBox(
+                          height: size.height * 0.4,
+                        ),
+                      ),
+                      Center(child: CircularProgressIndicator() ),
+                    ],
                   );
                 break;
                 case ConnectionState.none:
-                  return Align(
-                    heightFactor: 34.0,
-                    alignment: Alignment.center,
-                    child: Text('$noData'),
+                  return Column(
+                    children: <Widget>[
+                      SafeArea(
+                        child: SizedBox(
+                          height: size.height * 0.4,
+                        ),
+                      ),
+                      Center(
+                        child: Text(
+                        '$noData',
+                        style: TextStyle(
+                          fontFamily: 'Point-SemiBold'
+                        ),
+                        )
+                      ),
+                    ],
                   );
                 break;
                 case ConnectionState.done:
                   if(snapshot.hasData){
-                    return RecomendadoGrid(listaRecomendados: snapshot.data, siguientePagina: categoriasProvider.recomendadosPag);
+                    if(snapshot.data['tours'][0]['data_tour'] == null){
+                      return Column(
+                        children: <Widget>[
+                          SizedBox(
+                            height: size.height * 0.34,
+                          ),
+                          Center(
+                            child: Text(
+                              "$noData",
+                              style: TextStyle(
+                                fontFamily: 'Point-SemiBold'
+                              ),
+                            ),
+                          )
+                        ],
+                      );
+                    }else{
+                      final recomendados = ListaToursC.fromJsonList(snapshot.data['tours'][0]['data_tour']);
+                      return RecomendadoGrid(listaRecomendados: recomendados.itemsTours, siguientePagina: cargarTour );
+                    }
                   
                   }else{
-                    return Align(
-                      heightFactor: 34.0,
-                      alignment: Alignment.center,
-                      child: Text('$noData'),
+                    return Column(
+                      children: <Widget>[
+                        SafeArea(
+                          child: SizedBox(
+                            height: size.height * 0.4,
+                          ),
+                        ),
+                        Center(child: CircularProgressIndicator()),
+                      ],
                     );
                   }
                 break;
                 case ConnectionState.active:
                   if(snapshot.hasData){
-                    return RecomendadoGrid(listaRecomendados: snapshot.data, siguientePagina: categoriasProvider.recomendadosPag);
-                  
+                    if(snapshot.data['tours'][0]['data_tour'] == null){
+                      return Column(
+                        children: <Widget>[
+                          SizedBox(
+                            height: size.height * 0.34,
+                          ),
+                          Center(
+                            child: Text(
+                              "$noData",
+                              style: TextStyle(
+                                fontFamily: 'Point-SemiBold'
+                              ),
+                            ),
+                          )
+                        ],
+                      );
+                    }else{
+                      final recomendados = ListaToursC.fromJsonList(snapshot.data['tours'][0]['data_tour']);
+                      return RecomendadoGrid(listaRecomendados: recomendados.itemsTours, siguientePagina: cargarTour );
+                    }
                   }else{
-                    return Align(
-                      heightFactor: 34.0,
-                      alignment: Alignment.center,
-                      child: Text('$noData'),
+                    return Column(
+                      children: <Widget>[
+                        SafeArea(
+                          child: SizedBox(
+                            height: size.height * 0.4,
+                          ),
+                        ),
+                        Center(child: CircularProgressIndicator()),
+                      ],
                     );
                   }
                 break;
                 default:
-                  return Align(
-                    heightFactor: 34.0,
-                    alignment: Alignment.center,
-                    child: Text('$noData'),
+                  return Column(
+                    children: <Widget>[
+                      SafeArea(
+                        child: SizedBox(
+                          height: size.height * 0.4,
+                        ),
+                      ),
+                      Center(child: CircularProgressIndicator()),
+                    ],
                   );
               }
               

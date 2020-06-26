@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:selftourapp/src/googlemaps/states/app_state.dart';
 import 'package:selftourapp/src/models/tour_categoria_model.dart';
 import 'package:selftourapp/src/providers/categorias_providers.dart';
 import 'package:selftourapp/src/search/search_delegate.dart';
@@ -12,9 +13,13 @@ class BusquedaTourPage extends StatefulWidget {
 
 class _BusquedaTourPageState extends State<BusquedaTourPage> with AutomaticKeepAliveClientMixin {
   CategoriasProvider categoriasProvider = CategoriasProvider();
+  String codPais;
+  String state;
+  AppState _appState = AppState();
+  
   @override
   void initState() { 
-    categoriasProvider.getTours();
+    
     super.initState();
     
   }
@@ -22,6 +27,16 @@ class _BusquedaTourPageState extends State<BusquedaTourPage> with AutomaticKeepA
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    _appState.userLocation().then((value){
+      codPais = value[5].toString();
+      state = value[1].toString();
+      print("Estado: ");
+      print(state);
+      print("Pais: ");
+      print(codPais);
+      categoriasProvider.getTours(state,codPais);
+    });
+    
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -60,13 +75,25 @@ class _BusquedaTourPageState extends State<BusquedaTourPage> with AutomaticKeepA
     var size = MediaQuery.of(context).size;
     //CategoriasProvider categoriasProvider = new CategoriasProvider();
     String noDatos = AppTranslations.of(context).text('title_nodata');
-    
+    Future<List<InfoTour>> cargarTour()async{
+      //ListaToursC listaToursC;
+      ListaToursC result;
+      _appState.userLocation().then((value)async{
+        state = value[1].toString();
+        codPais = value[5].toString();
+        final resultado = await categoriasProvider.getTours(state,codPais);
+        result = new ListaToursC.fromJsonList(resultado['tours'][0]['data_tour']);
+      });
+      
+      // listaToursC = new ListaToursC.fromJsonList(result['Tours']['data']);
+      return result.itemsTours;
+    }
     return SingleChildScrollView(
       child: Column(
         children: <Widget>[
           StreamBuilder(
             stream: categoriasProvider.popularStream,//
-            builder: (BuildContext context, AsyncSnapshot<List<InfoTour>> snapshot) {
+            builder: (BuildContext context, AsyncSnapshot<Map<String,dynamic>> snapshot) {
               //Se evalúa si tiene datos
               switch(snapshot.connectionState){
                 
@@ -90,14 +117,21 @@ class _BusquedaTourPageState extends State<BusquedaTourPage> with AutomaticKeepA
                           height: size.height * 0.4,
                         ),
                       ),
-                      Center(child: Text('$noDatos')),
+                      Center(
+                        child: Text(
+                        '$noDatos',
+                        style: TextStyle(
+                          fontFamily: 'Point-SemiBold'
+                        ),
+                        )
+                      ),
                     ],
                   );
                 
                 case ConnectionState.done:
-
-                  if(snapshot.hasData && snapshot.data.length > 0){
-                    return ToursGeneral(listaTours:snapshot.data,siguientePagina: categoriasProvider.getTours);
+                  final tours = new ListaToursC.fromJsonList(snapshot.data['tours'][0]['data_tour']);
+                  if(snapshot.hasData && tours.itemsTours.length > 0){
+                    return ToursGeneral(listaTours: tours.itemsTours);
                   }else{
                     return Column(
                       children: <Widget>[
@@ -106,16 +140,23 @@ class _BusquedaTourPageState extends State<BusquedaTourPage> with AutomaticKeepA
                             height: size.height * 0.4,
                           ),
                         ),
-                        Center(child: Text('$noDatos')),
+                        Center(
+                          child: Text(
+                            '$noDatos',
+                            style: TextStyle(
+                              fontFamily: 'Point-SemiBold'
+                            ),
+                          )
+                        ),
                       ],
                     );
                   }
                   //return ToursGeneral(listaTours:snapshot.data,siguientePagina: categoriasProvider.getTours);
                 break;
                 case ConnectionState.active:
-
-                  if(snapshot.hasData){
-                    return ToursGeneral(listaTours:snapshot.data,siguientePagina: categoriasProvider.getTours);
+                  final tours = new ListaToursC.fromJsonList(snapshot.data['tours'][0]['data_tour']);
+                  if(snapshot.hasData && tours.itemsTours.length > 0){
+                    return ToursGeneral(listaTours: tours.itemsTours);
                   }else{
                     return Column(
                       children: <Widget>[
@@ -124,7 +165,14 @@ class _BusquedaTourPageState extends State<BusquedaTourPage> with AutomaticKeepA
                             height: size.height * 0.4,
                           ),
                         ),
-                        Center(child: Text('$noDatos')),
+                        Center(
+                          child: Text(
+                            '$noDatos',
+                            style: TextStyle(
+                              fontFamily: 'Point-SemiBold'
+                            ),
+                          )
+                        ),
                       ],
                     );
                   }
@@ -138,7 +186,9 @@ class _BusquedaTourPageState extends State<BusquedaTourPage> with AutomaticKeepA
                           height: size.height * 0.4,
                         ),
                       ),
-                      Center(child: Text('$noDatos')),
+                      Center(
+                        child: CircularProgressIndicator()
+                      ),
                     ],
                   );
               }

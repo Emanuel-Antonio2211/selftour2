@@ -806,10 +806,10 @@ class _MetodoPagoPageState extends State<MetodoPagoPage> {
                   )
                 ),
               ),
-              SizedBox(
+             /* SizedBox(
                 height: size.height * 0.03,
-              ),
-              Padding(
+              ),*/
+              /*Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -820,7 +820,7 @@ class _MetodoPagoPageState extends State<MetodoPagoPage> {
                       ),
                     ],
                   ),
-              ),
+              ),*/
               SizedBox(
                 height: size.height * 0.03,
               ),

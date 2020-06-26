@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:selftourapp/src/googlemaps/states/app_state.dart';
 import 'dart:async';
 import 'package:selftourapp/src/models/tour_categoria_model.dart';
 import 'package:selftourapp/src/translation_class/app_translations.dart';
@@ -18,17 +19,31 @@ class _RecomendadoVerticalState extends State<RecomendadoVertical> {
   final _scrollController = ScrollController();
   final categoriasProvider = CategoriasProvider();
   bool isloading = false;
+  String state;
+  String codCountry;
+  AppState _appState = AppState();
+
+  @override
+  void initState() { 
+    super.initState();
+    
+  }
 
   Future<Null> cargarRecomendados()async{
     final duration = Duration(seconds: 2);
 
     Timer(duration, (){
       widget.listaRecomendados.clear();
-      categoriasProvider.recomendadosPag().then((result){
-        for(int i = 0; i < result.length; i++){
-          widget.listaRecomendados.add(result[i]);
+      _appState.userLocation().then((value)async{
+        state = value[1].toString();
+        codCountry = value[5].toString();
+       final result = await categoriasProvider.recomendadosPag(state,codCountry);
+        final recomendados = ListaToursC.fromJsonList(result['tours'][0]['data_tour']);
+        for(int i = 0; i < recomendados.itemsTours.length; i++){
+          widget.listaRecomendados.add(recomendados.itemsTours[i]);
         }
       });
+      
 
     });
     print("Lista Cargada");
@@ -46,7 +61,7 @@ class _RecomendadoVerticalState extends State<RecomendadoVertical> {
         //Se ejecuta la función para mostrar la siguiente página
         //de categorías
         //widget.siguientePagina();
-        fetchData();
+        //fetchData();
       }
     });
     return Container(
@@ -58,18 +73,19 @@ class _RecomendadoVerticalState extends State<RecomendadoVertical> {
             child: ListView.builder(
               controller: _scrollController,
               itemCount: widget.listaRecomendados.length,//snapshot.data.length
+              physics: AlwaysScrollableScrollPhysics(),
               itemBuilder: (context,index){
                 return recomendados(context, widget.listaRecomendados[index]);
               },
             ),
           ),
-          _crearLoading()
+          //_crearLoading()
         ]
       ),
     );
   }
 
-  Future<Null> fetchData()async{
+  Future fetchData()async{
     isloading = true;
     setState(() {
       
@@ -298,17 +314,31 @@ class _RecomendadoGridState extends State<RecomendadoGrid> {
   final _scrollController = ScrollController();
   bool isloading = false;
   final categoriasProvider = CategoriasProvider();
+  String state;
+  String codCountry;
+  AppState _appState = AppState();
+
+  @override
+  void initState() { 
+    super.initState();
+    
+  }
 
   Future<Null> cargarRecomendados()async{
     final duration = Duration(seconds: 2);
 
     Timer(duration, (){
       widget.listaRecomendados.clear();
-      categoriasProvider.recomendadosPag().then((result){
-        for(int i = 0; i < result.length; i++){
-          widget.listaRecomendados.add(result[i]);
+        _appState.userLocation().then((value)async{
+        state = value[1].toString();
+        codCountry = value[5].toString();
+       final result = await categoriasProvider.recomendadosPag(state,codCountry);
+        final recomendados = ListaToursC.fromJsonList(result['tours'][0]['data_tour']);
+        for(int i = 0; i < recomendados.itemsTours.length; i++){
+          widget.listaRecomendados.add(recomendados.itemsTours[i]);
         }
       });
+      
 
     });
     print("Lista Cargada");
@@ -326,11 +356,12 @@ class _RecomendadoGridState extends State<RecomendadoGrid> {
         //Se ejecuta la función para mostrar la siguiente página
         //de categorías
         //widget.siguientePagina();
-        fetchData();
+        //fetchData();
       }
     });
     return Container(
       height: size.height * 0.8,
+      //color: Colors.lightBlueAccent,
       child: Stack(
         children:<Widget>[ 
           RefreshIndicator(
@@ -339,19 +370,20 @@ class _RecomendadoGridState extends State<RecomendadoGrid> {
               scrollDirection: Axis.vertical,
               controller: _scrollController,
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+              physics: AlwaysScrollableScrollPhysics(),
               itemCount: widget.listaRecomendados.length,//snapshot.data.length
               itemBuilder: (context,i){
                 return recomendadoGrid(context, widget.listaRecomendados[i]);
               },
             ),
           ),
-          _crearLoading()
+          //_crearLoading()
         ]
       ),
     );
   }
 
-  Future<Null> fetchData()async{
+  Future fetchData()async{
     isloading = true;
     setState(() {
       

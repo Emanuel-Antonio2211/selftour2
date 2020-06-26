@@ -589,10 +589,12 @@ Future<void> signInEmail( String email,String pass, BuildContext context)async{
 
   //Los combinelates no trabajan con streams, no los conocen
   Stream<bool> get formValidStream => 
-    Observable.combineLatest2(emailStream, passwordStream, (e,p)=>true);
+    //Observable.combineLatest2(emailStream, passwordStream, (e,p)=>true);
+    CombineLatestStream.combine2(emailStream, passwordStream, (a, b) => true);
 
   Stream<bool> get formValidStreamReg =>
-    Observable.combineLatest4(nameStream, emailStream, passwordStream, phoneStream, (n,m,p,tel)=>true);
+    //Observable.combineLatest4(nameStream, emailStream, passwordStream, phoneStream, (n,m,p,tel)=>true);
+    CombineLatestStream.combine4(nameStream, emailStream, passwordStream, phoneStream, (n,m,p,tel) => true);
   
   //Get para Insertar valores al Stream
  Function(String) get changeName => _nameController.sink.add;

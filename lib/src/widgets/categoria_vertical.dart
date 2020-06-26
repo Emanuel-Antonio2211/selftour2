@@ -20,7 +20,7 @@ class CategoriaVertical extends StatelessWidget {
     final size = MediaQuery.of(context).size;
     _scrollController.addListener((){
       if(_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 10){
-        siguientePagina();
+        //siguientePagina();
       }
     });
     return Container(
@@ -28,6 +28,7 @@ class CategoriaVertical extends StatelessWidget {
       child: ListView.builder(
         controller: _scrollController,
         itemCount: categorias.length,
+        physics: AlwaysScrollableScrollPhysics(),
         itemBuilder: (context,i){
           return categoria(context, categorias[i]);
         },
@@ -170,7 +171,7 @@ class CategoriaGrid extends StatelessWidget {
     final size = MediaQuery.of(context).size;
     _scrollController.addListener((){
       if(_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 10){
-        siguientePagina();
+        //siguientePagina();
       }
     });
     return Container(
@@ -178,6 +179,7 @@ class CategoriaGrid extends StatelessWidget {
       child: GridView.builder(
         controller: _scrollController,
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+        physics: AlwaysScrollableScrollPhysics(),
         itemCount: categorias.length,
         itemBuilder: (context,i){
           return categoriasGrid(context, categorias[i]);

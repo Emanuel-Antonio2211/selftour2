@@ -3,6 +3,8 @@ import 'package:selftourapp/src/models/tour_categoria_model.dart';
 import 'package:selftourapp/src/providers/categorias_providers.dart';
 import 'package:selftourapp/src/translation_class/app_translations.dart';
 import 'package:selftourapp/src/utils/utils.dart';
+import 'package:flutter_progress_button/flutter_progress_button.dart';
+import 'package:selftourapp/src/widgets/tree_size_dot_widget.dart';
 
 class FormComentarioPage extends StatefulWidget {
   @override
@@ -13,6 +15,7 @@ class _FormComentarioPageState extends State<FormComentarioPage> {
   CategoriasProvider categoriasProvider = CategoriasProvider();
 
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  final TextEditingController controller = new TextEditingController();
 
   String comentario = '';
   bool marcado1 = false;
@@ -24,6 +27,7 @@ class _FormComentarioPageState extends State<FormComentarioPage> {
   @override
   Widget build(BuildContext context) {
     InfoTour detalleTour = ModalRoute.of(context).settings.arguments;
+    String instruccion = AppTranslations.of(context).text('title_instruccion');
     final size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
@@ -50,15 +54,18 @@ class _FormComentarioPageState extends State<FormComentarioPage> {
                   height: size.height * 0.04,
                 ),
               ),
-            /*  Text('Califique su experiencia',style: TextStyle(fontFamily: 'Point-SemiBold'),),
+              Text('$instruccion',style: TextStyle(fontFamily: 'Point-SemiBold'),),
               SizedBox(
                 height: size.height * 0.04,
               ),
               valoracion(),
               SizedBox(
                 height: size.height * 0.04,
-              ),*/
+              ),
               comentarios(context),
+              SizedBox(
+                height: size.height * 0.04,
+              ),
               enviarComentario(detalleTour)
             ],
           ),
@@ -68,11 +75,12 @@ class _FormComentarioPageState extends State<FormComentarioPage> {
   }
 
   Widget valoracion(){
+    String valoracion = AppTranslations.of(context).text('title_valorar');
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 40.0),
       child: Row(
         children: <Widget>[
-         Text('Valoración: ',style: TextStyle(fontFamily: 'Point-SemiBold'),),
+         Text('$valoracion: ',style: TextStyle(fontFamily: 'Point-SemiBold'),),
          GestureDetector(
            onTap: (){
              marcar();
@@ -135,7 +143,14 @@ class _FormComentarioPageState extends State<FormComentarioPage> {
           Container(
             width: size.width * 0.8,
             child: TextFormField(
-              textCapitalization: TextCapitalization.sentences,
+              //textCapitalization: TextCapitalization.characters,
+              controller: controller,
+              // toolbarOptions: ToolbarOptions(
+              //   copy: true,
+              //   paste: true,
+              //   cut: true,
+              //   selectAll: true
+              // ),
               keyboardType: TextInputType.multiline,
               maxLines: 5,
               onSaved: (value){
@@ -150,10 +165,49 @@ class _FormComentarioPageState extends State<FormComentarioPage> {
   }
 
   Widget enviarComentario(InfoTour detalle){
+    final size = MediaQuery.of(context).size;
     String enviar = AppTranslations.of(context).text('title_send');
     String comentariosuccess = AppTranslations.of(context).text('title_comentariosuccess');
     String comentarioerror = AppTranslations.of(context).text('title_comentarioerror');
-    return RaisedButton(
+    return ProgressButton(
+      defaultWidget: Text(
+        '$enviar',
+        style: TextStyle(
+          fontFamily: 'Point-SemiBold',
+          color: Colors.white
+        )
+      ),
+      width: size.width * 0.6,
+      height: size.height * 0.07,
+      borderRadius: 5.0,
+      progressWidget: ThreeSizeDot(),
+      color: Color(0xFFD62250),
+      type: ProgressButtonType.Raised,
+      animate: false,
+      onPressed: ()async{
+        formKey.currentState.save();
+        setState(() {
+          
+        });
+        print("Valoración: ");
+        print(contador);
+        print("Comentario: ");
+        print(comentario);
+        await categoriasProvider.comentar(detalle.idtour.toString(), comentario,contador).then((result){
+          if(result['msg'] == 'COMMENT ADDED SUCCESFULY'){
+            
+            //mostrarAlerta(context, 'Comentario agregado, gracias por su colaboración', '', 'assets/check.jpg');
+            mostrarConfirmacion(context,'$comentariosuccess', '', 'assets/check.jpg');
+          }else{
+            mostrarAlerta(context, '$comentarioerror', '', 'assets/error.png');
+          }
+        }).catchError((error){
+          mostrarAlerta(context, error.toString(), '', 'assets/error.png');
+        });
+      },
+    );
+    
+    /*RaisedButton(
       child: Text('$enviar',style: TextStyle(fontFamily: 'Point-SemiBold',color: Colors.white),),
       color: Color(0xFFD62250),
       textTheme: ButtonTextTheme.primary,
@@ -175,7 +229,7 @@ class _FormComentarioPageState extends State<FormComentarioPage> {
           mostrarAlerta(context, error.toString(), '', 'assets/error.png');
         });
       },
-    );
+    );*/
   }
 
   void marcar(){

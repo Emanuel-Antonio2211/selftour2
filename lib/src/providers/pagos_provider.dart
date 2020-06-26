@@ -174,9 +174,9 @@ Future<Map<String,dynamic>> obtenerToken(String tokenId)async{
     //https://sandbox-api.openpay.mx/v1/{MERCHANT_ID}/charges
     final datos={
       "source_id":"$sourceId",
-      "method":"card",
+      "method": "card",
       "amount": "$amount",
-      "currency":"MXN",
+      "currency": "USD",//MXN
       "description": "$description",
       "device_session_id" : "S/N",//kR1MiQhz2otdIuUlQkbEyitIqVMiI16f
       "customer":{

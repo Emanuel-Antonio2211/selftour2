@@ -54,11 +54,12 @@ class InfoTour {
   String state;
   String country;
   String foto;
-  List<String> galeriaFotos;
+  //List<String> galeriaFotos;
   String gallery;
   String map_tour;
   Map<String,dynamic> temporada;
-  List picture;
+  //List picture;
+  String picture;
   List route;
   List latlng;
   bool comprado = false;
@@ -113,7 +114,7 @@ class InfoTour {
     this.country,
     this.foto,
     this.gallery,
-    this.galeriaFotos,
+    //this.galeriaFotos,
     this.map_tour,
     this.temporada,
     this.picture,

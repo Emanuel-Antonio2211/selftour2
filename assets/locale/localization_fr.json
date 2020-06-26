@@ -180,5 +180,15 @@
     "title_facebook": "Facebook",
     "title_webpag": "Page Web",
     "title_ejemplo": "Exemple",
-    "title_message": "Écrivez votre message"
+    "title_message": "Écrivez votre message",
+    "title_instruccion": "Évaluez votre expérience",
+    "title_valorar": "Évaluation",
+    "title_mascomentarios": "Voir plus de commentaires",
+    "title_nocomments": "Il n'y a aucun commentaire",
+    "title_totalvaloraciones": "Évaluations",
+    "title_estrellas": "étoiles",
+    "title_estrella": "etoile",
+    "title_walking": "En marchant",
+    "title_bicycle": "Vélo",
+    "title_car": "Voiture"
 }

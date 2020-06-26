@@ -32,6 +32,7 @@ import 'package:selftourapp/src/pages/login/sesion_page_comentario.dart';
 //import 'package:selfttour/src/pages/login/sesion_page.dart';
 import 'package:selftourapp/src/pages/login/sesion_page_compra.dart';
 import 'package:selftourapp/src/pages/login/sesion_page_favorito.dart';
+import 'package:selftourapp/src/pages/tours/comentarios_page.dart';
 //import 'package:selfttour/src/pages/pagos/pagos_page.dart';
 import 'package:selftourapp/src/pages/usuario/comentario_form_page.dart';
 import 'package:selftourapp/src/pages/usuario/usuarios_chat_page.dart';
@@ -356,12 +357,12 @@ class _DetalleTourPageState extends State<DetalleTourPage> with SingleTickerProv
                             iconSize: 35.0,
                             color: ((snapshot.data.single.favorite == 1) && (isShrink)) ? Colors.red : null,
                             icon: Icon(
-                              ((snapshot.data.single.favorite == 1) && (isShrink)) ? Icons.favorite : Icons.favorite_border,
+                              ((snapshot.data.single.favorite == 1)) ? Icons.favorite : Icons.favorite_border,
                               color: ( (snapshot.data.single.favorite == 1)  || (isShrink)) ? Colors.red : Colors.white
                             ),
                             onPressed: () async {
-                              
-                              if( prefs.email == '' || prefs.token == ''){
+                              //prefs.email == '' 
+                              if( prefs.token == ''){
                                 
                                 Navigator.of(context).push(MaterialPageRoute(
                                   builder: (context){
@@ -373,15 +374,21 @@ class _DetalleTourPageState extends State<DetalleTourPage> with SingleTickerProv
                                 
                                 if(snapshot.data.single.favorite == 1){
                                   
-                                  await categoriasProvider.removerFavorito(prefs.iduser,snapshot.data.single.idtour.toString());
+                                  await categoriasProvider.removerFavorito(prefs.token.toString(),prefs.iduser,snapshot.data.single.idtour.toString()).then((value){
+                                    setState(() {
+                                      snapshot.data.single.favorite = snapshot.data.single.favorite;
+                                    });
+                                  });
                                   }else{
                                     
-                                  await categoriasProvider.marcarFavorito(snapshot.data.single.idtour.toString());
+                                  await categoriasProvider.marcarFavorito(prefs.token.toString(),snapshot.data.single.idtour.toString()).then((value) {
+                                    setState(() {
+                                      snapshot.data.single.favorite = snapshot.data.single.favorite;
+                                    });
+                                  });
                                   }
                                 }
-                                setState(() {
-                                  snapshot.data.single.favorite = snapshot.data.single.favorite;
-                                });
+                                
                             },
                           )
                         ],
@@ -1860,7 +1867,8 @@ Widget _botonesOpcionesUsuario(BuildContext context,InfoTour detalleTour){
               style: TextStyle(
                 fontFamily: 'Point-SemiBold',
                 fontSize: 15.0,
-                color: Colors.white)
+                color: Colors.white
+              )
             ),
             onPressed: () {
              /* Navigator.of(context).push(MaterialPageRoute(
@@ -2032,9 +2040,27 @@ Widget _botonesOpcionesUsuario(BuildContext context,InfoTour detalleTour){
     );
   }
 
-  Widget _opiniones(BuildContext context) {
+  Widget _opiniones( int totalComentarios, int valor1, int valor2, int valor3, int valor4, int valor5, BuildContext context){
     final size = MediaQuery.of(context).size;
     String opiniones = AppTranslations.of(context).text('title_opinions');
+    String valoraciones = AppTranslations.of(context).text('title_totalvaloraciones');
+    String estrellas = AppTranslations.of(context).text('title_estrellas');
+    String estrella = AppTranslations.of(context).text('title_estrella');
+    // int total;
+    //double porcentaje;
+    double porcentajeValor1;
+    double porcentajeValor2;
+    double porcentajeValor3;
+    double porcentajeValor4;
+    double porcentajeValor5;
+
+    //porcentaje = (double.parse(total.toString()) * 10.0)/100.0;
+    porcentajeValor1 = (double.parse(valor1.toString()) * 100.0)/double.parse(totalComentarios.toString());
+    porcentajeValor2 = (double.parse(valor2.toString()) * 100.0)/double.parse(totalComentarios.toString());
+    porcentajeValor3 = (double.parse(valor3.toString()) * 100.0)/double.parse(totalComentarios.toString());
+    porcentajeValor4 = (double.parse(valor4.toString()) * 100.0)/double.parse(totalComentarios.toString());
+    porcentajeValor5 = (double.parse(valor5.toString()) * 100.0)/ double.parse(totalComentarios.toString());
+
     return Column(
       children: <Widget>[
         SizedBox(
@@ -2055,286 +2081,266 @@ Widget _botonesOpcionesUsuario(BuildContext context,InfoTour detalleTour){
           height: size.height * 0.02,
         ),
         Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             SizedBox(
               width: size.width * 0.02,
             ),
-            Row(
-              children: <Widget>[
-                Icon(
-                  Icons.star,
-                  size: 20.0,
-                  color: Colors.yellow[700],
-                ),
-                Icon(
-                  Icons.star,
-                  size: 20.0,
-                  color: Colors.yellow[700],
-                ),
-                Icon(
-                  Icons.star,
-                  size: 20.0,
-                  color: Colors.yellow[700],
-                ),
-                Icon(
-                  Icons.star,
-                  size: 20.0,
-                  color: Colors.yellow[700],
-                ),
-                Icon(
-                  Icons.star_half,
-                  size: 20.0,
-                  color: Colors.yellow[700],
-                ),
-              ],
+            Icon(
+              Icons.star,
+              size: 20.0,
+              color: Colors.yellow[700],
             ),
             SizedBox(
               width: size.width * 0.02,
             ),
             Text(
-              '(50)',
+              '( ${totalComentarios.toString()} $valoraciones )',
               style: TextStyle(
-                fontFamily: 'Neue Haas Grotesk Display Pro',
+                fontFamily: 'Point-SemiBold',
               ),
             ),
             SizedBox(
-              width: size.width * 0.11,
+              width: size.width * 0.25,
             ),
             Text(
-              '4.8 de 5 estrellas',
+              "$valoraciones",
               style: TextStyle(
-                fontFamily: 'Neue Haas Grotesk Display Pro',
+                fontFamily: 'Point-SemiBold',
               ),
             )
+            // SizedBox(
+            //   width: size.width * 0.11,
+            // ),
+            // Text(
+            //   '5 de 5 estrellas',
+            //   style: TextStyle(
+            //     fontFamily: 'Neue Haas Grotesk Display Pro',
+            //   ),
+            // )
           ],
         ),
         SizedBox(
           height: size.height * 0.02,
         ),
         Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
-            SizedBox(
-              width: size.width * 0.03,
-            ),
-            Text(
-              '5 estrellas',
-              style: TextStyle(
-                fontFamily: 'Neue Haas Grotesk Display Pro',
-              ),
-            ),
-            SizedBox(
-              width: size.width * 0.04,
-            ),
-            Container(
-                width: size.width * 0.5,
-                height: size.height * 0.025,
-                decoration: BoxDecoration(
-                  color: Colors.grey[300],
-                  borderRadius: BorderRadius.circular(30.0)
+            Column(
+              children: <Widget>[
+                Container(
+                  height: size.height * 0.036,
+                  alignment: Alignment.center,
+                  child: Text(
+                    '5 $estrellas',
+                    style: TextStyle(
+                      fontFamily: 'Point-SemiBold',
+                    ),
+                  ),
                 ),
-                child: Row(
-                  children: <Widget>[
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.yellow[700],
-                        borderRadius: BorderRadius.circular(30.0)
-                      ),
-                      width: size.width * 0.4,
-                      height: size.height * 0.03,
-                    )
-                  ],
-                )),
-            SizedBox(
-              width: size.width * 0.06,
-            ),
-            Text(
-              '35',
-              style: TextStyle(
-                fontFamily: 'Neue Haas Grotesk Display Pro',
-              ),
-            )
-          ],
-        ),
-        SizedBox(
-          height: size.height * 0.01,
-        ),
-        Row(
-          children: <Widget>[
-            SizedBox(
-              width: size.width * 0.03,
-            ),
-            Text(
-              '4 estrellas',
-              style: TextStyle(
-                fontFamily: 'Neue Haas Grotesk Display Pro',
-              ),
-            ),
-            SizedBox(
-              width: size.width * 0.04,
-            ),
-            Container(
-                width: size.width * 0.5,
-                height: size.height * 0.025,
-                decoration: BoxDecoration(
-                  color: Colors.grey[300],
-                  borderRadius: BorderRadius.circular(30.0)
+                Container(
+                  height: size.height * 0.036,
+                  alignment: Alignment.center,
+                  child: Text(
+                    '4 $estrellas',
+                    style: TextStyle(
+                      fontFamily: 'Point-SemiBold',
+                    ),
+                  ),
                 ),
-                child: Row(
-                  children: <Widget>[
-                    Container(
-                      decoration: BoxDecoration(
-                          color: Colors.yellow[700],
-                          borderRadius: BorderRadius.circular(30.0)),
-                      width: size.width * 0.3,
-                      height: size.height * 0.03,
-                    )
-                  ],
-                )),
-            SizedBox(
-              width: size.width * 0.08,
+                Container(
+                  height: size.height * 0.036,
+                  alignment: Alignment.center,
+                  child: Text(
+                    '3 $estrellas',
+                    style: TextStyle(
+                      fontFamily: 'Point-SemiBold',
+                    ),
+                  ),
+                ),
+                Container(
+                  height: size.height * 0.036,
+                  alignment: Alignment.center,
+                  child: Text(
+                    '2 $estrellas',
+                    style: TextStyle(
+                      fontFamily: 'Point-SemiBold',
+                    ),
+                  ),
+                ),
+                Container(
+                  height: size.height * 0.036,
+                  alignment: Alignment.center,
+                  child: Text(
+                    '1 $estrella',
+                    style: TextStyle(
+                      fontFamily: 'Point-SemiBold',
+                    ),
+                  ),
+                ),
+              ],
             ),
-            Text(
-              '6',
-              style: TextStyle(
-                fontFamily: 'Neue Haas Grotesk Display Pro',
-              ),
-            )
-          ],
-        ),
-        SizedBox(
-          height: size.height * 0.01,
-        ),
-        Row(
-          children: <Widget>[
-            SizedBox(
-              width: size.width * 0.03,
-            ),
-            Text(
-              '3 estrellas',
-              style: TextStyle(
-                fontFamily: 'Neue Haas Grotesk Display Pro',
-              ),
-            ),
-            SizedBox(
-              width: size.width * 0.04,
-            ),
-            Container(
-                width: size.width * 0.5,
-                height: size.height * 0.025,
-                decoration: BoxDecoration(
+            Column(
+              children: <Widget>[
+                Container(
+                  width: 100.0,
+                  height: size.height * 0.025,
+                  decoration: BoxDecoration(
                     color: Colors.grey[300],
-                    borderRadius: BorderRadius.circular(30.0)),
-                child: Row(
-                  children: <Widget>[
-                    Container(
-                      decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(30.0)
+                  ),
+                  child: Row(
+                    children: <Widget>[
+                      Container(
+                        decoration: BoxDecoration(
                           color: Colors.yellow[700],
-                          borderRadius: BorderRadius.circular(30.0)),
-                      width: size.width * 0.2,
-                      height: size.height * 0.03,
-                    )
-                  ],
-                )),
-            SizedBox(
-              width: size.width * 0.08,
-            ),
-            Text(
-              '5',
-              style: TextStyle(
-                fontFamily: 'Neue Haas Grotesk Display Pro',
-              ),
-            )
-          ],
-        ),
-        SizedBox(
-          height: size.height * 0.01,
-        ),
-        Row(
-          children: <Widget>[
-            SizedBox(
-              width: size.width * 0.03,
-            ),
-            Text(
-              '2 estrellas',
-              style: TextStyle(
-                fontFamily: 'Neue Haas Grotesk Display Pro',
-              ),
-            ),
-            SizedBox(
-              width: size.width * 0.04,
-            ),
-            Container(
-                width: size.width * 0.5,
-                height: size.height * 0.025,
-                decoration: BoxDecoration(
-                    color: Colors.grey[300],
-                    borderRadius: BorderRadius.circular(30.0)),
-                child: Row(
-                  children: <Widget>[
-                    Container(
-                      decoration: BoxDecoration(
-                          color: Colors.yellow[700],
-                          borderRadius: BorderRadius.circular(30.0)),
-                      width: size.width * 0.1,
-                      height: size.height * 0.03,
-                    )
-                  ],
-                )),
-            SizedBox(
-              width: size.width * 0.08,
-            ),
-            Text(
-              '2',
-              style: TextStyle(
-                fontFamily: 'Neue Haas Grotesk Display Pro',
-              ),
-            )
-          ],
-        ),
-        SizedBox(
-          height: size.height * 0.01,
-        ),
-        Row(
-          children: <Widget>[
-            SizedBox(
-              width: size.width * 0.03,
-            ),
-            Text(
-              '1 estrella',
-              style: TextStyle(
-                fontFamily: 'Neue Haas Grotesk Display Pro',
-              ),
-            ),
-            SizedBox(
-              width: size.width * 0.067,
-            ),
-            Container(
-                width: size.width * 0.5,
-                height: size.height * 0.025,
-                decoration: BoxDecoration(
-                  color: Colors.grey[300],
-                  borderRadius: BorderRadius.circular(30.0)
+                          borderRadius: BorderRadius.circular(30.0)
+                        ),
+                        width: porcentajeValor5,
+                        height: size.height * 0.03,
+                      )
+                    ],
+                  )),
+                SizedBox(
+                  height: size.height * 0.01,
                 ),
-                child: Row(
-                  children: <Widget>[
-                    Container(
-                      decoration: BoxDecoration(
-                          color: Colors.yellow[700],
-                          borderRadius: BorderRadius.circular(30.0)),
-                      width: size.width * 0.1,
-                      height: size.height * 0.03,
-                    )
-                  ],
-                )),
-            SizedBox(
-              width: size.width * 0.07,
+                Container(
+                  width: 100.0,
+                  height: size.height * 0.025,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: BorderRadius.circular(30.0)
+                  ),
+                  child: Row(
+                    children: <Widget>[
+                      Container(
+                        decoration: BoxDecoration(
+                            color: Colors.yellow[700],
+                            borderRadius: BorderRadius.circular(30.0)),
+                        width: porcentajeValor4,
+                        height: size.height * 0.03,
+                      )
+                    ],
+                  )),
+                SizedBox(
+                  height: size.height * 0.01,
+                ),
+                Container(
+                  width: 100.0,
+                  height: size.height * 0.025,
+                  decoration: BoxDecoration(
+                      color: Colors.grey[300],
+                      borderRadius: BorderRadius.circular(30.0)),
+                  child: Row(
+                    children: <Widget>[
+                      Container(
+                        decoration: BoxDecoration(
+                            color: Colors.yellow[700],
+                            borderRadius: BorderRadius.circular(30.0)),
+                        width: porcentajeValor3,
+                        height: size.height * 0.03,
+                      )
+                    ],
+                  )),
+                SizedBox(
+                  height: size.height * 0.01,
+                ),
+                Container(
+                  width: 100.0,
+                  height: size.height * 0.025,
+                  decoration: BoxDecoration(
+                      color: Colors.grey[300],
+                      borderRadius: BorderRadius.circular(30.0)),
+                  child: Row(
+                    children: <Widget>[
+                      Container(
+                        decoration: BoxDecoration(
+                            color: Colors.yellow[700],
+                            borderRadius: BorderRadius.circular(30.0)),
+                        width: porcentajeValor2,
+                        height: size.height * 0.03,
+                      )
+                    ],
+                  )),
+                SizedBox(
+                  height: size.height * 0.01,
+                ),
+                Container(
+                  width: 100.0,
+                  height: size.height * 0.025,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: BorderRadius.circular(30.0)
+                  ),
+                  child: Row(
+                    children: <Widget>[
+                      Container(
+                        decoration: BoxDecoration(
+                            color: Colors.yellow[700],
+                            borderRadius: BorderRadius.circular(30.0)),
+                        width: porcentajeValor1,
+                        height: size.height * 0.03,
+                      )
+                    ],
+                  )),
+              ],
             ),
-            Text(
-              '2',
-              style: TextStyle(
-                fontFamily: 'Neue Haas Grotesk Display Pro',
-              ),
-            )
+            Column(
+              children: <Widget>[
+                Container(
+                  alignment: Alignment.center,
+                  //color: Colors.red,
+                  height: size.height * 0.036,
+                  child: Text(
+                    '${valor5.toString()} (${porcentajeValor5.toStringAsFixed(2)} %)',
+                    style: TextStyle(
+                      fontFamily: 'Point-SemiBold',
+                    ),
+                  ),
+                ),
+                
+                Container(
+                  alignment: Alignment.center,
+                  height: size.height * 0.036,
+                  child: Text(
+                    '${valor4.toString()} (${porcentajeValor4.toStringAsFixed(2)} %)',
+                    style: TextStyle(
+                      fontFamily: 'Point-SemiBold',
+                    ),
+                  ),
+                ),
+                Container(
+                  alignment: Alignment.center,
+                  height: size.height * 0.036,
+                  child: Text(
+                    '${valor3.toString()} (${porcentajeValor3.toStringAsFixed(2)} %)',
+                    style: TextStyle(
+                      fontFamily: 'Point-SemiBold',
+                    ),
+                  ),
+                ),
+                Container(
+                  alignment: Alignment.center,
+                  height: size.height * 0.036,
+                  child: Text(
+                    '${valor2.toString()} (${porcentajeValor2.toStringAsFixed(2)} %)',
+                    style: TextStyle(
+                      fontFamily: 'Point-SemiBold',
+                    ),
+                  ),
+                ),
+                Container(
+                  alignment: Alignment.center,
+                  height: size.height * 0.036,
+                  child: Text(
+                    '${valor1.toString()} (${porcentajeValor1.toStringAsFixed(2)} %)',
+                    style: TextStyle(
+                      fontFamily: 'Point-SemiBold',
+                    ),
+                  ),
+                )
+              ],
+            ),
           ],
         ),
       ],
@@ -2343,36 +2349,115 @@ Widget _botonesOpcionesUsuario(BuildContext context,InfoTour detalleTour){
 
 Widget _comentariosUsuarios(BuildContext context,InfoTour tour) {
     final size = MediaQuery.of(context).size;
+    String verMas = AppTranslations.of(context).text('title_mascomentarios');
+    String noComments = AppTranslations.of(context).text('title_nocomments');
     return FutureBuilder(
         future: categoriasProvider.verComentarios(tour.idtour.toString()),
         //initialData: InitialData,
-        builder: (BuildContext context, AsyncSnapshot<List<Comment>> snapshot) {
+        builder: (BuildContext context, AsyncSnapshot<Map<String,dynamic>> snapshot) {
           final comentario = snapshot.data;
 
           if(snapshot.hasData){
-            return SingleChildScrollView(
-              child: Column(
+            
+            if(comentario['comments'] == "SIN COMENTARIOS"){
+              return Column(
                 children: <Widget>[
-                  _opiniones(context),
-                  Container(
-                    width: size.width * 1.0,
-                    height: size.height * 0.53,
-                    child: ListView.builder(
-                      itemCount: comentario.length,
-                      itemBuilder: (context,index){
-                        return _comentarioUsuario(comentario[index]);
-                      },
-                    ),
+                  SizedBox(
+                    height: size.height * 0.25
                   ),
+                  Center(
+                    child: Text(
+                      "$noComments",
+                      style: TextStyle(
+                        fontFamily: 'Point-SemiBold'
+                      ),
+                    ),
+                  )
                 ],
-              ),
-            );
+              );
+            }else{
+              final comentarios = Comentario.fromJsonList(snapshot.data['comments']);
+              return SingleChildScrollView(
+                child: Column(
+                  children: <Widget>[
+                    GestureDetector(
+                      onTap: (){
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context){
+                              return ComentariosPage();
+                            },
+                            settings: RouteSettings(
+                              arguments: tour
+                            )
+                          )
+                        );
+                      },
+                      child: Container(
+                        color: Colors.transparent,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: <Widget>[
+                            FlatButton(
+                              onPressed: (){
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context){
+                                      return ComentariosPage();
+                                    },
+                                    settings: RouteSettings(
+                                      arguments: tour
+                                    )
+                                  )
+                                );
+                              }, 
+                              child: Text(
+                                "$verMas",
+                                style: TextStyle(
+                                  fontFamily: 'Point-SemiBold'
+                                ),
+                              )
+                            ),
+                            Icon(
+                              Icons.keyboard_arrow_right,
+                              color: Colors.black,
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                    _opiniones( int.parse(comentario['comentarios'].toString()), int.parse(comentario['valoracion']['uno'].toString()), int.parse(comentario['valoracion']['dos'].toString()), int.parse(comentario['valoracion']['tres'].toString()), int.parse(comentario['valoracion']['cuatro'].toString()), int.parse(comentario['valoracion']['cinco'].toString()) ,context),
+                    Container(
+                      //width: size.width * 1.0,
+                      height: size.height * 0.5,
+                      child: ListView.builder(
+                        itemCount: (comentarios.comments.length == 1) ? 1 : 2,
+                        itemBuilder: (context,index){
+                          return _comentarioUsuario(comentarios.comments[index]);
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }
           }else{
-            return Align(
-              heightFactor: 34.0,
-              alignment: Alignment.center,
-              child: Text('No hay comentarios'),
+            return Column(
+              children: <Widget>[
+                SizedBox(
+                  height: size.height * 0.25,
+                ),
+                Center(
+                  child: CircularProgressIndicator(),
+                )
+              ],
             );
+            
+            // Align(
+            //   heightFactor: 34.0,
+            //   alignment: Alignment.center,
+            //   child: Text('No hay comentarios'),
+            // );
           }
           
         },
@@ -2399,8 +2484,165 @@ Widget _comentariosUsuarios(BuildContext context,InfoTour tour) {
     });
   }
 
+  Widget _estrellas(int valoraciones){
+    if(valoraciones == 5){
+      return Row(
+        children: <Widget>[
+          Icon(
+            Icons.star,
+            color: Colors.yellow[700],
+          ),
+          Icon(
+            Icons.star,
+            color: Colors.yellow[700],
+          ),
+          Icon(
+            Icons.star,
+            color: Colors.yellow[700],
+          ),
+          Icon(
+            Icons.star,
+            color: Colors.yellow[700],
+          ),
+          Icon(
+            Icons.star,
+            color: Colors.yellow[700],
+          ),
+        ],
+      );
+    }else if(valoraciones == 4 ){
+      return Row(
+        children: <Widget>[
+          Icon(
+            Icons.star,
+            color: Colors.yellow[700],
+          ),
+          Icon(
+            Icons.star,
+            color: Colors.yellow[700],
+          ),
+          Icon(
+            Icons.star,
+            color: Colors.yellow[700],
+          ),
+          Icon(
+            Icons.star,
+            color: Colors.yellow[700],
+          ),
+          Icon(
+            Icons.star_border,
+            color: Colors.yellow[700],
+          ),
+        ],
+      ); 
+    }else if(valoraciones == 3){
+      return Row(
+        children: <Widget>[
+          Icon(
+            Icons.star,
+            color: Colors.yellow[700],
+          ),
+          Icon(
+            Icons.star,
+            color: Colors.yellow[700],
+          ),
+          Icon(
+            Icons.star,
+            color: Colors.yellow[700],
+          ),
+          Icon(
+            Icons.star_border,
+            color: Colors.yellow[700],
+          ),
+          Icon(
+            Icons.star_border,
+            color: Colors.yellow[700],
+          ),
+        ],
+      );
+    }else if(valoraciones == 2){
+      return Row(
+        children: <Widget>[
+          Icon(
+            Icons.star,
+            color: Colors.yellow[700],
+          ),
+          Icon(
+            Icons.star,
+            color: Colors.yellow[700],
+          ),
+          Icon(
+            Icons.star_border,
+            color: Colors.yellow[700],
+          ),
+          Icon(
+            Icons.star_border,
+            color: Colors.yellow[700],
+          ),
+          Icon(
+            Icons.star_border,
+            color: Colors.yellow[700],
+          ),
+        ],
+      );
+    }else if(valoraciones == 1 ){
+      return Row(
+        children: <Widget>[
+          Icon(
+            Icons.star,
+            color: Colors.yellow[700],
+          ),
+          Icon(
+            Icons.star_border,
+            color: Colors.yellow[700],
+          ),
+          Icon(
+            Icons.star_border,
+            color: Colors.yellow[700],
+          ),
+          Icon(
+            Icons.star_border,
+            color: Colors.yellow[700],
+          ),
+          Icon(
+            Icons.star_border,
+            color: Colors.yellow[700],
+          ),
+        ],
+      );
+    }else{
+      return Row(
+        children: <Widget>[
+          Icon(
+            Icons.star_border,
+            color: Colors.yellow[700],
+          ),
+          Icon(
+            Icons.star_border,
+            color: Colors.yellow[700],
+          ),
+          Icon(
+            Icons.star_border,
+            color: Colors.yellow[700],
+          ),
+          Icon(
+            Icons.star_border,
+            color: Colors.yellow[700],
+          ),
+          Icon(
+            Icons.star_border,
+            color: Colors.yellow[700],
+          ),
+        ],
+      );
+    }
+  }
+
 Widget _comentarioUsuario(Comment comment){
   final size = MediaQuery.of(context).size;
+  String dia = DateTime.tryParse(comment.dateComment).day.toString();
+  String mes = DateTime.tryParse(comment.dateComment).month.toString();
+  String anio = DateTime.tryParse(comment.dateComment).year.toString();
 
   return Card(
       child: Padding(
@@ -2427,24 +2669,27 @@ Widget _comentarioUsuario(Comment comment){
           ),
           Row(
             children: <Widget>[
-              ClipRRect(
-                borderRadius: BorderRadius.circular(20.0),
-                child: 
-                /*FadeInImage(
-                  width: size.width * 0.2,
-                  image: NetworkImage(comment.imgProfile),
-                  placeholder: AssetImage('assets/loading.gif'),
-                  fit: BoxFit.fill,
-                ),*/
-                CachedNetworkImage(
-                  imageUrl: "${comment.imgProfile}",
-                  //errorWidget: (context, url, error)=>Icon(Icons.error),
-                  //cacheManager: baseCacheManager,
-                  useOldImageOnUrlChange: true,
-                  width: size.width * 0.2,
-                  fit: BoxFit.fill,
-                )
+              Container(
+                width: size.width * 0.2,
+                height: size.height * 0.1,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  image: DecorationImage(
+                    fit: BoxFit.fill,
+                    image: NetworkImage(
+                      "${comment.imgProfile}"
+                    )
+                  )
+                ),
               ),
+              // CachedNetworkImage(
+              //     imageUrl: "${comment.imgProfile}",
+              //     //errorWidget: (context, url, error)=>Icon(Icons.error),
+              //     //cacheManager: baseCacheManager,
+              //     useOldImageOnUrlChange: true,
+              //     //width: size.width * 0.2,
+              //     fit: BoxFit.fill,
+              //   ),
               SizedBox(width: size.width * 0.03,),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -2453,7 +2698,7 @@ Widget _comentarioUsuario(Comment comment){
                     children: <Widget>[
                       Text('${comment.name}',
                           style: TextStyle(
-                            fontFamily: 'Source Sans Pro',
+                            fontFamily: 'Point-SemiBold',
                             fontStyle: FontStyle.italic,
                             fontWeight: FontWeight.bold
                         )
@@ -2502,9 +2747,9 @@ Widget _comentarioUsuario(Comment comment){
                     ],
                   ),
                   Text(
-                    '${comment.dateComment}',
+                    '$dia/$mes/$anio',
                     style: TextStyle(
-                      fontFamily: 'Source Sans Pro',
+                      fontFamily: 'Point-SemiBold',
                       color: Colors.grey[800],
                       fontSize: 12.0
                       ),
@@ -2513,9 +2758,10 @@ Widget _comentarioUsuario(Comment comment){
               ),
             ],
           ),
-          /*SizedBox(
+          SizedBox(
             height: size.height * 0.01,
-          ),*/
+          ),
+          _estrellas(comment.value),
           /* Row(
             children: <Widget>[
               Icon(
@@ -2550,7 +2796,9 @@ Widget _comentarioUsuario(Comment comment){
           ),
           Text(
             comment.commentary,
-            style: TextStyle(fontFamily: 'Neue Haas Grotesk Display Pro')
+            style: TextStyle(
+              fontFamily: 'Point-SemiBold'
+            )
           ),
           /*FutureBuilder(
             future: categoriasProvider.traducir(prefs.idioma == null ? 'es' : prefs.idioma.toString(), comment.commentary),

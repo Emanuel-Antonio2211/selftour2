@@ -180,5 +180,15 @@
     "title_facebook": "脸书",
     "title_webpag": "网页",
     "title_ejemplo": "例子",
-    "title_message": "写你的留言"
+    "title_message": "写你的留言",
+    "title_instruccion": "评价您的经验",
+    "title_valorar": "评定",
+    "title_mascomentarios": "查看更多评论",
+    "title_nocomments": "没有评论",
+    "title_totalvaloraciones": "等级",
+    "title_estrellas": "星星",
+    "title_estrella": "星",
+    "title_walking": "步行",
+    "title_bicycle": "自行车",
+    "title_car": "汽车"
 }

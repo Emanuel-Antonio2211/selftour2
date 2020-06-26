@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:selftourapp/src/googlemaps/states/app_state.dart';
 import 'package:selftourapp/src/models/tour_categoria_model.dart';
 import 'package:selftourapp/src/providers/categorias_providers.dart';
 import 'package:selftourapp/src/translation_class/app_translations.dart';
@@ -19,19 +20,33 @@ class _PopularVerticalState extends State<PopularVertical> {
   final _scrollController = ScrollController();
 
   final categoriaProvider = CategoriasProvider();
-
+  String state;
+  String codCountry;
+  AppState _appState = AppState();
   bool isloading = false;
+
+  @override
+  void initState() { 
+    
+    super.initState();
+    
+  }
 
   Future<Null> cargarPopulares()async{
     final duration = Duration(seconds: 2);
 
     Timer(duration, (){
       widget.listaPopulares.clear();
-      categoriaProvider.popularesPag().then((result){
-        for(int i = 0; i < result.length; i++){
-          widget.listaPopulares.add(result[i]);
-        }
+      _appState.userLocation().then((value)async{
+        state = value[1].toString();
+        codCountry = value[5].toString();
+        final result = await categoriaProvider.popularesPag(state,codCountry);
+        final populares = ListaToursC.fromJsonList(result['tours'][0]['data_tour']);
+        for(int i = 0; i < populares.itemsTours.length; i++){
+            widget.listaPopulares.add(populares.itemsTours[i]);
+          }
       });
+      
 
     });
     print("Lista Cargada");
@@ -49,7 +64,7 @@ class _PopularVerticalState extends State<PopularVertical> {
         //Se ejecuta la función para mostrar la siguiente página
         //de categorías
         //widget.siguientePagina();
-        fetchData();
+        //fetchData();
       }
     });
     return Container(
@@ -61,18 +76,19 @@ class _PopularVerticalState extends State<PopularVertical> {
           child: ListView.builder(
             controller: _scrollController,
             itemCount: widget.listaPopulares.length,
+            physics: AlwaysScrollableScrollPhysics(),
             itemBuilder: (context,index){
               return populares(context, widget.listaPopulares[index]);
             },
           ),
         ),
-        _crearLoading()
+        //_crearLoading()
         ]
       ),
     );
   }
 
-  Future<Null> fetchData()async{
+  Future fetchData()async{
     isloading = true;
     setState(() {
       
@@ -300,18 +316,31 @@ class _PopularGridState extends State<PopularGrid> {
   final _scrollController = ScrollController();
 
   final categoriaProvider = CategoriasProvider();
-
+  String state;
+  String codCountry;
+  AppState _appState = AppState();
   bool isloading = false;
+
+  @override
+  void initState() { 
+    
+    super.initState();
+    
+  }
 
   Future<Null> cargarPopulares()async{
     final duration = Duration(seconds: 2);
 
     Timer(duration, (){
       widget.listaPopulares.clear();
-      categoriaProvider.popularesPag().then((result){
-        for(int i = 0; i < result.length; i++){
-          widget.listaPopulares.add(result[i]);
-        }
+      _appState.userLocation().then((value)async{
+        state = value[1].toString();
+        codCountry = value[5].toString();
+       final result = await categoriaProvider.popularesPag(state,codCountry);
+        final populares = ListaToursC.fromJsonList(result['tours'][0]['data_tour']);
+        for(int i = 0; i < populares.itemsTours.length; i++){
+            widget.listaPopulares.add(populares.itemsTours[i]);
+          }
       });
 
     });
@@ -330,7 +359,7 @@ class _PopularGridState extends State<PopularGrid> {
         //Se ejecuta la función para mostrar la siguiente página
         //de categorías
         //widget.siguientePagina();
-        fetchData();
+        //fetchData();
       }
     });
     return Container(
@@ -343,19 +372,20 @@ class _PopularGridState extends State<PopularGrid> {
               scrollDirection: Axis.vertical,
               controller: _scrollController,
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+              physics: AlwaysScrollableScrollPhysics(),
               itemCount: widget.listaPopulares.length,
               itemBuilder: (context,i){
                 return popularGrid(context, widget.listaPopulares[i]);
               },
             ),
           ),
-          _crearLoading()
+          //_crearLoading()
         ]
       ),
     );
   }
 
-  Future<Null> fetchData()async{
+  Future fetchData()async{
     isloading = true;
     setState(() {
       

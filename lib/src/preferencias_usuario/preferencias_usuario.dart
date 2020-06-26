@@ -147,8 +147,15 @@ class PreferenciasUsuario {
     return _prefs.getString('pagWeb');
   }
 
-  set photoUrl (String value){
+  set photoUrl(String value){
     _prefs.setString('photoUrl', value);
+  }
+
+  set photoEditar(String value){
+    _prefs.setString('photoEditar', value);
+  }
+  get photoEditar{
+    return _prefs.getString('photoEditar');
   }
 
   set tokenVerif (String value){

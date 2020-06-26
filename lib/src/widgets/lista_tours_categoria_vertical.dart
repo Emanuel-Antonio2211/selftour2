@@ -5,9 +5,11 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:selftourapp/src/googlemaps/states/app_state.dart';
 //import 'package:selfttour/src/googlemaps/states/app_state.dart';
 //import 'package:selfttour/src/models/mapa_model.dart';
 import 'package:selftourapp/src/models/tour_categoria_model.dart';
+import 'package:selftourapp/src/pages/login/sesion_page_favorito.dart';
 import 'package:selftourapp/src/preferencias_usuario/preferencias_usuario.dart';
 import 'package:selftourapp/src/providers/categorias_providers.dart';
 import 'package:selftourapp/src/translation_class/app_translations.dart';
@@ -28,6 +30,16 @@ class _ListaToursCategoriaVerticalState extends State<ListaToursCategoriaVertica
   final CategoriasProvider provider = CategoriasProvider();
   final PreferenciasUsuario prefs = PreferenciasUsuario();
   bool isloading = false;
+  String state;
+  String codCountry;
+  AppState _appState = AppState();
+
+  @override
+  void initState() { 
+    
+    super.initState();
+    
+  }
   
   Future<Null> cargarTours()async{
     final duration = Duration(seconds: 2);
@@ -35,12 +47,17 @@ class _ListaToursCategoriaVerticalState extends State<ListaToursCategoriaVertica
     Timer(duration, ()async{
       //Se borra la lista para generar otra
       widget.listaTours.clear();
-      await provider.getToursC(widget.ctid).then((datos){
+      _appState.userLocation().then((value)async{
+        state = value[1].toString();
+        codCountry = value[5].toString();
+        await provider.getToursC(state,codCountry,widget.ctid).then((datos){
         final listaToursC = new ListaToursC.fromJsonList(datos['Tours']['data']);
         for(int i = 0; i<listaToursC.itemsTours.length; i++){
           widget.listaTours.add(listaToursC.itemsTours[i]);
         }
       });
+      });
+      
       print("Ctid");
       print(widget.ctid);
     });
@@ -73,6 +90,7 @@ class _ListaToursCategoriaVerticalState extends State<ListaToursCategoriaVertica
               controller: widget._pageController,
               //children: _tarjetas(context)
               itemCount: widget.listaTours.length,
+              physics: AlwaysScrollableScrollPhysics(),
               itemBuilder: (context,i){
                 return _tarjeta(context, widget.listaTours[i]);
               },
@@ -104,16 +122,22 @@ class _ListaToursCategoriaVerticalState extends State<ListaToursCategoriaVertica
       duration: Duration(milliseconds: 250)
     );
     //widget.siguientePagina();
-    provider.getToursC(widget.ctid).then((result){
-      final listaToursC = new ListaToursC.fromJsonList(result['Tours']['data']);
-      for(int i = 0; i < listaToursC.itemsTours.length; i++){
-        widget.listaTours.add(listaToursC.itemsTours[i]);
-        setState(() {
-          isloading = false;
+    _appState.userLocation().then((value)async{
+        state = value[1].toString();
+        codCountry = value[5].toString();
+        await provider.getToursC(state,codCountry,widget.ctid).then((result){
+          setState(() {
+            isloading = false;
+          });
+          final listaToursC = new ListaToursC.fromJsonList(result['Tours']['data']);
+          for(int i = 0; i < listaToursC.itemsTours.length; i++){
+            widget.listaTours.add(listaToursC.itemsTours[i]);
+            
+          }
         });
-        
       }
-    });
+    );
+    
     print("Lista paginado");
     print(widget.listaTours);
   }
@@ -238,24 +262,51 @@ class _ListaToursCategoriaVerticalState extends State<ListaToursCategoriaVertica
                     
                   ],
                 ),
-               /* SizedBox(
+                SizedBox(
                   width: size.width * 0.6,
-                ),*/
-                /*IconButton(
-                  color: tour.favorite == 1 ? Colors.red : Colors.white,
-                  icon: Icon( tour.favorite == 1 ? Icons.favorite : Icons.favorite_border),
-                  onPressed: (){
+                ),
+                IconButton(
+                  color: (tour.favorite == 1) ? Colors.red : null,
+                  icon: Icon( 
+                    tour.favorite == 1 ? Icons.favorite : Icons.favorite_border,
+                    color: (tour.favorite == 1) ? Colors.red : Colors.white,
+                  ),
+                  onPressed: ()async{
                     CategoriasProvider provider = CategoriasProvider();
                     PreferenciasUsuario prefs = PreferenciasUsuario();
-                    if(tour.favorite == 1){
+                    setState(() {
                       
-                      provider.removerFavorito(prefs.iduser,tour.idtour.toString());
+                    });
+                    if(prefs.token == ''){
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context){
+                            return SesionPageFavorito();
+                          }
+                        )
+                      );
                     }else{
-                      provider.marcarFavorito(tour.idtour.toString());
+
+                      if(tour.favorite == 1){
+                      
+                        await provider.removerFavorito(prefs.token.toString(),prefs.iduser,tour.idtour.toString()).then((value){
+                          setState((){
+                            tour.favorite = 0;
+                          });
+                        });
+                        
+                      }else{
+                        
+                        await provider.marcarFavorito(prefs.token.toString(),tour.idtour.toString()).then((value){
+                          setState((){
+                            tour.favorite = 1;
+                          });
+                        });
+                        
+                      }
                     }
-                    
                   },
-                )*/
+                )
               ],
             ),
           ),
@@ -423,6 +474,16 @@ class _ListaToursCategoriaGridState extends State<ListaToursCategoriaGrid> {
   final PreferenciasUsuario prefs = PreferenciasUsuario();
   bool isloading = false;
   final _scrollController = ScrollController();
+  String state;
+  String codCountry;
+  AppState _appState = AppState();
+
+  @override
+  void initState() { 
+    
+    super.initState();
+    
+  }
   
   Future<Null> cargarTours()async{
     final duration = Duration(seconds: 2);
@@ -430,12 +491,17 @@ class _ListaToursCategoriaGridState extends State<ListaToursCategoriaGrid> {
     Timer(duration, ()async{
       //Se borra la lista para generar otra
       widget.listaTours.clear();
-      await categoriasProvider.getToursC(widget.ctid).then((datos){
-        final listaToursC = new ListaToursC.fromJsonList(datos['Tours']['data']);
-        for(int i = 0; i<listaToursC.itemsTours.length; i++){
-          widget.listaTours.add(listaToursC.itemsTours[i]);
-        }
+      _appState.userLocation().then((value)async{
+        state = value[1].toString();
+        codCountry = value[5].toString();
+        await categoriasProvider.getToursC(state,codCountry,widget.ctid).then((datos){
+          final listaToursC = new ListaToursC.fromJsonList(datos['Tours']['data']);
+          for(int i = 0; i<listaToursC.itemsTours.length; i++){
+            widget.listaTours.add(listaToursC.itemsTours[i]);
+          }
+        });
       });
+      
       print("Ctid");
       print(widget.ctid);
       print("Lista");
@@ -469,6 +535,7 @@ class _ListaToursCategoriaGridState extends State<ListaToursCategoriaGrid> {
             scrollDirection: Axis.vertical,
             controller: _scrollController,
             itemCount: widget.listaTours.length,
+            physics: AlwaysScrollableScrollPhysics(),
             itemBuilder: (context,i){
               return _tarjeta(context, widget.listaTours[i]);
             },
@@ -512,16 +579,20 @@ class _ListaToursCategoriaGridState extends State<ListaToursCategoriaGrid> {
       duration: Duration(milliseconds: 250)
     );
     //widget.siguientePagina();
-    categoriasProvider.getToursC(widget.ctid).then((result){
-      final listaToursC = new ListaToursC.fromJsonList(result['Tours']['data']);
-      for(int i = 0; i < listaToursC.itemsTours.length; i++){
-        widget.listaTours.add(listaToursC.itemsTours[i]);
+    _appState.userLocation().then((value)async{
+      state = value[1].toString();
+      codCountry = value[5].toString();
+      await categoriasProvider.getToursC(state,codCountry,widget.ctid).then((result){
         setState(() {
           isloading = false;
         });
-        
-      }
+        final listaToursC = new ListaToursC.fromJsonList(result['Tours']['data']);
+        for(int i = 0; i < listaToursC.itemsTours.length; i++){
+          widget.listaTours.add(listaToursC.itemsTours[i]);
+        }
+      });
     });
+    
     print("Lista paginado");
     print(widget.listaTours);
     
@@ -578,24 +649,8 @@ class _ListaToursCategoriaGridState extends State<ListaToursCategoriaGrid> {
                         width: size.width * 0.5,
                         height: size.height * 0.3,
                         fit: BoxFit.fill,
-                      )
-                    /* Align(
-                        widthFactor: 14.0,
-                        alignment: Alignment.topRight,
-                        child: IconButton(
-                          color: tour.favorite == 1 ? Colors.red : null,
-                          icon: Icon( tour.favorite == 1 ? Icons.favorite : Icons.favorite_border),
-                          onPressed: (){
-                            CategoriasProvider provider = CategoriasProvider();
-                            PreferenciasUsuario prefs = PreferenciasUsuario();
-                            if(tour.favorite == 1){
-                              provider.removerFavorito(prefs.iduser);
-                            }else{
-                              provider.marcarFavorito(tour.idtour.toString());
-                            }
-                          },
-                        ),
-                      )*/
+                      ),
+                      
                     ]
                   ),
                 ),
@@ -695,6 +750,49 @@ class _ListaToursCategoriaGridState extends State<ListaToursCategoriaGrid> {
            ),
         ),
         Align(
+          alignment: Alignment.topRight,
+          child: IconButton(
+            iconSize: 25.0,
+            color: (tour.favorite == 1) ? Colors.red : null,
+            icon: Icon( 
+              (tour.favorite == 1) ? Icons.favorite : Icons.favorite_border,
+              color: (tour.favorite == 1) ? Colors.red : Colors.white,
+            ),
+            onPressed: ()async{
+              CategoriasProvider provider = CategoriasProvider();
+              PreferenciasUsuario prefs = PreferenciasUsuario();
+              setState(() {
+                
+              });
+              if(prefs.token == ''){
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context){
+                      return SesionPageFavorito();
+                    }
+                  )
+                );
+              }else{
+              if(tour.favorite == 1){
+                  await provider.removerFavorito(prefs.token.toString(),tour.iduser.toString(),prefs.iduser).then((value){
+                    setState(() {
+                      tour.favorite = 0;
+                    });
+                  });
+                  
+                }else{
+                  await provider.marcarFavorito(prefs.token.toString(),tour.idtour.toString()).then((value){
+                    setState(() {
+                      tour.favorite = 1;
+                    });
+                  });
+                  
+                }
+              }
+            },
+          ),
+        ),
+        Align(
           alignment: Alignment.center,
           child: Padding(
             padding: EdgeInsets.only(top: 65.0,left: 10.0),
@@ -765,7 +863,7 @@ class _ListaToursCategoriaGridState extends State<ListaToursCategoriaGrid> {
       ],
     );
     
-    
+    //return tarjeta;
     return GestureDetector(
       child: tarjeta,
       onTap: (){

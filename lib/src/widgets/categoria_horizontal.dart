@@ -20,9 +20,7 @@ class CategoriaHorizontal extends StatelessWidget {
 
   final CategoriasProvider categoriasProvider = CategoriasProvider();
 
-  final Function siguientePagina;
-
-  CategoriaHorizontal({@required this.categorias, @required this.siguientePagina});
+  CategoriaHorizontal({@required this.categorias});
 
   final _pageController = new PageController(
     initialPage: 0,

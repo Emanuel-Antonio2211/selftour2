@@ -27,10 +27,18 @@ class UsuarioProvider{
   final String _firebaseToken = 'AIzaSyAJbzYQ0hB74vAecuvIHwbZM5SjMegkWDM';
 
   PushNotificationProvider pushNotificationProvider = PushNotificationProvider();
+  StreamController<Map<String,dynamic>> _streamEditionController = StreamController<Map<String,dynamic>>.broadcast();
+
+  Function(Map<String,dynamic>) get editionSink => _streamEditionController.sink.add;
+  Stream<Map<String,dynamic>> get streamEdition => _streamEditionController.stream;
 
   final firebaseMessaging = FirebaseMessaging();
 
   String tokenFCM;
+
+  dispose(){
+    _streamEditionController?.close();
+  }
 
   //Se crea una instancia de la clase PreferenciasUsuario
   final prefs = new PreferenciasUsuario();
@@ -836,6 +844,22 @@ class UsuarioProvider{
 
     return decodedResp;*/
 
+  }
+
+  Future<Map<String,dynamic>> obtenerDatosUsuario(String token)async{
+    String url = 'https://api-users.selftours.app/user';
+
+    final resp = await http.get(
+      url,
+      headers: {
+        'token': '$token'
+      }
+    );
+
+    final decodedResp = json.decode(resp.body);
+
+    editionSink(decodedResp);
+    return decodedResp;
   }
 
   //Método para reestablecer la contraseña

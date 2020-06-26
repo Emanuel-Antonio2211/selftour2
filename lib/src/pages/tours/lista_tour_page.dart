@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
+import 'package:selftourapp/src/googlemaps/states/app_state.dart';
 //import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:selftourapp/src/models/categoria_model.dart';
 //import 'package:selfttour/src/models/detalle_tour_model.dart';
@@ -26,6 +27,9 @@ class ListaTourPage extends StatefulWidget {
 class _ListaTourPageState extends State<ListaTourPage> with SingleTickerProviderStateMixin{
   final List<InfoTour> listaTour=List();
   final categoriasProvider = new CategoriasProvider();
+  AppState _appState = AppState();
+  String state;
+  String codCountry;
   // Create a tab controller
   TabController controller;
   int currentIndex = 0;
@@ -186,11 +190,24 @@ class _ListaTourPageState extends State<ListaTourPage> with SingleTickerProvider
     var size = MediaQuery.of(context).size;
     //ToursProvider toursProvider = new ToursProvider();
     final categoriasProvider = new CategoriasProvider();
-    categoriasProvider.getToursC(categoria.ctidss.toString());
+    _appState.userLocation().then((value){
+      state = value[1].toString();
+      codCountry = value[5].toString();
+      categoriasProvider.getToursC(state,codCountry,categoria.ctidss.toString());
+    });
+    
     Future<List<InfoTour>> cargarTours()async{
       ListaToursC listaToursC;
-      final result = await categoriasProvider.getToursC(categoria.ctidss.toString());
+      Map<String,dynamic> result;
+      _appState.userLocation().then((value)async{
+        state = value[1].toString();
+        codCountry = value[5].toString();
+        result = await categoriasProvider.getToursC(state,codCountry,categoria.ctidss.toString());
+      });
+      
       listaToursC = new ListaToursC.fromJsonList(result['Tours']['data']);
+      print("Lista C");
+      print(listaToursC.itemsTours);
       return listaToursC.itemsTours;
     }
     
@@ -423,14 +440,20 @@ class _ListaTourPageState extends State<ListaTourPage> with SingleTickerProvider
     String noData = AppTranslations.of(context).text('title_nodata');
     //ToursProvider toursProvider = new ToursProvider();
     final categoriasProvider = new CategoriasProvider();
-    categoriasProvider.getToursC(categoria.ctidss.toString());
+    categoriasProvider.getToursC(state,codCountry,categoria.ctidss.toString());
     // void cargarTour()async{
     //   await categoriasProvider.getToursC(categoria.ctidss.toString());
     // }
 
     Future<List<InfoTour>> cargarTour()async{
       ListaToursC listaToursC;
-      final result = await categoriasProvider.getToursC(categoria.ctidss.toString());
+      Map<String,dynamic> result;
+      _appState.userLocation().then((value)async{
+        state = value[1].toString();
+        codCountry = value[5].toString();
+        result = await categoriasProvider.getToursC(state,codCountry,categoria.ctidss.toString());
+      });
+      
       listaToursC = new ListaToursC.fromJsonList(result['Tours']['data']);
       return listaToursC.itemsTours;
     }

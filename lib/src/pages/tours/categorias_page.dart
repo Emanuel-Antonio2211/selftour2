@@ -1,5 +1,6 @@
 //import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:selftourapp/src/models/categoria_model.dart';
 //import 'package:selftourapp/src/models/categoria_model.dart';
 import 'package:selftourapp/src/preferencias_usuario/preferencias_usuario.dart';
 import 'package:selftourapp/src/providers/categorias_providers.dart';
@@ -21,6 +22,21 @@ class _CategoriasPageState extends State<CategoriasPage> {
     categoriasProvider.categoriaPag();
     super.initState();
   }
+
+  Future<List<Categoria>> cargarTour()async{
+      //ListaToursC listaToursC;
+      //Categorias result;
+      // _appState.userLocation().then((value)async{
+      //   state = value[1].toString();
+      //   codCountry = value[5].toString();
+        
+      // });
+      final resultado = await categoriasProvider.getCategoria();
+      final result = Categorias.fromJsonList(resultado['categories']['data']);
+      
+      // listaToursC = new ListaToursC.fromJsonList(result['Tours']['data']);
+      return result.items;
+    }
 
   @override
   Widget build(BuildContext context) {
@@ -86,32 +102,66 @@ class _CategoriasPageState extends State<CategoriasPage> {
     }
   }
   Widget lista(){
-    //final size = MediaQuery.of(context).size;
+    final size = MediaQuery.of(context).size;
     String noData = AppTranslations.of(context).text('title_nodata');
     return SingleChildScrollView(
       child: Column(
         children: <Widget>[
           StreamBuilder(
             stream:  categoriasProvider.categoriasStream,
-            builder: (BuildContext context, AsyncSnapshot<List> snapshot){
+            builder: (BuildContext context, AsyncSnapshot<Map<String,dynamic>> snapshot){
               switch(snapshot.connectionState){
                 case ConnectionState.waiting:
-                  return Align(
-                    heightFactor: 34.0,
-                    alignment: Alignment.center,
-                    child: CircularProgressIndicator(),
+                  return Column(
+                    children: <Widget>[
+                      SizedBox(
+                        height: size.height * 0.34,
+                      ),
+                      Center(
+                        child: CircularProgressIndicator(),
+                      )
+                    ],
                   );
                 break;
                 case ConnectionState.none:
-                  return Align(
-                    heightFactor: 34.0,
-                    alignment: Alignment.center,
-                    child: Text('$noData'),
+                  return Column(
+                    children: <Widget>[
+                      SizedBox(
+                        height: size.height * 0.34,
+                      ),
+                      Center(
+                        child: Text(
+                        '$noData',
+                        style: TextStyle(
+                          fontFamily: 'Point-SemiBold'
+                        ),
+                        ),
+                      )
+                    ],
                   );
                 break;
                 case ConnectionState.done:
                   if(snapshot.hasData){
-                    return CategoriaVertical(categorias: snapshot.data, siguientePagina: categoriasProvider.categoriaPag);
+                    if(snapshot.data['categories']['data'] == null){
+                      return Column(
+                        children: <Widget>[
+                          SizedBox(
+                            height: size.height * 0.34,
+                          ),
+                          Center(
+                            child: Text(
+                              "$noData",
+                              style: TextStyle(
+                                fontFamily: 'Point-SemiBold'
+                              ),
+                            ),
+                          )
+                        ],
+                      );
+                    }else{
+                      final categorias = new Categorias.fromJsonList(snapshot.data['categories']['data']);
+                      return CategoriaVertical(categorias: categorias.items, siguientePagina: cargarTour );
+                    }
                     
                   /* Container(
                       height: size.height * 0.8,
@@ -123,16 +173,42 @@ class _CategoriasPageState extends State<CategoriasPage> {
                       ),
                     );*/
                   }else{
-                    return Align(
-                      heightFactor: 34.0,
-                      alignment: Alignment.center,
-                      child: Text('$noData'),
+                    return Column(
+                      children: <Widget>[
+                        SizedBox(
+                          height: size.height * 0.34,
+                        ),
+                        Center(
+                          child: CircularProgressIndicator()
+                        )
+                      ],
                     );
                   }
                 break;
                 case ConnectionState.active:
+                  
                   if(snapshot.hasData){
-                    return CategoriaVertical(categorias: snapshot.data, siguientePagina: categoriasProvider.categoriaPag);
+                    if(snapshot.data['categories']['data'] == null){
+                      return Column(
+                        children: <Widget>[
+                          SizedBox(
+                            height: size.height * 0.34,
+                          ),
+                          Center(
+                            child: Text(
+                              "$noData",
+                              style: TextStyle(
+                                fontFamily: 'Point-SemiBold'
+                              ),
+                            ),
+                          )
+                        ],
+                      );
+                    }else{
+                      final categorias = new Categorias.fromJsonList(snapshot.data['categories']['data']);
+                      return CategoriaVertical(categorias: categorias.items, siguientePagina: cargarTour );
+                    }
+                    
                     
                   /* Container(
                       height: size.height * 0.8,
@@ -144,18 +220,28 @@ class _CategoriasPageState extends State<CategoriasPage> {
                       ),
                     );*/
                   }else{
-                    return Align(
-                      heightFactor: 34.0,
-                      alignment: Alignment.center,
-                      child: Text('$noData'),
+                    return Column(
+                      children: <Widget>[
+                        SizedBox(
+                          height: size.height * 0.34,
+                        ),
+                        Center(
+                          child: CircularProgressIndicator()
+                        )
+                      ],
                     );
                   }
                 break;
                 default:
-                  return Align(
-                    heightFactor: 34.0,
-                    alignment: Alignment.center,
-                    child: Text('$noData'),
+                  return Column(
+                    children: <Widget>[
+                      SizedBox(
+                        height: size.height * 0.34,
+                      ),
+                      Center(
+                        child: CircularProgressIndicator()
+                      )
+                    ],
                   );
               }
               /*if(snapshot.hasData){
@@ -262,14 +348,64 @@ class _CategoriasPageState extends State<CategoriasPage> {
   }*/
 
   Widget grid(){
-    //final size = MediaQuery.of(context).size;
+    final size = MediaQuery.of(context).size;
+    String noData = AppTranslations.of(context).text('title_nodata');
+    Future<List<Categoria>> cargarTour()async{
+      //ListaToursC listaToursC;
+      //Categorias result;
+      // _appState.userLocation().then((value)async{
+      //   state = value[1].toString();
+      //   codCountry = value[5].toString();
+        
+      // });
+      final resultado = await categoriasProvider.getCategoria();
+      final result = Categorias.fromJsonList(resultado['categories']['data']);
+      
+      // listaToursC = new ListaToursC.fromJsonList(result['Tours']['data']);
+      return result.items;
+    }
     return SingleChildScrollView(
       child: Column(
         children: <Widget>[
           StreamBuilder(
             stream: categoriasProvider.categoriasStream,
-            builder: (BuildContext context, AsyncSnapshot<List> snapshot){
-              return CategoriaGrid(categorias: snapshot.data, siguientePagina: categoriasProvider.categoriaPag);
+            builder: (BuildContext context, AsyncSnapshot<Map<String,dynamic>> snapshot){
+              
+              if(snapshot.hasData){
+                if(snapshot.data['categories']['data'] == null){
+                  return Column(
+                    children: <Widget>[
+                      SizedBox(
+                        height: size.height * 0.34,
+                      ),
+                      Center(
+                        child: Text(
+                          "$noData",
+                          style: TextStyle(
+                            fontFamily: 'Point-SemiBold'
+                          ),
+                        ),
+                      )
+                    ],
+                  );
+                }else{
+                  final categorias = new Categorias.fromJsonList(snapshot.data['categories']['data']);
+                  return CategoriaGrid(categorias: categorias.items, siguientePagina: cargarTour );
+                }
+                
+              }else{
+                return Column(
+                  children: <Widget>[
+                    SizedBox(
+                      height: size.height * 0.34,
+                    ),
+                    Center(
+                      child: CircularProgressIndicator(),
+                    )
+                  ],
+                );
+              }
+              
               /*Container(
                 height: size.height * 0.8,
                 child: GridView.builder(

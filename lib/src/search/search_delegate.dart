@@ -123,110 +123,130 @@ class DataSearch extends SearchDelegate{
 
     FutureBuilder(
       future: categorias.buscarTours(query),//categorias.buscarTours(query)
-      builder: (BuildContext context, AsyncSnapshot<List<InfoTour>> snapshot) {
+      builder: (BuildContext context, AsyncSnapshot<Map<String,dynamic>> snapshot) {
         final size = MediaQuery.of(context).size;
+        String noDatos = AppTranslations.of(context).text('title_nodata');
        // categorias.buscarTours(query);
         if(snapshot.hasData){
-          final tours = snapshot.data;
-          return ListView(
-            children: tours.map((tour){
-              return GestureDetector(
-                onTap: (){
-                  //Se cierra la búsqueda primero
-                  close(context, null);
-                  //tour.uniqueid='';
-                  Navigator.pushNamed(context, '/detalletour',arguments: tour);
-                },
-                child: Card(
-                  child: Container(
-                    width: size.width * 1.0,
-                    height: size.height * 0.2,
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 10.0),
-                      child: Row(
-                        children: <Widget>[
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(5.0),
-                            child: Image.network(
-                              tour.gallery.toString(),
-                              width: size.width * 0.5,
-                              height: size.height * 0.15,
-                              fit: BoxFit.fill,
-                              scale: 1.0,
-                            )
-                          ),
-                          SizedBox(
-                            width: size.width * 0.04,
-                          ),
-                          Flexible(
-                            child: Text( tour.title != null ? 
-                              "${tour.title}":'',
-                              style: TextStyle(fontFamily: 'Point-SemiBold'),
-                            ),
-                          ),
-                            /*Column(
-                            //crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              SafeArea(
-                                child: SizedBox(
-                                  height: size.height * 0.02,
-                                ),
-                              ),
-                              
-                            /* Row(
-                                children: <Widget>[
-                                  Icon(Icons.place),
-                                ],
-                              )*/
-                            ],
-                          ),*/
-                        ],
-                      ),
+          final tours = snapshot.data;//['msg'] == "Any match tour"
+          if(tours.containsKey('msg')){
+            return Column(
+              children: <Widget>[
+                SizedBox(
+                  height: size.height * 0.24,
+                ),
+                Center(
+                  child: Text(
+                    "$noDatos",
+                    style: TextStyle(
+                      fontFamily: 'Point-SemiBold'
                     ),
-                    
-                   /* ListTile(
-                      leading: ClipRRect(
-                        borderRadius: BorderRadius.circular(5.0),
-                        child: FadeInImage(
-                          image: NetworkImage(tour.gallery.toString()),
-                          placeholder: AssetImage('assets/loading.gif'),
-                          width: size.width * 0.4,
-                          height: size.height * 0.2,
-                          fit: BoxFit.fill,
+                  ),
+                )
+              ],
+            );
+          }else{
+            final tourEncontrado = new ListaToursC.fromJsonList(snapshot.data['tour']);
+            return ListView(
+              children: tourEncontrado.itemsTours.map((tour){
+                return GestureDetector(
+                  onTap: (){
+                    //Se cierra la búsqueda primero
+                    close(context, null);
+                    //tour.uniqueid='';
+                    Navigator.pushNamed(context, '/detalletour',arguments: tour);
+                  },
+                  child: Card(
+                    child: Container(
+                      width: size.width * 1.0,
+                      height: size.height * 0.2,
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 10.0),
+                        child: Row(
+                          children: <Widget>[
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(5.0),
+                              child: Image.network(
+                                tour.gallery.toString(),
+                                width: size.width * 0.5,
+                                height: size.height * 0.15,
+                                fit: BoxFit.fill,
+                                scale: 1.0,
+                              )
+                            ),
+                            SizedBox(
+                              width: size.width * 0.04,
+                            ),
+                            Flexible(
+                              child: Text( tour.title != null ? 
+                                "${tour.title}":'',
+                                style: TextStyle(fontFamily: 'Point-SemiBold'),
+                              ),
+                            ),
+                              /*Column(
+                              //crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                SafeArea(
+                                  child: SizedBox(
+                                    height: size.height * 0.02,
+                                  ),
+                                ),
+                                
+                              /* Row(
+                                  children: <Widget>[
+                                    Icon(Icons.place),
+                                  ],
+                                )*/
+                              ],
+                            ),*/
+                          ],
                         ),
                       ),
-                      title: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Flexible(
-                            child: Text( tour.title != null ? 
-                              "${tour.title}":'',
-                              style: TextStyle(fontFamily: 'Point-SemiBold'),
-                            ),
+                      
+                    /* ListTile(
+                        leading: ClipRRect(
+                          borderRadius: BorderRadius.circular(5.0),
+                          child: FadeInImage(
+                            image: NetworkImage(tour.gallery.toString()),
+                            placeholder: AssetImage('assets/loading.gif'),
+                            width: size.width * 0.4,
+                            height: size.height * 0.2,
+                            fit: BoxFit.fill,
                           ),
-                         /* Row(
-                            children: <Widget>[
-                              Icon(Icons.place),
-                            ],
-                          )*/
-                        ],
-                      ),
-                      onTap: (){
-                        //Se cierra la búsqueda primero
-                        close(context, null);
-                        //tour.uniqueid='';
-                        Navigator.pushNamed(context, 'detalletour',arguments: tour);
-                      },
-                    ),*/
+                        ),
+                        title: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Flexible(
+                              child: Text( tour.title != null ? 
+                                "${tour.title}":'',
+                                style: TextStyle(fontFamily: 'Point-SemiBold'),
+                              ),
+                            ),
+                          /* Row(
+                              children: <Widget>[
+                                Icon(Icons.place),
+                              ],
+                            )*/
+                          ],
+                        ),
+                        onTap: (){
+                          //Se cierra la búsqueda primero
+                          close(context, null);
+                          //tour.uniqueid='';
+                          Navigator.pushNamed(context, 'detalletour',arguments: tour);
+                        },
+                      ),*/
+                    ),
                   ),
-                ),
-              );
-            }).toList(),
-          );
+                );
+              }).toList(),
+            );
+          }
         }else{
-        return Center(
-          child: CircularProgressIndicator(),
-        ) ;
+          return Center(
+            child: CircularProgressIndicator(),
+          );
         }
       },
     );
@@ -338,83 +358,102 @@ class DataSearch extends SearchDelegate{
 
     return FutureBuilder(
       future: categorias.buscarTours(query),
-      builder: (BuildContext context, AsyncSnapshot<List<InfoTour>> snapshot) {
+      builder: (BuildContext context, AsyncSnapshot<Map<String,dynamic>> snapshot) {
         final size = MediaQuery.of(context).size;
         String noDatos = AppTranslations.of(context).text('title_nodata');
         if(snapshot.hasData){
           final tours = snapshot.data;
-          return ListView(
-            children: tours.map((tour){
-              return GestureDetector(
-                onTap: (){
-                  //Se cierra la búsqueda primero
-                  close(context, null);
-                  //showResults(context);
-                  Navigator.pushNamed(context, '/detalletour',arguments: tour);
-                },
-                child: Card(
-                  child: Container(
-                    width: size.width * 1.0,
-                    height: size.height * 0.15,
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 10.0),
-                      child: Row(
-                        children: <Widget>[
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(5.0),
-                            child: Image.network(
-                              tour.gallery.toString(),
-                              width: 160.0,
-                              height: 90.0,
-                              fit: BoxFit.fill,
-                              scale: 1.0,
-                            )
-                          ),
-                          SizedBox(
-                            width: size.width * 0.04,
-                          ),
-                          Flexible(
-                            child: Text( tour.title != null ?
-                              "${tour.title}":'',
-                              style: TextStyle(fontFamily: 'Point-SemiBold'),
-                            ),
-                          ),
-                        ],
-                      ),
-                    )
-                    
-                    /*ListTile(
-                      leading: ClipRRect(
-                        borderRadius: BorderRadius.circular(5.0),
-                        child: FadeInImage(
-                            image: NetworkImage(tour.gallery.toString()),
-                            placeholder: AssetImage('assets/loading.gif'),
-                            width: 160.0,
-                            height: 80.0,
-                            fit: BoxFit.cover,
-                          ),
-                      ),
-                      
-                      title: Text( tour.title != null ?
-                        "${tour.title}":'',
-                        style: TextStyle(fontFamily: 'Point-SemiBold'),
-                      ),
-                      onTap: (){
-                        //Se cierra la búsqueda primero
-                        close(context, null);
-                        //showResults(context);
-                        Navigator.pushNamed(context, 'detalletour',arguments: tour);
-                      },
-                    ),*/
-                  ),
+          if(tours.containsKey('msg')){
+            return Column(
+              children: <Widget>[
+                SizedBox(
+                  height: size.height * 0.24,
                 ),
-              );
-            }).toList(),
-          );
+                Center(
+                  child: Text(
+                    "$noDatos",
+                    style: TextStyle(
+                      fontFamily: 'Point-SemiBold'
+                    ),
+                  ),
+                )
+              ],
+            );
+          }else{
+            final tourEncontrado = new ListaToursC.fromJsonList(snapshot.data['tour']);
+            return ListView(
+              children: tourEncontrado.itemsTours.map((tour){
+                return GestureDetector(
+                  onTap: (){
+                    //Se cierra la búsqueda primero
+                    //close(context, null);
+                    showResults(context);
+                    Navigator.pushNamed(context, '/detalletour',arguments: tour);
+                  },
+                  child: Card(
+                    child: Container(
+                      width: size.width * 1.0,
+                      height: size.height * 0.15,
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 10.0),
+                        child: Row(
+                          children: <Widget>[
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(5.0),
+                              child: Image.network(
+                                tour.gallery.toString(),
+                                width: 160.0,
+                                height: 90.0,
+                                fit: BoxFit.fill,
+                                scale: 1.0,
+                              )
+                            ),
+                            SizedBox(
+                              width: size.width * 0.04,
+                            ),
+                            Flexible(
+                              child: Text( tour.title != null ?
+                                "${tour.title}":'',
+                                style: TextStyle(fontFamily: 'Point-SemiBold'),
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                      
+                      /*ListTile(
+                        leading: ClipRRect(
+                          borderRadius: BorderRadius.circular(5.0),
+                          child: FadeInImage(
+                              image: NetworkImage(tour.gallery.toString()),
+                              placeholder: AssetImage('assets/loading.gif'),
+                              width: 160.0,
+                              height: 80.0,
+                              fit: BoxFit.cover,
+                            ),
+                        ),
+                        
+                        title: Text( tour.title != null ?
+                          "${tour.title}":'',
+                          style: TextStyle(fontFamily: 'Point-SemiBold'),
+                        ),
+                        onTap: (){
+                          //Se cierra la búsqueda primero
+                          close(context, null);
+                          //showResults(context);
+                          Navigator.pushNamed(context, 'detalletour',arguments: tour);
+                        },
+                      ),*/
+                    ),
+                  ),
+                );
+              }).toList(),
+            );
+          }
         }else{
-        return Center(
-          child: Text('$noDatos'),
-        ) ;
+          return Center(
+            child: CircularProgressIndicator(),
+          );
         }
       },
     );
