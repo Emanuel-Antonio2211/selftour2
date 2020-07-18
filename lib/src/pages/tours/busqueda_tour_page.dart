@@ -5,6 +5,7 @@ import 'package:selftourapp/src/providers/categorias_providers.dart';
 import 'package:selftourapp/src/search/search_delegate.dart';
 import 'package:selftourapp/src/translation_class/app_translations.dart';
 import 'package:selftourapp/src/widgets/tours.dart';
+import 'package:selftourapp/src/preferencias_usuario/preferencias_usuario.dart';
 
 class BusquedaTourPage extends StatefulWidget {
   @override
@@ -16,26 +17,37 @@ class _BusquedaTourPageState extends State<BusquedaTourPage> with AutomaticKeepA
   String codPais;
   String state;
   AppState _appState = AppState();
+  PreferenciasUsuario prefs = PreferenciasUsuario();
   
   @override
-  void initState() { 
-    
+  void initState() {
     super.initState();
-    
+    // _appState.userLocation().then((value){
+    //   codPais = value[5].toString();
+    //   state = value[1].toString();
+    //   print("Estado: ");
+    //   print(state);
+    //   print("Pais: ");
+    //   print(codPais);
+    //   categoriasProvider.getTours(state,codPais);
+    // });
+
+    // _appState.ubicacion().then((value){
+    //   print("Datos del usuario:");
+    //   print(value[1]);
+    //   print(value[3]);
+    //   categoriasProvider.getTours(value[1],value[3]);
+    // });
+
+    print("Datos del usuario:");
+    print(prefs.estadoUser);
+    print(prefs.countryCode);
+    categoriasProvider.getTours(prefs.estadoUser.toString(),prefs.countryCode.toString());
   }
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    _appState.userLocation().then((value){
-      codPais = value[5].toString();
-      state = value[1].toString();
-      print("Estado: ");
-      print(state);
-      print("Pais: ");
-      print(codPais);
-      categoriasProvider.getTours(state,codPais);
-    });
     
     return Scaffold(
       appBar: AppBar(
@@ -78,12 +90,26 @@ class _BusquedaTourPageState extends State<BusquedaTourPage> with AutomaticKeepA
     Future<List<InfoTour>> cargarTour()async{
       //ListaToursC listaToursC;
       ListaToursC result;
-      _appState.userLocation().then((value)async{
-        state = value[1].toString();
-        codPais = value[5].toString();
-        final resultado = await categoriasProvider.getTours(state,codPais);
-        result = new ListaToursC.fromJsonList(resultado['tours'][0]['data_tour']);
-      });
+      // _appState.userLocation().then((value)async{
+      //   state = value[1].toString();
+      //   codPais = value[5].toString();
+      //   final resultado = await categoriasProvider.getTours(state,codPais);
+      //   result = new ListaToursC.fromJsonList(resultado['tours'][0]['data_tour']);
+      // });
+
+      // _appState.ubicacion().then((value)async{
+      //   print("Datos del usuario:");
+      //   print(value[1]);
+      //   print(value[3]);
+      //   final resultado = await categoriasProvider.getTours(value[1],value[3]);
+      //   result = new ListaToursC.fromJsonList(resultado['tours'][0]['data_tour']);
+      // });
+
+      print("Datos del usuario:");
+      print(prefs.estadoUser);
+      print(prefs.countryCode);
+      final resultado = await categoriasProvider.getTours(prefs.estadoUser.toString(),prefs.countryCode.toString());
+      result = new ListaToursC.fromJsonList(resultado['tours'][0]['data_tour']);
       
       // listaToursC = new ListaToursC.fromJsonList(result['Tours']['data']);
       return result.itemsTours;
@@ -96,7 +122,6 @@ class _BusquedaTourPageState extends State<BusquedaTourPage> with AutomaticKeepA
             builder: (BuildContext context, AsyncSnapshot<Map<String,dynamic>> snapshot) {
               //Se evalúa si tiene datos
               switch(snapshot.connectionState){
-                
                 case ConnectionState.waiting:
                   return Column(
                     children: <Widget>[
@@ -129,9 +154,31 @@ class _BusquedaTourPageState extends State<BusquedaTourPage> with AutomaticKeepA
                   );
                 
                 case ConnectionState.done:
-                  final tours = new ListaToursC.fromJsonList(snapshot.data['tours'][0]['data_tour']);
-                  if(snapshot.hasData && tours.itemsTours.length > 0){
-                    return ToursGeneral(listaTours: tours.itemsTours);
+                //snapshot.data['tours']['total'] == "empty"
+                  if(snapshot.hasData){
+                    if(snapshot.data['tours'][0]['data_tour'] != null){
+                      final tours = new ListaToursC.fromJsonList(snapshot.data['tours'][0]['data_tour']);
+                      return ToursGeneral(listaTours: tours.itemsTours);
+                      
+                    }else if(snapshot.data['tours']['total'] == "empty"){
+                      return Column(
+                        children: <Widget>[
+                          SafeArea(
+                            child: SizedBox(
+                              height: size.height * 0.4,
+                            ),
+                          ),
+                          Center(
+                            child: Text(
+                              '$noDatos',
+                              style: TextStyle(
+                                fontFamily: 'Point-SemiBold'
+                              ),
+                            )
+                          ),
+                        ],
+                      );
+                    }
                   }else{
                     return Column(
                       children: <Widget>[
@@ -141,12 +188,7 @@ class _BusquedaTourPageState extends State<BusquedaTourPage> with AutomaticKeepA
                           ),
                         ),
                         Center(
-                          child: Text(
-                            '$noDatos',
-                            style: TextStyle(
-                              fontFamily: 'Point-SemiBold'
-                            ),
-                          )
+                          child: CircularProgressIndicator()
                         ),
                       ],
                     );
@@ -154,9 +196,30 @@ class _BusquedaTourPageState extends State<BusquedaTourPage> with AutomaticKeepA
                   //return ToursGeneral(listaTours:snapshot.data,siguientePagina: categoriasProvider.getTours);
                 break;
                 case ConnectionState.active:
-                  final tours = new ListaToursC.fromJsonList(snapshot.data['tours'][0]['data_tour']);
-                  if(snapshot.hasData && tours.itemsTours.length > 0){
-                    return ToursGeneral(listaTours: tours.itemsTours);
+                  if(snapshot.hasData){
+                    if(snapshot.data['tours'][0]['data_tour'] != null){
+                      final tours = new ListaToursC.fromJsonList(snapshot.data['tours'][0]['data_tour']);
+                      return ToursGeneral(listaTours: tours.itemsTours);
+                      
+                    }else if(snapshot.data['tours']['total'] == "empty"){
+                      return Column(
+                        children: <Widget>[
+                          SafeArea(
+                            child: SizedBox(
+                              height: size.height * 0.4,
+                            ),
+                          ),
+                          Center(
+                            child: Text(
+                              '$noDatos',
+                              style: TextStyle(
+                                fontFamily: 'Point-SemiBold'
+                              ),
+                            )
+                          ),
+                        ],
+                      );
+                    }
                   }else{
                     return Column(
                       children: <Widget>[
@@ -166,12 +229,7 @@ class _BusquedaTourPageState extends State<BusquedaTourPage> with AutomaticKeepA
                           ),
                         ),
                         Center(
-                          child: Text(
-                            '$noDatos',
-                            style: TextStyle(
-                              fontFamily: 'Point-SemiBold'
-                            ),
-                          )
+                          child: CircularProgressIndicator()
                         ),
                       ],
                     );

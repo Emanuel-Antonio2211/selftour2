@@ -21,19 +21,31 @@ class _ToursRecientesPageState extends State<ToursRecientesPage> {
   AppState _appState = AppState();
 
   @override
-  void initState() { 
-    
+  void initState() {
     super.initState();
+    // _appState.userLocation().then((value){
+    //   state = value[1].toString();
+    //   codCountry = value[5].toString();
+    //   categoriasProvider.recientesPag(state,codCountry);
+    // });
+
+    // _appState.ubicacion().then((value){
+    //   print("Datos del usuario:");
+    //   print(value[1]);
+    //   print(value[3]);
+    //   categoriasProvider.recientesPag(value[1],value[3]);
+    // });
+
+    print("Datos del usuario:");
+    print(prefs.estadoUser);
+    print(prefs.countryCode);
+    categoriasProvider.recientesPag(prefs.estadoUser,prefs.countryCode);
   }
 
   @override
   Widget build(BuildContext context) {
     //final size = MediaQuery.of(context).size;
-    _appState.userLocation().then((value){
-      state = value[1].toString();
-      codCountry = value[5].toString();
-      categoriasProvider.recientesPag(state,codCountry);
-    });
+    
     
     return Scaffold(
       appBar: AppBar(
@@ -103,12 +115,26 @@ class _ToursRecientesPageState extends State<ToursRecientesPage> {
     Future<List<InfoTour>> cargarTour()async{
       //ListaToursC listaToursC;
       ListaToursC result;
-      _appState.userLocation().then((value)async{
-        state = value[1].toString();
-        codCountry = value[5].toString();
-       final resultado = await categoriasProvider.recientesPag(state,codCountry);
-        result = ListaToursC.fromJsonList(resultado['tours'][0]['data_tour']);
-      });
+      // _appState.userLocation().then((value)async{
+      //   state = value[1].toString();
+      //   codCountry = value[5].toString();
+      //  final resultado = await categoriasProvider.recientesPag(state,codCountry);
+      //   result = ListaToursC.fromJsonList(resultado['tours'][0]['data_tour']);
+      // });
+
+      // _appState.ubicacion().then((value)async{
+      //   print("Datos del usuario:");
+      //   print(value[1]);
+      //   print(value[3]);
+      //   final resultado = await categoriasProvider.recientesPag(value[1],value[3]);
+      //   result = ListaToursC.fromJsonList(resultado['tours'][0]['data_tour']);
+      // });
+
+      print("Datos del usuario:");
+      print(prefs.estadoUser);
+      print(prefs.countryCode);
+      final resultado = await categoriasProvider.recientesPag(prefs.estadoUser,prefs.countryCode);
+      result = ListaToursC.fromJsonList(resultado['tours'][0]['data_tour']);
       
       // listaToursC = new ListaToursC.fromJsonList(result['Tours']['data']);
       return result.itemsTours;
@@ -431,12 +457,26 @@ class _ToursRecientesPageState extends State<ToursRecientesPage> {
     Future<List<InfoTour>> cargarTour()async{
       //ListaToursC listaToursC;
       ListaToursC result;
-      _appState.userLocation().then((value)async{
-        state = value[1].toString();
-        codCountry = value[5].toString();
-        final resultado = await categoriasProvider.recientesPag(state,codCountry);
-        result = ListaToursC.fromJsonList(resultado['tours'][0]['data_tour']);
-      });
+      // _appState.userLocation().then((value)async{
+      //   state = value[1].toString();
+      //   codCountry = value[5].toString();
+      //   final resultado = await categoriasProvider.recientesPag(state,codCountry);
+      //   result = ListaToursC.fromJsonList(resultado['tours'][0]['data_tour']);
+      // });
+
+      // _appState.ubicacion().then((value)async{
+      //   print("Datos del usuario:");
+      //   print(value[1]);
+      //   print(value[3]);
+      //   final resultado = await categoriasProvider.recientesPag(value[1],value[3]);
+      //   result = ListaToursC.fromJsonList(resultado['tours'][0]['data_tour']);
+      // });
+
+      print("Datos del usuario:");
+      print(prefs.estadoUser);
+      print(prefs.countryCode);
+      final resultado = await categoriasProvider.recientesPag(prefs.estadoUser,prefs.countryCode);
+      result = ListaToursC.fromJsonList(resultado['tours'][0]['data_tour']);
       
       // listaToursC = new ListaToursC.fromJsonList(result['Tours']['data']);
       return result.itemsTours;

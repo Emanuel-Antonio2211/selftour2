@@ -5,32 +5,52 @@ import 'package:selftourapp/src/preferencias_usuario/preferencias_usuario.dart';
 import 'package:selftourapp/src/providers/categorias_providers.dart';
 import 'package:translator/translator.dart';
 
-class CategoriaVertical extends StatelessWidget {
+class CategoriaVertical extends StatefulWidget {
   final List<Categoria> categorias;
+  final Function siguientePagina;
+  CategoriaVertical({@required this.categorias, @required this.siguientePagina});
+
+  @override
+  _CategoriaVerticalState createState() => _CategoriaVerticalState();
+}
+
+class _CategoriaVerticalState extends State<CategoriaVertical> {
   final PreferenciasUsuario prefs = PreferenciasUsuario();
+
   final translator = new GoogleTranslator();
 
   final CategoriasProvider categoriasProvider = CategoriasProvider();
 
-  final Function siguientePagina;
-  CategoriaVertical({@required this.categorias, @required this.siguientePagina});
   final _scrollController = ScrollController();
+
   @override
-  Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
+  void initState() {
+    super.initState();
     _scrollController.addListener((){
       if(_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 10){
         //siguientePagina();
       }
     });
+  }
+
+  @override
+  void dispose(){
+    super.dispose();
+    _scrollController.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    
     return Container(
       height: size.height * 0.8,
       child: ListView.builder(
         controller: _scrollController,
-        itemCount: categorias.length,
+        itemCount: widget.categorias.length,
         physics: AlwaysScrollableScrollPhysics(),
         itemBuilder: (context,i){
-          return categoria(context, categorias[i]);
+          return categoria(context, widget.categorias[i]);
         },
       ),
     );
@@ -156,33 +176,53 @@ class CategoriaVertical extends StatelessWidget {
   }
 }
 
-class CategoriaGrid extends StatelessWidget {
+class CategoriaGrid extends StatefulWidget {
   final List<Categoria> categorias;
+  final Function siguientePagina;
+  CategoriaGrid({@required this.categorias, @required this.siguientePagina});
+
+  @override
+  _CategoriaGridState createState() => _CategoriaGridState();
+}
+
+class _CategoriaGridState extends State<CategoriaGrid> {
   final PreferenciasUsuario prefs = PreferenciasUsuario();
+
   final translator = new GoogleTranslator();
 
   final CategoriasProvider categoriasProvider = CategoriasProvider();
 
-  final Function siguientePagina;
-  CategoriaGrid({@required this.categorias, @required this.siguientePagina});
   final _scrollController = ScrollController();
+
   @override
-  Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
+  void initState() {
+    super.initState();
     _scrollController.addListener((){
       if(_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 10){
         //siguientePagina();
       }
     });
+  }
+
+  @override
+  void dispose(){
+    super.dispose();
+    _scrollController.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    
     return Container(
       height: size.height * 0.8,
       child: GridView.builder(
         controller: _scrollController,
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
         physics: AlwaysScrollableScrollPhysics(),
-        itemCount: categorias.length,
+        itemCount: widget.categorias.length,
         itemBuilder: (context,i){
-          return categoriasGrid(context, categorias[i]);
+          return categoriasGrid(context, widget.categorias[i]);
         },
       ),
     );

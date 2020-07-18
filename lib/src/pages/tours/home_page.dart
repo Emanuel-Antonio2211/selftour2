@@ -60,24 +60,56 @@ void initState() {
   //appState.getUserLocation();
   
   super.initState();
-  _appState.userLocation().then((value){
-    state = value[1].toString();
-    codCountry = value[5].toString();
-    categorias.getCategoria();
-    categorias.verPopulares(state,codCountry);
-    categorias.verRecientes(state,codCountry);
-    categorias.verRecomendados(state,codCountry);
-  });
+  // _appState.userLocation().then((value){
+  //   state = value[1].toString();
+  //   codCountry = value[5].toString();
+  //   categorias.getCategoria();
+  //   categorias.verPopulares(state,codCountry);
+  //   categorias.verRecientes(state,codCountry);
+  //   categorias.verRecomendados(state,codCountry);
+  // });
+
+  // _appState.ubicacion().then((value){
+  //   print("Datos del usuario:");
+  //   print(value[1]);
+  //   print(value[3]);
+  //   categorias.getCategoria();
+  //   categorias.verPopulares(value[1],value[3]);
+  //   categorias.verRecientes(value[1],value[3]);
+  //   categorias.verRecomendados(value[1],value[3]);
+  // });
+  print("Datos: ");
+  print(prefs.estadoUser);
+  print(prefs.countryCode);
+  categorias.getCategoria();
+  categorias.verPopulares(prefs.estadoUser.toString(),prefs.countryCode.toString());
+  categorias.verRecientes(prefs.estadoUser.toString(),prefs.countryCode.toString());
+  categorias.verRecomendados(prefs.estadoUser.toString(),prefs.countryCode.toString());
 }
 
 Future<void> getDatos()async{
   setState(() {
     
   });
-  await categorias.getCategoria();
-  await categorias.verPopulares(state,codCountry);
-  await categorias.verRecientes(state,codCountry);
-  await categorias.verRecomendados(state,codCountry);
+  // await categorias.getCategoria();
+  // await categorias.verPopulares(state,codCountry);
+  // await categorias.verRecientes(state,codCountry);
+  // await categorias.verRecomendados(state,codCountry);
+
+  // _appState.ubicacion().then((value){
+  //   categorias.getCategoria();
+  //   categorias.verPopulares(value[1],value[3]);
+  //   categorias.verRecientes(value[1],value[3]);
+  //   categorias.verRecomendados(value[1],value[3]);
+  // });
+
+  print("Datos: ");
+  print(prefs.estadoUser);
+  print(prefs.countryCode);
+  categorias.getCategoria();
+  categorias.verPopulares(prefs.estadoUser.toString(),prefs.countryCode.toString());
+  categorias.verRecientes(prefs.estadoUser.toString(),prefs.countryCode.toString());
+  categorias.verRecomendados(prefs.estadoUser.toString(),prefs.countryCode.toString());
 }
 
 /*Future<Null> _refresh() {
@@ -93,10 +125,25 @@ Future<void> getDatos()async{
     setState(() {
       
     });
-    await categorias.getCategoria();
-    await categorias.verPopulares(state,codCountry);
-    await categorias.verRecientes(state,codCountry);
-    await categorias.verRecomendados(state,codCountry);
+    // await categorias.getCategoria();
+    // await categorias.verPopulares(state,codCountry);
+    // await categorias.verRecientes(state,codCountry);
+    // await categorias.verRecomendados(state,codCountry);
+
+    // _appState.ubicacion().then((value){
+    //   categorias.getCategoria();
+    //   categorias.verPopulares(value[1],value[3]);
+    //   categorias.verRecientes(value[1],value[3]);
+    //   categorias.verRecomendados(value[1],value[3]);
+    // });
+
+    print("Datos: ");
+    print(prefs.estadoUser);
+    print(prefs.countryCode);
+    categorias.getCategoria();
+    categorias.verPopulares(prefs.estadoUser.toString(),prefs.countryCode.toString());
+    categorias.verRecientes(prefs.estadoUser.toString(),prefs.countryCode.toString());
+    categorias.verRecomendados(prefs.estadoUser.toString(),prefs.countryCode.toString());
     print("Datos actualizados");
     return null;
   }
@@ -140,6 +187,7 @@ Future<void> getDatos()async{
     print(prefs.pais);*/
   
     var size = MediaQuery.of(context).size;
+
     return Scaffold(
      appBar: AppBar(
        elevation: 0.0,
@@ -678,7 +726,7 @@ Future<void> getDatos()async{
         switch(snapshot.connectionState){
           case ConnectionState.waiting:
             return Container(
-              height: size.height * 0.28 ,//size.height * 0.1
+              height: size.height * 0.24,//size.height * 0.1
               child: Center(
                 child: CircularProgressIndicator()
               ),
@@ -686,7 +734,7 @@ Future<void> getDatos()async{
           break;
           case ConnectionState.none:
             return Container(
-              height: size.height * 0.28 ,//size.height * 0.1
+              height: size.height * 0.24,//size.height * 0.1
               child: Center(
                 child: Text(
                   "$noData",
@@ -698,14 +746,13 @@ Future<void> getDatos()async{
             );
           break;
           case ConnectionState.done:
-            
             if(snapshot.hasData){
               final resp = snapshot.data['categories'];
               if(resp['data'] == null){
                 return Column(
                   children: <Widget>[
                     SizedBox(
-                      height: size.height * 0.28,
+                      height: size.height * 0.24,
                     ),
                     Center(
                       child: Text(
@@ -723,13 +770,25 @@ Future<void> getDatos()async{
                   categorias: categorias.items,
                 );
               }
-              
-              /*CardSwiper(
-              categorias: snapshot.data,
-            );*/
+            }else if(snapshot.hasError){
+              return Column(
+                  children: <Widget>[
+                    SizedBox(
+                      height: size.height * 0.24,
+                    ),
+                    Center(
+                      child: Text(
+                        "${snapshot.error.toString()}",
+                        style: TextStyle(
+                          fontFamily: 'Point-SemiBold'
+                        ),
+                      ),
+                    )
+                  ],
+                );
             }else{
               return Container(
-                height: size.height * 0.28,//size.height * 0.1
+                height: size.height * 0.24,//size.height * 0.1
                 child: Center(
                   child: CircularProgressIndicator()
                 ),
@@ -737,14 +796,13 @@ Future<void> getDatos()async{
             }
           break;
           case ConnectionState.active:
-            
             if(snapshot.hasData){
               final resp = snapshot.data['categories'];
               if(resp['data'] == null){
                 return Column(
                   children: <Widget>[
                     SizedBox(
-                      height: size.height * 0.28,
+                      height: size.height * 0.24,
                     ),
                     Center(
                       child: Text(
@@ -759,16 +817,38 @@ Future<void> getDatos()async{
               }else{
                 final categorias = new Categorias.fromJsonList(snapshot.data['categories']['data']);
                 return CategoriaHorizontal(
-                  categorias: categorias.items
+                  categorias: categorias.items,
                 );
               }
-              
+            }else if(snapshot.hasError){
+              return Column(
+                children: <Widget>[
+                  SizedBox(
+                    height: size.height * 0.24,
+                  ),
+                  Center(
+                    child: Text(
+                      "${snapshot.error.toString()}",
+                      style: TextStyle(
+                        fontFamily: 'Point-SemiBold'
+                      ),
+                    ),
+                  )
+                ],
+              );
+            }else{
+              return Container(
+                height: size.height * 0.24,//size.height * 0.1
+                child: Center(
+                  child: CircularProgressIndicator()
+                ),
+              );
             }
             
           break;
           default:
             return Container(
-              height: size.height * 0.28 ,//size.height * 0.1
+              height: size.height * 0.24,//size.height * 0.1
               child: Center(
                 child: CircularProgressIndicator()
               ),
@@ -870,11 +950,10 @@ Future<void> getDatos()async{
       stream: categorias.popularStream,
       //initialData: InitialData,
       builder: (BuildContext context, AsyncSnapshot<Map<String,dynamic>> snapshot) {
-        
         switch(snapshot.connectionState){
           case ConnectionState.waiting:
             return Container(
-              height: size.height * 0.28,//size.height * 0.1
+              height: size.height * 0.24,//size.height * 0.1
               child: Center(
                 child: CircularProgressIndicator()
               ),
@@ -882,7 +961,7 @@ Future<void> getDatos()async{
           break;
           case ConnectionState.none:
             return Container(
-              height: size.height * 0.28,//size.height * 0.1
+              height: size.height * 0.24,//size.height * 0.1
               child: Center(
                 child: Text(
                   "$noData",
@@ -894,17 +973,16 @@ Future<void> getDatos()async{
             );
           break;
           case ConnectionState.done:
-            
             if(snapshot.hasData){
               if(snapshot.data['tours'][0]['data_tour'] == null){
                 return Column(
                   children: <Widget>[
                     SizedBox(
-                      height: size.height * 0.28,
+                      height: size.height * 0.24,
                     ),
                     Center(
                       child: Text(
-                        "$noData",
+                        "$noData",//
                         style: TextStyle(
                           fontFamily: 'Point-SemiBold'
                         ),
@@ -916,29 +994,15 @@ Future<void> getDatos()async{
                 final populares = ListaToursC.fromJsonList(snapshot.data['tours'][0]['data_tour']);
                 return ToursPopulares(listaPopulares: populares.itemsTours,);
               }
-              
-              /*CardSwiper(
-              categorias: snapshot.data,
-            );*/
-            }else{
-              return Container(
-                height: size.height * 0.28,//size.height * 0.1
-                child: Center(
-                  child: CircularProgressIndicator()
-                ),
-              );
-            }
-          break;
-          case ConnectionState.active:
-            if(snapshot.data['tours'][0]['data_tour'] == null){
+            }else if(snapshot.hasError){
               return Column(
                 children: <Widget>[
                   SizedBox(
-                    height: size.height * 0.28,
+                    height: size.height * 0.24,
                   ),
                   Center(
                     child: Text(
-                      "$noData",
+                      "${snapshot.error.toString()}",//
                       style: TextStyle(
                         fontFamily: 'Point-SemiBold'
                       ),
@@ -947,14 +1011,64 @@ Future<void> getDatos()async{
                 ],
               );
             }else{
-              final populares = ListaToursC.fromJsonList(snapshot.data['tours'][0]['data_tour']);
-              return ToursPopulares(listaPopulares: populares.itemsTours,);
+              return Container(
+                height: size.height * 0.24,//size.height * 0.1
+                child: Center(
+                  child: CircularProgressIndicator()
+                ),
+              );
             }
-            
+          break;
+          case ConnectionState.active:
+            if(snapshot.hasData){
+              if(snapshot.data['tours'][0]['data_tour'] == null){
+                return Column(
+                  children: <Widget>[
+                    SizedBox(
+                      height: size.height * 0.24,
+                    ),
+                    Center(
+                      child: Text(
+                        "$noData",//
+                        style: TextStyle(
+                          fontFamily: 'Point-SemiBold'
+                        ),
+                      ),
+                    )
+                  ],
+                );
+              }else{
+                final populares = ListaToursC.fromJsonList(snapshot.data['tours'][0]['data_tour']);
+                return ToursPopulares(listaPopulares: populares.itemsTours,);
+              }
+            }else if(snapshot.hasError){
+              return Column(
+                children: <Widget>[
+                  SizedBox(
+                    height: size.height * 0.24,
+                  ),
+                  Center(
+                    child: Text(
+                      "${snapshot.error.toString()}",//
+                      style: TextStyle(
+                        fontFamily: 'Point-SemiBold'
+                      ),
+                    ),
+                  )
+                ],
+              );
+            }else{
+              return Container(
+                height: size.height * 0.24,//size.height * 0.1
+                child: Center(
+                  child: CircularProgressIndicator()
+                ),
+              );
+            }
           break;
           default:
             return Container(
-              height: size.height * 0.28,//size.height * 0.1
+              height: size.height * 0.24,//size.height * 0.1
               child: Center(
                 child: CircularProgressIndicator()
               ),
@@ -1043,7 +1157,7 @@ Future<void> getDatos()async{
         switch(snapshot.connectionState){
           case ConnectionState.waiting:
             return Container(
-              height: size.height * 0.28,
+              height: size.height * 0.24,
               child: Center(
                 child: CircularProgressIndicator()
               ),
@@ -1051,7 +1165,7 @@ Future<void> getDatos()async{
           break;
           case ConnectionState.none:
             return Container(
-              height: size.height * 0.28,
+              height: size.height * 0.24,
               child: Center(
                 child: Text(
                   "$noData",
@@ -1068,42 +1182,7 @@ Future<void> getDatos()async{
                 return Column(
                   children: <Widget>[
                     SizedBox(
-                      height: size.height * 0.28,
-                    ),
-                    Center(
-                      child: Text(
-                        "$noData",
-                        style: TextStyle(
-                          fontFamily: 'Point-SemiBold'
-                        ),
-                      ),
-                    )
-                  ],
-                );
-              }else{
-                final recientes = ListaToursC.fromJsonList(snapshot.data['tours'][0]['data_tour']);
-                return ToursRecientes(listaRecientes: recientes.itemsTours,);
-            }
-            
-              /*CardSwiper(
-              categorias: snapshot.data,
-            );*/
-            }else{
-              return Container(
-                height: size.height * 0.28,
-                child: Center(
-                  child: CircularProgressIndicator()
-                ),
-              );
-            }
-          break;
-          case ConnectionState.active:
-            if(snapshot.hasData){
-              if(snapshot.data['tours'][0]['data_tour'] == null){
-                return Column(
-                  children: <Widget>[
-                    SizedBox(
-                      height: size.height * 0.28,
+                      height: size.height * 0.24,
                     ),
                     Center(
                       child: Text(
@@ -1119,12 +1198,64 @@ Future<void> getDatos()async{
                 final recientes = ListaToursC.fromJsonList(snapshot.data['tours'][0]['data_tour']);
                 return ToursRecientes(listaRecientes: recientes.itemsTours,);
               }
-              
+            }else if(snapshot.hasError){
+              return Container(
+                height: size.height * 0.24,
+                child: Center(
+                  child: Text(
+                    snapshot.error.toString(),
+                    style: TextStyle(
+                      fontFamily: 'Point-SemiBold'
+                    ),
+                  ),
+                )
+              );
+            }else{
+              return Container(
+                height: size.height * 0.24,
+                child: Center(
+                  child: CircularProgressIndicator()
+                ),
+              );
+            }
+          break;
+          case ConnectionState.active:
+            if(snapshot.hasData){
+              if(snapshot.data['tours'][0]['data_tour'] == null){
+                return Column(
+                  children: <Widget>[
+                    SizedBox(
+                      height: size.height * 0.24,
+                    ),
+                    Center(
+                      child: Text(
+                        "$noData",
+                        style: TextStyle(
+                          fontFamily: 'Point-SemiBold'
+                        ),
+                      ),
+                    )
+                  ],
+                );
+              }else{
+                final recientes = ListaToursC.fromJsonList(snapshot.data['tours'][0]['data_tour']);
+                return ToursRecientes(listaRecientes: recientes.itemsTours,);
+              }
+            }else if(snapshot.hasError){
+              return Container(
+                height: size.height * 0.24,
+                child: Text(
+                  snapshot.error.toString(),
+                  style: TextStyle(
+                    fontFamily: 'Point-SemiBold'
+                  ),
+                )
+              );
             }else{
               return Column(
                 children: <Widget>[
                   SizedBox(
-                    height: size.height * 0.28,
+                    height: size.height * 0.24,
                   ),
                   Center(
                     child: CircularProgressIndicator()
@@ -1132,11 +1263,10 @@ Future<void> getDatos()async{
                 ],
               );
             }
-            
           break;
           default:
             return Container(
-              height: size.height * 0.28,
+              height: size.height * 0.24,
               child: Center(
                 child: CircularProgressIndicator()
               ),
@@ -1223,7 +1353,7 @@ Future<void> getDatos()async{
         switch(snapshot.connectionState){
           case ConnectionState.waiting:
             return Container(
-              height: size.height * 0.28,
+              height: size.height * 0.24,
               child: Center(
                 child: CircularProgressIndicator()
               ),
@@ -1231,7 +1361,7 @@ Future<void> getDatos()async{
           break;
           case ConnectionState.none:
             return Container(
-              height: size.height * 0.28,
+              height: size.height * 0.24,
               child: Center(
                 child: Text(
                   "$noData",
@@ -1243,13 +1373,12 @@ Future<void> getDatos()async{
             );
           break;
           case ConnectionState.done:
-            
             if(snapshot.hasData){
               if(snapshot.data['tours'][0]['data_tour'] == null){
                 return Column(
                   children: <Widget>[
                     SizedBox(
-                      height: size.height * 0.28,
+                      height: size.height * 0.24,
                     ),
                     Center(
                       child: Text(
@@ -1265,10 +1394,25 @@ Future<void> getDatos()async{
                 final recomendados = ListaToursC.fromJsonList(snapshot.data['tours'][0]['data_tour']);
                 return ToursRecomendados(listaRecomendados: recomendados.itemsTours);
               }
-              
+            }else if(snapshot.hasError){
+              return Column(
+                children: <Widget>[
+                  SizedBox(
+                    height: size.height * 0.24,
+                  ),
+                  Center(
+                    child: Text(
+                      "${snapshot.error.toString()}",
+                      style: TextStyle(
+                        fontFamily: 'Point-SemiBold'
+                      ),
+                    ),
+                  )
+                ],
+              );
             }else{
               return Container(
-                height: size.height * 0.28,
+                height: size.height * 0.24,
                 child: Center(
                   child: CircularProgressIndicator()
                 ),
@@ -1281,7 +1425,7 @@ Future<void> getDatos()async{
                 return Column(
                   children: <Widget>[
                     SizedBox(
-                      height: size.height * 0.28,
+                      height: size.height * 0.24,
                     ),
                     Center(
                       child: Text(
@@ -1297,10 +1441,25 @@ Future<void> getDatos()async{
                 final recomendados = ListaToursC.fromJsonList(snapshot.data['tours'][0]['data_tour']);
                 return ToursRecomendados(listaRecomendados: recomendados.itemsTours);
               }
-              
+            }else if(snapshot.hasError){
+              return Column(
+                children: <Widget>[
+                  SizedBox(
+                    height: size.height * 0.24,
+                  ),
+                  Center(
+                    child: Text(
+                      "${snapshot.error.toString()}",
+                      style: TextStyle(
+                        fontFamily: 'Point-SemiBold'
+                      ),
+                    ),
+                  )
+                ],
+              );
             }else{
               return Container(
-                height: size.height * 0.28,
+                height: size.height * 0.24,
                 child: Center(
                   child: CircularProgressIndicator()
                 ),
@@ -1310,7 +1469,7 @@ Future<void> getDatos()async{
           break;
           default:
             return Container(
-              height: size.height * 0.28,
+              height: size.height * 0.24,
               child: Center(
                 child: CircularProgressIndicator()
               ),

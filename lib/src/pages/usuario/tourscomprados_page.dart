@@ -69,9 +69,9 @@ class _ToursCompradosPageState extends State<ToursCompradosPage> {
       ),
       body: SingleChildScrollView(
         child: StreamBuilder(
-          stream: categoriasProvider.tourFavoritoStream,
+          stream: categoriasProvider.tourCompradoStream,
          // initialData: InitialData,
-          builder: (BuildContext context, AsyncSnapshot<List<InfoTour>> snapshot) {
+          builder: (BuildContext context, AsyncSnapshot<Map<String,dynamic>> snapshot) {
             String errorDatos = AppTranslations.of(context).text('title_errorVacio');
 
             switch(snapshot.connectionState){
@@ -101,12 +101,7 @@ class _ToursCompradosPageState extends State<ToursCompradosPage> {
               break;
               case ConnectionState.done:
                 if( snapshot.hasData){
-                  if(snapshot.data.length > 0){
-                    final listatour = snapshot.data;
-                    print("Tamaño");
-                    print(listatour.length);
-                    return Comprados(listaComprados: listatour);
-                  }else{
+                  if(snapshot.data['shopping']['msg'] == "NO SE ENCONTRO NINGUN TOUR"){
                     return Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
@@ -122,6 +117,9 @@ class _ToursCompradosPageState extends State<ToursCompradosPage> {
                         ),
                       ],
                     );
+                  }else{
+                    final comprados = ListaToursC.fromJsonList(snapshot.data['shopping']['tours']);
+                    return Comprados(listaComprados: comprados.itemsTours);
                   }
                   
                 }else if(snapshot.hasError){
@@ -158,19 +156,11 @@ class _ToursCompradosPageState extends State<ToursCompradosPage> {
                     ],
                   );
                 }
-                /*final listatour = snapshot.data;
-                //loading = true;
-                return Comprados(listaComprados: listatour,);*/
               break;
               case ConnectionState.active:
-                if(snapshot.hasData){
-                  if(snapshot.data.length > 0){
-                    final listatour = snapshot.data;
-                    print("Tamaño");
-                    print(listatour.length);
-                    return Comprados(listaComprados: listatour);
-                  }else{
-                   return Column(
+                if( snapshot.hasData){
+                  if(snapshot.data['shopping']['msg'] == "NO SE ENCONTRO NINGUN TOUR"){
+                    return Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         SafeArea(
@@ -179,11 +169,17 @@ class _ToursCompradosPageState extends State<ToursCompradosPage> {
                           ),
                         ),
                         Center(
-                          child: Text('$noData')
+                          child: Text(
+                            '${noData.toString()}' //errorDatos.toString() snapshot.error.toString()
+                          )
                         ),
                       ],
                     );
+                  }else{
+                    final comprados = ListaToursC.fromJsonList(snapshot.data['shopping']['tours']);
+                    return Comprados(listaComprados: comprados.itemsTours);
                   }
+                  
                 }else if(snapshot.hasError){
                   return Center(
                     child: Column(
@@ -195,12 +191,15 @@ class _ToursCompradosPageState extends State<ToursCompradosPage> {
                           ),
                         ),
                         Center(
-                          child: Text('${errorDatos.toString()}')
+                          child: Text(
+                            '${errorDatos.toString()}' //errorDatos.toString() snapshot.error.toString()
+                          )
                         ),
                       ],
                     ),
                   );
-                }else{
+                }
+                else{
                   return Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
@@ -215,9 +214,6 @@ class _ToursCompradosPageState extends State<ToursCompradosPage> {
                     ],
                   );
                 }
-                //final listatour = snapshot.data;
-                //loading = true;
-               // return Comprados(listaComprados: listatour,);
               break;
               default:
                 return Column(
@@ -304,8 +300,9 @@ class _CompradosState extends State<Comprados> {
       // });
 
       _categoriasProvider.toursComprados().then((result){
-        for(int i = 0; i < result.length; i++){
-          widget.listaComprados.add(result[i]);
+        final comprados = ListaToursC.fromJsonList(result['shopping']['tours']);
+        for(int i = 0; i < comprados.itemsTours.length; i++){
+          widget.listaComprados.add(comprados.itemsTours[i]);
         }
       });
 
@@ -372,8 +369,9 @@ class _CompradosState extends State<Comprados> {
       setState(() {
         isloading = false;
       });
-      for(int i = 0; i < resp.length; i++){
-        widget.listaComprados.add(resp[i]);
+      final comprados = ListaToursC.fromJsonList(resp['shopping']['tours']);
+      for(int i = 0; i < comprados.itemsTours.length; i++){
+        widget.listaComprados.add(comprados.itemsTours[i]);
       }
     });
     //widget.siguientePagina();
@@ -485,7 +483,7 @@ class _CompradosState extends State<Comprados> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
                             Container(
-                              width: size.width * 0.5,
+                              width: size.width * 0.4,
                               child: Text(
                                   infotour.title.toString(),
                                   style: TextStyle(

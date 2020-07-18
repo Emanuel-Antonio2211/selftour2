@@ -7,12 +7,15 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import 'package:selftourapp/src/pages/usuario/chat_page.dart';
-
+import 'package:selftourapp/src/preferencias_usuario/preferencias_usuario.dart';
+import 'package:selftourapp/src/pages/login/sesion_page_chat_user.dart';
+import 'package:selftourapp/src/models/chat_model.dart';
 
 class PushNotificationProvider{
   //Se inicializa las notificaciones
   //Pedirle permiso al usuario de que va a recibir notificaciones
   FirebaseMessaging firebaseMessaging = FirebaseMessaging();
+  PreferenciasUsuario _prefs = PreferenciasUsuario();
   FlutterLocalNotificationsPlugin localNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
   final GlobalKey<NavigatorState> _navigatorKey = new GlobalKey<NavigatorState>();
@@ -20,6 +23,7 @@ class PushNotificationProvider{
   GlobalKey<NavigatorState> get navigationKey => _navigatorKey;
 
   Map<String, dynamic> informacion;
+  Map<String,dynamic> datosReceived;
 
   //Se crea un stream para las notificaciones
   final _mensajesStreamController = StreamController<Map<String,dynamic>>.broadcast();
@@ -123,12 +127,20 @@ class PushNotificationProvider{
             String mensaje = 'no-message';
             String emailUser;
             String fotoUser;
+            String fotoUsuarioNoti;
+            String dataUser;
+            String dataEmail;
             if(Platform.isAndroid){
               //argumento = info['data']['mensaje'] ?? 'no-data';
               usuario = info['notification']['title'];
               mensaje = info['notification']['body'];
               emailUser = info['data']['iduser'];
               fotoUser = info['data']['useravatar'];
+
+              //Desde el servidor
+              fotoUsuarioNoti = info['notification']['icon'];
+              dataUser = info['data']['user'];
+              dataEmail = info['data']['mail'];
             }else{
               usuario = info['notification']['title'] ?? 'no-data-ios';
               mensaje = info['notification']['body'];
@@ -141,9 +153,22 @@ class PushNotificationProvider{
               "emailuser": "${emailUser.toString()}",
               "fotouser": "${fotoUser.toString()}"
             };
+
+            datosReceived = {
+              "usuario": "${usuario.toString()}",
+              "mensaje": "${mensaje.toString()}",
+              "emailuser": "${emailUser.toString()}",
+              "fotouser": "${fotoUser.toString()}",
+              "fotousuarionoti": "${fotoUsuarioNoti.toString()}",
+              "datauser": "${dataUser.toString()}",
+              "dataemail": "${dataEmail.toString()}"
+            };
+
             //El argumento se agrega al stream
             _mensajesStreamController.sink.add(informacion);
+
             mostrarNotificaciones(fotoUser.toString(),usuario, mensaje);
+
             /*mensajes.listen((data){
               mostrarNotificaciones(fotoUser.toString(),usuario, mensaje);
               /*navigationKey.currentState.push(
@@ -165,12 +190,20 @@ class PushNotificationProvider{
             String mensaje = 'no-message';
             String emailUser;
             String fotoUser;
+            String fotoUsuarioNoti;
+            String dataUser;
+            String dataEmail;
             if(Platform.isAndroid){
               //argumento = info['data']['mensaje'] ?? 'no-data';
               usuario = info['notification']['title'];
               mensaje = info['notification']['body'];
               emailUser = info['data']['iduser'];
               fotoUser = info['data']['useravatar'];
+              //Desde el servidor
+              fotoUsuarioNoti = info['notification']['icon'];
+              dataUser = info['data']['user'];
+              dataEmail = info['data']['mail'];
+              
             }else{
               //argumento = info['mensaje'] ?? 'no-data-ios';
               usuario = info['notification']['title'] ?? 'no-data-ios';
@@ -184,6 +217,17 @@ class PushNotificationProvider{
               "emailuser": "${emailUser.toString()}",
               "fotouser": "${fotoUser.toString()}"
             };
+
+            datosReceived = {
+              "usuario": "${usuario.toString()}",
+              "mensaje": "${mensaje.toString()}",
+              "emailuser": "${emailUser.toString()}",
+              "fotouser": "${fotoUser.toString()}",
+              "fotousuarionoti": "${fotoUsuarioNoti.toString()}",
+              "datauser": "${dataUser.toString()}",
+              "dataemail": "${dataEmail.toString()}"
+            };
+
             _mensajesStreamController.sink.add(informacion);
             //mostrarNotificaciones(fotoUser.toString(),usuario, mensaje);
             // mensajes.listen((data){
@@ -196,13 +240,29 @@ class PushNotificationProvider{
             //     )
             //   );
             // });
-            navigationKey.currentState.push(
-              MaterialPageRoute(
-                builder: (context){
-                  return ChatPage(userEmail: info['data']['iduser'],userName: info['data']['nickname'],userAvatar: info['data']['useravatar']);
-                }
-              )
-            );
+
+            final chat = Chat.fromJsonMap(datosReceived);
+
+            if(_prefs.token == ''){
+              navigationKey.currentState.push(
+                MaterialPageRoute(
+                  builder: (context){
+                    return SesionPageChatUser();
+                  },
+                  settings: RouteSettings(
+                    arguments: chat
+                  )
+                )
+              );
+            }else{
+              navigationKey.currentState.push(
+                MaterialPageRoute(
+                  builder: (context){
+                    return ChatPage(userEmail: info['data']['iduser'],userName: info['data']['nickname'],userAvatar: info['data']['useravatar']);
+                  }
+                )
+              );
+            }
           },
           //Se dispara cuando la aplicación está en segundo plano
           onResume: (info)async{
@@ -216,12 +276,21 @@ class PushNotificationProvider{
             String mensaje = 'no-message';
             String emailUser;
             String fotoUser;
+            String fotoUsuarioNoti;
+            String dataUser;
+            String dataEmail;
+            
             if(Platform.isAndroid){
               //argumento = info['data']['mensaje'] ?? 'no-data';
               usuario = info['notification']['title'];
               mensaje = info['notification']['body'];
               emailUser = info['data']['iduser'];
               fotoUser = info['data']['useravatar'];
+
+              //Desde el servidor
+              fotoUsuarioNoti = info['notification']['icon'];
+              dataUser = info['data']['user'];
+              dataEmail = info['data']['mail'];
             }else{
               //argumento = info['mensaje'] ?? 'no-data-ios';
               usuario = info['notification']['title'] ?? 'no-data-ios';
@@ -235,16 +304,40 @@ class PushNotificationProvider{
               "emailuser": "${emailUser.toString()}",
               "fotouser": "${fotoUser.toString()}"
             };
+
+            datosReceived = {
+              "usuario": "${usuario.toString()}",
+              "mensaje": "${mensaje.toString()}",
+              "emailuser": "${emailUser.toString()}",
+              "fotouser": "${fotoUser.toString()}",
+              "fotousuarionoti": "${fotoUsuarioNoti.toString()}",
+              "datauser": "${dataUser.toString()}",
+              "dataemail": "${dataEmail.toString()}"
+            };
             _mensajesStreamController.sink.add(informacion);
             //mostrarNotificaciones(fotoUser.toString(),usuario, mensaje);
+            final chat = Chat.fromJsonMap(datosReceived);
+            if(_prefs.token == ''){
+              navigationKey.currentState.push(
+                MaterialPageRoute(
+                  builder: (context){
+                    return SesionPageChatUser();
+                  },
+                  settings: RouteSettings(
+                    arguments: chat
+                  )
+                )
+              );
+            }else{
+              navigationKey.currentState.push(
+                MaterialPageRoute(
+                  builder: (context){
+                    return ChatPage(userEmail: info['data']['iduser'],userName: info['data']['nickname'],userAvatar: info['data']['useravatar']);
+                  }
+                )
+              );
+            }
             
-            navigationKey.currentState.push(
-              MaterialPageRoute(
-                builder: (context){
-                  return ChatPage(userEmail: info['data']['iduser'],userName: info['data']['nickname'],userAvatar: info['data']['useravatar']);
-                }
-              )
-            );
           }
         );
       }
@@ -262,13 +355,28 @@ class PushNotificationProvider{
       print(payload);
       print("Información");
       print(informacion);
-      navigationKey.currentState.push(
-        MaterialPageRoute(
-          builder: (context){
-            return ChatPage(userEmail: informacion['emailuser'].toString(),userName: informacion['usuario'].toString(), userAvatar: informacion['fotouser'].toString());
-          }
-        )
-      );
+      final chat = Chat.fromJsonMap(datosReceived);
+      if( _prefs.tokenFCM == '' || _prefs.token == '' ){
+        navigationKey.currentState.push(
+          MaterialPageRoute(
+            builder: (context){
+              return SesionPageChatUser();
+            },
+            settings: RouteSettings(
+              arguments: chat
+            )
+          )
+        );
+      }else{
+        navigationKey.currentState.push(
+          MaterialPageRoute(
+            builder: (context){
+              return ChatPage(userEmail: informacion['emailuser'].toString(),userName: informacion['usuario'].toString(), userAvatar: informacion['fotouser'].toString());
+            }
+          )
+        );
+      }
+      
     }
 
     void mostrarNotificaciones(String iconUser,String nombreUsuario, String mensaje)async{

@@ -46,9 +46,11 @@ import 'package:selftourapp/src/pages/usuario/profile_user_page.dart';
 import 'package:selftourapp/src/pages/registro_page.dart';
 
 import 'package:selftourapp/src/pages/usuario/Inicio_page.dart';
+import 'package:selftourapp/src/pages/usuario/tours_user_page.dart';
 import 'package:selftourapp/src/pages/usuario/tourscomprados_page.dart';
 //import 'package:selftourapp/src/pages/usuario/usuarios_chat_page.dart';
 import 'package:selftourapp/src/preferencias_usuario/preferencias_usuario.dart';
+import 'package:selftourapp/src/providers/pagos_provider.dart';
 import 'package:selftourapp/src/providers/push_notifications_provider.dart';
 import 'package:selftourapp/src/translation_class/app_translations_delegate.dart';
 import 'package:selftourapp/src/translation_class/application.dart';
@@ -70,7 +72,8 @@ WidgetsFlutterBinding.ensureInitialized();
           runApp(
         MultiProvider(
           providers: [
-            ChangeNotifierProvider.value(value: AppState(),)
+            ChangeNotifierProvider.value(value: AppState(),),
+            ChangeNotifierProvider.value(value: PagosProvider())
           ],
           child: MyApp(),
         )
@@ -232,6 +235,7 @@ class _MyAppState extends State<MyApp> {
           'intro'          : (BuildContext context)=>IntroPage(),
           'slidepage'      : (BuildContext context)=>SliderOptionsPage(),
           'menuprincipal'  : (BuildContext context)=>TabsPage(),
+          'toursuser'      : (BuildContext context)=>ToursUserPage(),
 
           'loginusuario'   : (BuildContext context)=>LoginPage(),
           'registro'       : (BuildContext context)=>RegistroPage(),

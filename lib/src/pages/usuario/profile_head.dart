@@ -9,6 +9,7 @@ import 'package:selftourapp/src/pages/login/login_page.dart';
 import 'package:selftourapp/src/pages/usuario/term_serv_page.dart';
 import 'package:selftourapp/src/preferencias_usuario/preferencias_usuario.dart';
 import 'package:selftourapp/src/translation_class/app_translations.dart';
+import 'package:selftourapp/src/pages/usuario/usuarios_chat_page.dart';
 
 class ProfileHead extends StatefulWidget {
   @override
@@ -432,6 +433,9 @@ class _ProfileHeadState extends State<ProfileHead> {
       String preflang = AppTranslations.of(context).text('title_preflang');
       String logout = AppTranslations.of(context).text('title_logout');
       String confaccount = AppTranslations.of(context).text('title_confaccount');
+      String mensajes = AppTranslations.of(context).text('title_mensajes');
+      String misTours = AppTranslations.of(context).text('title_mis_tours');
+
       return Stack(
             children: <Widget>[
            /* Container(
@@ -719,6 +723,144 @@ class _ProfileHeadState extends State<ProfileHead> {
                                               return TermServPage();
                                             }
                                           ));
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                  
+                                  SizedBox(
+                                    width: size.width * 0.3,
+                                  ),
+                                  Icon(
+                                    Icons.arrow_forward_ios,
+                                    size: 16.0,
+                                    color: Colors.grey,
+                                  )
+                                ],
+                            ),
+                              ),
+                          ),
+                        ),
+                        SizedBox(
+                          height: size.height * 0.03,
+                          child: Container(
+                            padding: EdgeInsets.symmetric(horizontal: size.width * 0.03),
+                            width: size.width * 0.6,
+                            child: Divider(
+                              color: Colors.grey,
+                              )
+                            ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(left: size.width * 0.02,right: size.width * 0.02 ),
+                          child: GestureDetector(
+                            onTap: (){
+                                Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context){
+                                    return ChatUsuariosPage();
+                                  }
+                                ));
+                              },
+                              child: Container(
+                                color: Colors.transparent,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
+                                  Row(
+                                    children: <Widget>[
+                                      ClipRRect(
+                                        borderRadius: BorderRadius.circular(5.0),
+                                        child: Container(
+                                          width: 30.0,
+                                          height: 30.0,
+                                          color: Colors.grey,
+                                          child: Icon(
+                                            Icons.message,
+                                            color: Colors.white)
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: size.width * 0.03,
+                                      ),
+                                      FlatButton(
+                                        padding: EdgeInsets.zero,
+                                        //color: Colors.orange,
+                                        child: Text('$mensajes',style: TextStyle(
+                                          fontFamily: 'Point-SemiBold'
+                                          ),
+                                        ),
+                                        onPressed: (){
+                                          Navigator.of(context).push(MaterialPageRoute(
+                                            builder: (context){
+                                              return ChatUsuariosPage();
+                                            }
+                                          ));
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                  
+                                  SizedBox(
+                                    width: size.width * 0.3,
+                                  ),
+                                  Icon(
+                                    Icons.arrow_forward_ios,
+                                    size: 16.0,
+                                    color: Colors.grey,
+                                  )
+                                ],
+                            ),
+                              ),
+                          ),
+                        ),
+                        SizedBox(
+                          height: size.height * 0.03,
+                          child: Container(
+                            padding: EdgeInsets.symmetric(horizontal: size.width * 0.03),
+                            width: size.width * 0.6,
+                            child: Divider(
+                              color: Colors.grey,
+                              )
+                            ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(left: size.width * 0.02,right: size.width * 0.02 ),
+                          child: GestureDetector(
+                            onTap: (){
+                                Navigator.pushNamed(context, 'toursuser');
+                              },
+                              child: Container(
+                                color: Colors.transparent,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
+                                  Row(
+                                    children: <Widget>[
+                                      ClipRRect(
+                                        borderRadius: BorderRadius.circular(5.0),
+                                        child: Container(
+                                          width: 30.0,
+                                          height: 30.0,
+                                          color: Colors.blueAccent,
+                                          child: Icon(
+                                            Icons.card_travel,
+                                            color: Colors.white)
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: size.width * 0.03,
+                                      ),
+                                      FlatButton(
+                                        padding: EdgeInsets.zero,
+                                        //color: Colors.orange,
+                                        child: Text(
+                                          '$misTours',
+                                          style: TextStyle(
+                                          fontFamily: 'Point-SemiBold'
+                                          ),
+                                        ),
+                                        onPressed: (){
+                                          Navigator.pushNamed(context, 'toursuser');
                                         },
                                       ),
                                     ],

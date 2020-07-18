@@ -6,6 +6,9 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:selftourapp/src/googlemaps/requests/google_maps_requests.dart';
 import 'package:selftourapp/src/models/detalle_tour_model.dart';
+import 'package:geocoder/geocoder.dart';
+import 'package:location/location.dart' as l;
+import 'package:selftourapp/src/preferencias_usuario/preferencias_usuario.dart';
 //import 'package:selftourapp/src/models/tour_categoria_model.dart';
 
 class AppState with ChangeNotifier{
@@ -29,10 +32,15 @@ class AppState with ChangeNotifier{
   Set<Marker> get markers => _markers;
   Set<Polyline> get polyLines => _polyLines;
 
-  
+  l.Location userUbicacion = l.Location();
+  bool _serviceEnabled;
+  l.PermissionStatus _permissionGranted;
+  l.LocationData _locationData;
+  PreferenciasUsuario _prefs = PreferenciasUsuario();
 
   AppState() {
-    getUserLocation();
+    //getUserLocation();
+    obtenerUbicacion();
   }
 
 // ! TO GET THE USERS LOCATION
@@ -46,10 +54,68 @@ class AppState with ChangeNotifier{
     print("initial position is : ${_initialPosition.toString()}");
     //Se encarga de mostrar en el campo de texto el nombre de
     // la ubicación del usuario
-    locationController.text = placemark[0].locality;
+    //locationController.text = placemark[0].locality;
     //_location = placemark[0].locality;
+    _prefs.estadoUser = placemark[0].administrativeArea;
+    _prefs.countryCode = placemark[0].isoCountryCode;
     
     //print(location);
+    notifyListeners();
+  }
+
+  void obtenerUbicacion()async{
+    //_permissionGranted = await userUbicacion.hasPermission();
+    //_serviceEnabled = await userUbicacion.serviceEnabled();
+
+    // if (!_serviceEnabled) {
+    //   _serviceEnabled = await userUbicacion.requestService();
+    //   if (!_serviceEnabled) {
+    //     return;
+    //   }
+    // }
+    
+      print("Permisos: ");
+      _locationData = await userUbicacion.getLocation();
+      _initialPosition = LatLng(_locationData.latitude, _locationData.longitude);
+      final coordinates = new Coordinates(_locationData.latitude, _locationData.longitude);
+      final addresses = await Geocoder.local.findAddressesFromCoordinates(coordinates);
+      
+      _prefs.estadoUser = addresses.first.adminArea;
+      _prefs.countryCode = addresses.first.countryCode;
+
+    // if (_permissionGranted == l.PermissionStatus.denied) {
+    //   // _permissionGranted = await userUbicacion.requestPermission();
+
+    //   // if (_permissionGranted == l.PermissionStatus.granted) {
+    //   //   _locationData = await userUbicacion.getLocation();
+    //   //   // print("Ubicación del usuario: ");
+    //   //   // print("${_locationData.latitude}, ${_locationData.longitude}");
+    //   // }
+
+    //   print("Permisos denegados");
+
+    //   // _initialPosition = LatLng(_locationData.latitude, _locationData.longitude);
+    //   // final coordinates = new Coordinates(_locationData.latitude, _locationData.longitude);
+    //   // final addresses = await Geocoder.local.findAddressesFromCoordinates(coordinates);
+    //   // notifyListeners();
+    // }else{
+    //     print("Permisos Aceptados");
+    //     _locationData = await userUbicacion.getLocation();
+    //     //return _locationData;
+
+    //     // print("Ubicación del usuario: ");
+    //     // print("${_locationData.latitude}, ${_locationData.longitude}");
+    //     _initialPosition = LatLng(_locationData.latitude, _locationData.longitude);
+    //     final coordinates = new Coordinates(_locationData.latitude, _locationData.longitude);
+    //     final addresses = await Geocoder.local.findAddressesFromCoordinates(coordinates);
+    //     _prefs.estadoUser = addresses.first.adminArea;
+    //     _prefs.countryCode = addresses.first.countryCode;
+    //     // print("Direcciones del usuario: ");
+    //     // print(addresses.first.countryCode);
+    //     // print(addresses.first.countryName);
+    //     // print(addresses.first.locality);
+    //     // print(addresses.first.adminArea);
+    // }
     notifyListeners();
   }
 
@@ -59,7 +125,7 @@ class AppState with ChangeNotifier{
     List<Placemark> placemark = await Geolocator()
       .placemarkFromCoordinates(position.latitude, position.longitude);
     _initialPosition = LatLng(position.latitude, position.longitude);
-    print("initial position is : ${_initialPosition.toString()}");
+    //print("initial position is : ${_initialPosition.toString()}");
     //Se encarga de mostrar en el campo de texto el nombre de
     // la ubicación del usuario
     locationController.text = placemark[0].locality;
@@ -88,6 +154,72 @@ class AppState with ChangeNotifier{
     return ubicaciones;
     
   }
+
+  
+
+  Future<List<String>> ubicacion()async{
+    List<String> datosUbicacion = List();
+    _permissionGranted = await userUbicacion.hasPermission();
+    if (_permissionGranted == l.PermissionStatus.denied) {
+      _permissionGranted = await userUbicacion.requestPermission();
+      if (_permissionGranted == l.PermissionStatus.granted) {
+        _locationData = await userUbicacion.getLocation();
+        // print("Ubicación del usuario: ");
+        // print("${_locationData.latitude}, ${_locationData.longitude}");
+      }
+      final coordinates = new Coordinates(_locationData.latitude, _locationData.longitude);
+      final addresses = await Geocoder.local.findAddressesFromCoordinates(coordinates);
+        datosUbicacion.addAll([
+          addresses.first.locality,
+          addresses.first.adminArea,
+          addresses.first.countryName,
+          addresses.first.countryCode
+        ]);
+        notifyListeners();
+        return datosUbicacion;
+    }else{
+        print("Permisos Aceptados");
+        _locationData = await userUbicacion.getLocation();
+        //return _locationData;
+
+        // print("Ubicación del usuario: ");
+        // print("${_locationData.latitude}, ${_locationData.longitude}");
+
+        final coordinates = new Coordinates(_locationData.latitude, _locationData.longitude);
+        final addresses = await Geocoder.local.findAddressesFromCoordinates(coordinates);
+        // print("Direcciones del usuario: ");
+        // print(addresses.first.countryCode);
+        // print(addresses.first.countryName);
+        // print(addresses.first.locality);
+        // print(addresses.first.adminArea);
+        datosUbicacion.addAll([
+          addresses.first.locality,
+          addresses.first.adminArea,
+          addresses.first.countryName,
+          addresses.first.countryCode
+        ]);
+        notifyListeners();
+        return datosUbicacion;
+    }
+    // _serviceEnabled = await userUbicacion.serviceEnabled();
+    // if (!_serviceEnabled) {
+    //   _serviceEnabled = await userUbicacion.requestService();
+    //   if (!_serviceEnabled) {
+    //     return;
+    //   }
+    // }
+    // final coordinates = new Coordinates(_initialPosition.latitude,_initialPosition.longitude);
+    
+    
+    // for(int i = 0; i < addresses.length; i++){
+    //   print(addresses[i].countryCode);
+    //   print(addresses[i].countryName);
+    //   print(addresses[i].locality);
+    //   print(addresses[i].adminArea);
+    // }
+    
+  }
+
   
 // ! TO CREATE ROUTE
   //Se encarga de crear la ruta a trazar definiendo los puntos a

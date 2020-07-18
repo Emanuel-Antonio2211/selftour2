@@ -18,7 +18,7 @@ import 'package:selftourapp/src/translation_class/app_translations.dart';
 import 'package:selftourapp/src/utils/utils.dart';
 import 'package:flutter_progress_button/flutter_progress_button.dart';
 import 'package:selftourapp/src/widgets/tree_size_dot_widget.dart';
-
+import 'package:provider/provider.dart';
 
 class PagosPage extends StatefulWidget {
   @override
@@ -572,7 +572,7 @@ class MetodoPagoPage extends StatefulWidget {
 
 class _MetodoPagoPageState extends State<MetodoPagoPage> {
   final formKey = GlobalKey<FormState>();
-  PagosProvider pagosProvider = PagosProvider();
+  //PagosProvider pagosProvider = PagosProvider();
   PreferenciasUsuario prefs = PreferenciasUsuario();
 
   String deviceSesionId;
@@ -604,10 +604,10 @@ class _MetodoPagoPageState extends State<MetodoPagoPage> {
    // DetalleTour detalleTour = ModalRoute.of(context).settings.arguments;
     final InfoTour detalleTour = ModalRoute.of(context).settings.arguments;
     
-    return _metodoPago(detalleTour);
+    return _metodoPago(context,detalleTour);
   }
 
-  Widget _metodoPago(InfoTour detalleTour){
+  Widget _metodoPago(BuildContext context,InfoTour detalleTour){
     final size = MediaQuery.of(context).size;
     String revisionpago = AppTranslations.of(context).text('title_revisioncompra');
     String metodopago = AppTranslations.of(context).text('title_metodopago');
@@ -621,7 +621,9 @@ class _MetodoPagoPageState extends State<MetodoPagoPage> {
     String pagosuccess = AppTranslations.of(context).text('title_pagosuccess');
     String addTarjeta = AppTranslations.of(context).text('title_add_tarjeta');
 
-    PagosProvider pagosProvider = PagosProvider();
+    PagosProvider pagosProvider = Provider.of<PagosProvider>(context);
+
+    pagosProvider.obtenerToken(prefs.idTarjeta.toString());
 
     return Scaffold(
       appBar: AppBar(
@@ -746,18 +748,36 @@ class _MetodoPagoPageState extends State<MetodoPagoPage> {
             SizedBox(
               height: size.height * 0.02,
             ),
-            FutureBuilder(
-              future: pagosProvider.obtenerToken(prefs.idTarjeta.toString()),
-              builder: (BuildContext context, AsyncSnapshot snapshot) {
-                final tarjeta = snapshot.data;
+            (prefs.idTarjeta == '') ?
+            Card(
+              elevation: 0.0,
+              child: Container(
+                  width: size.width * 1.0,
+                  height: size.height * 0.1,//|| tarjeta['card']['card_number'] == '[]'
+                  child:Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: <Widget>[
+                      Icon(Icons.credit_card,color: Colors.grey,),
+                      //tarjeta[0]['card']['card_number']
+                      
+                      Text('$tarjetacredito',style: TextStyle(fontFamily: 'Point-SemiBold',fontSize: 18.0)),
+                      //Text('${tarjeta[0]['card']['card_number']}',style: TextStyle(fontFamily: 'Point-SemiBold',fontSize: 18.0)),
+                      Icon(Icons.navigate_next,color: Colors.grey,)
+                    ],
+                  ),
+            )
+            ):
+            StreamBuilder(
+              stream: pagosProvider.pagosStream,//pagosProvider.obtenerToken(prefs.idTarjeta.toString())
+              builder: (BuildContext context, AsyncSnapshot<Map<String,dynamic>> snapshot) {
                 final tieneDatos = snapshot.hasData;
-                return Card(
-                      elevation: 0.0,
-                      child: Container(
+                if(!tieneDatos){
+                  return Card(
+                    elevation: 0.0,
+                    child: Container(
                         width: size.width * 1.0,
-                        height: size.height * 0.1,
-                        child: !tieneDatos || prefs.idTarjeta == '' || tarjeta['error_code'] == 1005 || tarjeta['card']['card_number'] == '[]' ? 
-                        Row(
+                        height: size.height * 0.1,//|| tarjeta['card']['card_number'] == '[]'
+                        child:Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: <Widget>[
                             Icon(Icons.credit_card,color: Colors.grey,),
@@ -767,7 +787,38 @@ class _MetodoPagoPageState extends State<MetodoPagoPage> {
                             //Text('${tarjeta[0]['card']['card_number']}',style: TextStyle(fontFamily: 'Point-SemiBold',fontSize: 18.0)),
                             Icon(Icons.navigate_next,color: Colors.grey,)
                           ],
-                        ):  Row(
+                        ),
+                  )
+                  );
+                }else{
+                  final tarjeta = snapshot.data;
+                  if(tarjeta['error_code'] == 1005){
+                    //Cuando el token no existe
+                    return Card(
+                      elevation: 0.0,
+                      child: Container(
+                        width: size.width * 1.0,
+                        height: size.height * 0.1,//|| tarjeta['card']['card_number'] == '[]'
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: <Widget>[
+                            Icon(Icons.credit_card,color: Colors.grey,),
+                            //tarjeta[0]['card']['card_number']
+                            
+                            Text('$tarjetacredito',style: TextStyle(fontFamily: 'Point-SemiBold',fontSize: 18.0)),
+                            //Text('${tarjeta[0]['card']['card_number']}',style: TextStyle(fontFamily: 'Point-SemiBold',fontSize: 18.0)),
+                            Icon(Icons.navigate_next,color: Colors.grey,)
+                          ],
+                        )
+                      ),
+                    );
+                  }else{
+                    return Card(
+                      elevation: 0.0,
+                      child: Container(
+                        width: size.width * 1.0,
+                        height: size.height * 0.1,//|| tarjeta['card']['card_number'] == '[]'
+                        child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: <Widget>[
                             Icon(Icons.credit_card,color: Colors.grey,),
@@ -779,6 +830,36 @@ class _MetodoPagoPageState extends State<MetodoPagoPage> {
                         ),
                       ),
                     );
+                  }
+                }
+                // return Card(
+                //       elevation: 0.0,
+                //       child: Container(
+                //         width: size.width * 1.0,
+                //         height: size.height * 0.1,//|| tarjeta['card']['card_number'] == '[]'
+                //         child: !tieneDatos || prefs.idTarjeta == '' || tarjeta['error_code'] == 1005 ? 
+                //         Row(
+                //           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                //           children: <Widget>[
+                //             Icon(Icons.credit_card,color: Colors.grey,),
+                //             //tarjeta[0]['card']['card_number']
+                            
+                //             Text('$tarjetacredito',style: TextStyle(fontFamily: 'Point-SemiBold',fontSize: 18.0)),
+                //             //Text('${tarjeta[0]['card']['card_number']}',style: TextStyle(fontFamily: 'Point-SemiBold',fontSize: 18.0)),
+                //             Icon(Icons.navigate_next,color: Colors.grey,)
+                //           ],
+                //         ):  Row(
+                //           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                //           children: <Widget>[
+                //             Icon(Icons.credit_card,color: Colors.grey,),
+                            
+                //             //Text('$tarjetacredito',style: TextStyle(fontFamily: 'Point-SemiBold',fontSize: 18.0)):
+                //             Text('${tarjeta['card']['card_number']}',style: TextStyle(fontFamily: 'Point-SemiBold',fontSize: 18.0)),
+                //             Icon(Icons.navigate_next,color: Colors.grey,)
+                //           ],
+                //         ),
+                //       ),
+                //     );
                 
               },
             ),
@@ -1686,10 +1767,13 @@ if(Platform.isAndroid){
                 borderRadius: 5.0,
                 animate: false,
                 onPressed: ()async{
+                  setState(() {
+                    
+                  });
                   await Future.delayed(Duration(seconds: 2),()async{
                     if(formKey.currentState.validate()){
                       formKey.currentState.save();
-                    await pagosProvider.crearToken(tarjeta).then((result){
+                    await pagosProvider.crearToken(tarjeta).then((result)async{
                       Map info = result;
                       if(info['error_code'] == 1000){
                         //Ocurrió un error en el servidor openpay
@@ -1872,30 +1956,31 @@ if(Platform.isAndroid){
                         mostrarAlerta(context, openpayNotFunds, '', 'assets/error.png');
                       }
                       else{
-                        formKey.currentState.save();
-                        prefs.idTarjeta = info['id'];
+                        //formKey.currentState.save();
+                        prefs.idTarjeta = info['id'].toString();
+                        await pagosProvider.obtenerToken(prefs.idTarjeta);
+
                         String tarjetaAgregado = AppTranslations.of(context).text('title_tarjetaAgregado');
                         
-                      /*  Navigator.removeRoute(context,MaterialPageRoute(
-                          builder: (context){
-                            return IngresoTarjetaPage();
-                          },
-                          settings: RouteSettings(arguments: detalleTour)
-                        ) );*/
                         //Navigator.pop(context);
-                      // Navigator.popUntil(context, ModalRoute.withName('metodopago'));
-                      //Navigator.popAndPushNamed(context,'metodopago',arguments: detalleTour);
-                        
                         Navigator.popUntil(context, ModalRoute.withName('metodopago'));
+                        //Navigator.popAndPushNamed(context,'metodopago',arguments: detalleTour);
+
+                        // Navigator.pushAndRemoveUntil(context, 
+                        // MaterialPageRoute(
+                        //   builder: (context){
+                        //     return MetodoPagoPage();
+                        //   }
+                        // ), ModalRoute.withName('metodopago') );
+                        //Navigator.pushReplacementNamed(context, 'metodopago');
+                        //Navigator.pushNamedAndRemoveUntil(context, 'metodopago', ModalRoute.withName('metodopago'));
                         mostrarAviso(context, '$tarjetaAgregado', '', 'assets/check.jpg');
-                        //mostrarAlerta(context, 'Tarjeta Agregada', '', 'assets/check.jpg');
-                        //Navigator.pop(context);
                     }
                     
                     });
                     }else{
                       String errorValidar = AppTranslations.of(context).text('title_errorValidar');
-                    mostrarAlerta(context, '$errorValidar', '', 'assets/error.png');
+                      mostrarAlerta(context, '$errorValidar', '', 'assets/error.png');
                     }
                   });
                 },
@@ -2386,7 +2471,7 @@ if(Platform.isAndroid){
                   await Future.delayed(Duration(seconds: 2),()async{
                     if(formKey.currentState.validate()){
                       formKey.currentState.save();
-                    await pagosProvider.crearToken(tarjeta).then((result){
+                    await pagosProvider.crearToken(tarjeta).then((result)async{
                       Map info = result;
                       if(info['error_code'] == 1000){
                         //Ocurrió un error en el servidor openpay
@@ -2569,8 +2654,9 @@ if(Platform.isAndroid){
                         mostrarAlerta(context, openpayNotFunds, '', 'assets/error.png');
                       }
                       else{
-                        formKey.currentState.save();
+                        //formKey.currentState.save();
                         prefs.idTarjeta = info['id'];
+                        await pagosProvider.obtenerToken(prefs.idTarjeta.toString());
                         String tarjetaAgregado = AppTranslations.of(context).text('title_tarjetaAgregado');
                         
                       /*  Navigator.removeRoute(context,MaterialPageRoute(
@@ -2592,7 +2678,7 @@ if(Platform.isAndroid){
                     });
                     }else{
                       String errorValidar = AppTranslations.of(context).text('title_errorValidar');
-                    mostrarAlerta(context, '$errorValidar', '', 'assets/error.png');
+                      mostrarAlerta(context, '$errorValidar', '', 'assets/error.png');
                     }
                   });
                 },

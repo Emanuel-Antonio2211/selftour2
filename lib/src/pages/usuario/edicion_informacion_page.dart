@@ -456,7 +456,7 @@ class _EditInformationPageState extends State<EditInformationPage> {
                         keyboardType: TextInputType.phone, //datosUsuario['dataUser']['data'][0]
                         initialValue: datosUsuario['dataUser']['data'][0]['phone'] == null ? '':datosUsuario['dataUser']['data'][0]['phone'].toString(),//prefs.phone //(prefs.phone == "null" || prefs.phone == '' || prefs.phone == null) ? '' : prefs.phone
                         decoration: InputDecoration(
-                          labelText: '$telefono *',
+                          labelText: '$telefono',
                           labelStyle: TextStyle(
                             fontFamily: 'Point-SemiBold',
                             color: Colors.black
@@ -538,10 +538,10 @@ class _EditInformationPageState extends State<EditInformationPage> {
                       padding: EdgeInsets.symmetric(horizontal: size.width * 0.02),
                       child: TextFormField(
                         keyboardType: TextInputType.text,
-                        initialValue: (datosUsuario['dataUser']['data'][0]['fb'] == null || datosUsuario['dataUser']['data'][0]['fb'] == "") ? '': datosUsuario['dataUser']['data'][0]['fb'].toString(),
+                        initialValue: ( datosUsuario['dataUser']['data'][0]['fb'] == '0' || datosUsuario['dataUser']['data'][0]['fb'] == null || datosUsuario['dataUser']['data'][0]['fb'] == "") ? '': datosUsuario['dataUser']['data'][0]['fb'].toString(),
                         //(prefs.accountFacebook == null || prefs.accountFacebook == "null") ? '': prefs.accountFacebook
                         decoration: InputDecoration(
-                          labelText: '$ctaFacebook *',
+                          labelText: '$ctaFacebook',
                           labelStyle: TextStyle(
                             fontFamily: 'Point-SemiBold',
                             color: Colors.black
@@ -573,7 +573,7 @@ class _EditInformationPageState extends State<EditInformationPage> {
                       padding: EdgeInsets.symmetric(horizontal: size.width * 0.02),
                       child: TextFormField(
                         keyboardType: TextInputType.text,
-                        initialValue: (datosUsuario['dataUser']['data'][0]['webpage'] == 'undefined' || datosUsuario['dataUser']['data'][0]['webpage'] == null || datosUsuario['dataUser']['data'][0]['webpage'] == "") ? '': datosUsuario['dataUser']['data'][0]['webpage'].toString(),
+                        initialValue: ( datosUsuario['dataUser']['data'][0]['webpage'] == '0' || datosUsuario['dataUser']['data'][0]['webpage'] == 'undefined' || datosUsuario['dataUser']['data'][0]['webpage'] == null || datosUsuario['dataUser']['data'][0]['webpage'] == "") ? '': datosUsuario['dataUser']['data'][0]['webpage'].toString(),
                         //(prefs.pagWeb == 'undefined' || prefs.pagWeb == null || prefs.pagWeb == "null") ? '': prefs.pagWeb.toString()
                         decoration: InputDecoration(
                           labelText: '$paginaWeb',

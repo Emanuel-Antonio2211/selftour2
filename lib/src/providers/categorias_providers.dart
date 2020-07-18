@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 //import 'dart:io';
 import 'package:rxdart/rxdart.dart';
-import 'package:selftourapp/src/models/categoria_model.dart';
+//import 'package:selftourapp/src/models/categoria_model.dart';
 import 'package:http/http.dart' as http;
 //import 'package:selftourapp/src/models/comentario_model.dart';
 import 'package:selftourapp/src/models/creartour_model.dart';
@@ -23,11 +23,11 @@ class CategoriasProvider{
    int _toursPage = 0;
  // bool _cargando = false;
 
-  List<Categoria> _categorias=new List();
+  // List<Categoria> _categorias=new List();
 
-  List<InfoTour> _toursC = new List();
+  // List<InfoTour> _toursC = new List();
 
-  List<InfoTour> _tourBuscar = new List();
+  // List<InfoTour> _tourBuscar = new List();
 
   List<InfoTour> popularesTours = new List();
   List<InfoTour> recientesTours = new List();
@@ -45,7 +45,9 @@ class CategoriasProvider{
   final _recomendadosStreamController            = BehaviorSubject<Map<String,dynamic>>();
   final _tourCStreamController                   = StreamController<List<InfoTour>>.broadcast();
   final _tourCategoryStreamController            = StreamController<Map<String,dynamic>>.broadcast();
-  final _tourFavoritosStreamController           = StreamController<List<InfoTour>>.broadcast();
+  final _tourFavoritosStreamController           = StreamController<Map<String,dynamic>>.broadcast();
+  final _tourUserStreamController                = StreamController<Map<String,dynamic>>.broadcast();
+  final _tourCompradoStreamController            = StreamController<Map<String,dynamic>>.broadcast();
 
   //Lo agregamos a la tubería
   Function(Map<String,dynamic>) get categoriasSink => _categoriaStreamController.sink.add;
@@ -53,7 +55,9 @@ class CategoriasProvider{
   Function(Map<String,dynamic>) get recienteSink => _recientesStreamController.sink.add;
   Function(Map<String,dynamic>) get recomendadosSink => _recomendadosStreamController.sink.add;
   Function(List<InfoTour>) get tourCSink => _tourCStreamController.sink.add;
-  Function(List<InfoTour>) get tourFavoritoSink => _tourFavoritosStreamController.sink.add;
+  Function(Map<String,dynamic>) get tourFavoritoSink => _tourFavoritosStreamController.sink.add;
+  Function(Map<String,dynamic>) get toursUserSink => _tourUserStreamController.sink.add;
+  Function(Map<String,dynamic>) get tourCompradoSink => _tourCompradoStreamController.sink.add;
 
   Function(Map<String,dynamic>) get tourCategorySink => _tourCategoryStreamController.sink.add;
   
@@ -63,7 +67,9 @@ class CategoriasProvider{
   Stream<Map<String,dynamic>> get recienteStream => _recientesStreamController.stream;
   Stream<Map<String,dynamic>> get recomendadoStream => _recomendadosStreamController.stream;
   Stream<List<InfoTour>> get tourCStream => _tourCStreamController.stream;
-  Stream<List<InfoTour>> get tourFavoritoStream => _tourFavoritosStreamController.stream;
+  Stream<Map<String,dynamic>> get tourFavoritoStream => _tourFavoritosStreamController.stream;
+  Stream<Map<String,dynamic>> get toursUserStream => _tourUserStreamController.stream;
+  Stream<Map<String,dynamic>> get tourCompradoStream => _tourCompradoStreamController.stream;
 
   Stream<Map<String,dynamic>> get tourCategoryStream => _tourCategoryStreamController.stream;
 
@@ -76,6 +82,8 @@ class CategoriasProvider{
     _recomendadosStreamController?.close();
     _tourCStreamController?.close();
     _tourFavoritosStreamController?.close();
+    _tourUserStreamController?.close();
+    _tourCompradoStreamController?.close();
 
     _tourCategoryStreamController?.close();
   }
@@ -230,7 +238,7 @@ class CategoriasProvider{
     final respuesta = await http.get(url);
     //Aquí recibimos los datos decodificados del json
     Map<String,dynamic> decodedData = json.decode(respuesta.body);
-    print(decodedData);
+    //print(decodedData);
     // final categorias = new Categorias.fromJsonList(decodedData['categories']['data']);
     //print(categorias.items);
     categoriasSink(decodedData);
@@ -257,7 +265,7 @@ _toursPage++;
       {
         'page': '${_toursPage.toString()}',
         'items': '5',
-        'state': '$state',
+        //'state': '$state',
         'country': '$country'
       }
     );
@@ -281,7 +289,9 @@ _toursPage++;
       );
     //Se recibe los datos decodificados del json
     final decodedDataTours = json.decode(respuestaTours.body);
-    print(decodedDataTours['tours'][0]['data_tour']);
+    print("Tours: ");
+    print(decodedDataTours);
+    //print(decodedDataTours['tours'][0]['data_tour']);
     // final tours = new ListaToursC.fromJsonList(decodedDataTours['tours'][0]['data_tour']);
     //print(tours.itemsTours);
     return decodedDataTours;
@@ -349,7 +359,7 @@ _toursPage++;
     //Guardamos la petición http en una variable
     final respuesta = await procesarRespuestaverTours(url);
     //popularesTours.addAll(respuesta);
-    tourFavoritoSink(popularesTours);
+    //tourFavoritoSink(popularesTours);
     //Significa que ya no se está cargando nada
    // _cargando = false;
     return respuesta;
@@ -359,7 +369,7 @@ _toursPage++;
     final respuestaTours = await http.get(url);
     //Se recibe los datos decodificados del json
     Map<String,dynamic> decodedDataTours = json.decode(respuestaTours.body);
-    print(decodedDataTours['tours']);
+    //print(decodedDataTours['tours']);
     final tours = new ListaToursC.fromJsonList(decodedDataTours['tours']);
     //print(tours.itemsTours);
     return //[];
@@ -396,7 +406,7 @@ _toursPage++;
     );
     final decodedDataTC = json.decode(respuestaTC.body);
     
-    print(decodedDataTC['rows']);
+    //print(decodedDataTC['rows']);
     final detallerTour = new ListaToursC.fromJsonList(decodedDataTC['rows']);
     //print(detallerTour.itemsTours);
     return 
@@ -435,7 +445,7 @@ _toursPage++;
     return decodedResp;
   }
 
-  Future<List<InfoTour>> verFavoritos()async{
+  Future<Map<String,dynamic>> verFavoritos()async{
     //final String url = "https://api-users.selftours.app/favoritesTours";
     final String url = "api-users.selftours.app";
     _toursPage++;
@@ -456,17 +466,17 @@ _toursPage++;
     );
 
     Map<String,dynamic> decodedResp = json.decode(resp.body);
-    print("Favoritos: ");
-    print(decodedResp['resp']['tours']);
-    final favoritos = new ListaToursC.fromJsonList(decodedResp['resp']['tours']);
+    // print("Favoritos: ");
+    // print(decodedResp);
+    // final favoritos = new ListaToursC.fromJsonList(decodedResp['resp']['tours']);
     //popularesTours.addAll(favoritos.itemsTours);
-    tourFavoritoSink(favoritos.itemsTours);
+    tourFavoritoSink(decodedResp);
     
     //print(favoritos.itemsTours);
-    return favoritos.itemsTours;
+    return decodedResp;
   }
 
-  Future<List<InfoTour>> toursComprados()async{
+  Future<Map<String,dynamic>> toursComprados()async{
     //String url = "https://api-users.selftours.app/shoppingTours";
     final String url = "api-users.selftours.app";
     _toursPage++;
@@ -487,13 +497,14 @@ _toursPage++;
       }
     );
     final decodedResp = json.decode(resp.body);
-    print(decodedResp['shopping']);
-    final comprados = ListaToursC.fromJsonList(decodedResp['shopping']['tours']);
+    // print(decodedResp['shopping']);
+    //final comprados = ListaToursC.fromJsonList(decodedResp['shopping']['tours']);
 
     //popularesTours.addAll(comprados.itemsTours);
-    tourFavoritoSink(comprados.itemsTours);
+    //tourFavoritoSink(comprados.itemsTours);
+    tourCompradoSink(decodedResp);
 
-    return comprados.itemsTours;
+    return decodedResp;
 
   }
   Future<Map<String,dynamic>> popularesPag(String state, String country)async{
@@ -512,7 +523,7 @@ _toursPage++;
       _url
     );
     final decodedResp = json.decode(resp.body);
-    print(decodedResp);
+    //print(decodedResp);
     //final populares = ListaToursC.fromJsonList(decodedResp['tours'][0]['data_tour']);
     //popularesTours.addAll(populares.itemsTours);
     popularSink(decodedResp);
@@ -536,7 +547,7 @@ _toursPage++;
     );
 
     final decodedResp = json.decode(resp.body);
-    print(decodedResp);
+    //print(decodedResp);
     // final populares = ListaToursC.fromJsonList(decodedResp['tours'][0]['data_tour']);
     //popularesTours.addAll(populares.itemsTours);
     popularSink(decodedResp);
@@ -558,7 +569,7 @@ _toursPage++;
     );
     final resp = await http.get(_url);
     final decodedResp = json.decode(resp.body);
-    print(decodedResp);
+    //print(decodedResp);
 
     //final recientes = ListaToursC.fromJsonList(decodedResp['tours'][0]['data_tour']);
     //recientesTours.addAll(recientes.itemsTours);
@@ -583,7 +594,7 @@ _toursPage++;
     final resp = await http.get(url);
 
     final decodedResp = json.decode(resp.body);
-    print(decodedResp);
+    //print(decodedResp);
 
     // final recientes = ListaToursC.fromJsonList(decodedResp['tours'][0]['data_tour']);
     //recientesTours.addAll(recientes.itemsTours);
@@ -607,7 +618,7 @@ _toursPage++;
     );
     final resp = await http.get(_url);
     final decodedResp = json.decode(resp.body);
-    print(decodedResp);
+    //print(decodedResp);
     //final recomendados = ListaToursC.fromJsonList(decodedResp['tours'][0]['data_tour']);
     //recomendadosTours.addAll(recomendados.itemsTours);
     recomendadosSink(decodedResp);
@@ -633,13 +644,37 @@ _toursPage++;
     final resp = await http.get(url);
 
     final decodedResp = json.decode(resp.body);
-    print(decodedResp);
+    //print(decodedResp);
     // final recomendados = ListaToursC.fromJsonList(decodedResp['tours'][0]['data_tour']);
     //recomendadosTours.addAll(recomendados.itemsTours);
     recomendadosSink(decodedResp);
 
     //print("Registro 1 : ${recomendados.itemsTours[0].title}");
 
+    return decodedResp;
+  }
+
+  Future<Map<String,dynamic>> toursUser(String token)async{
+    _toursPage++;
+    String base = 'api-users.selftours.app';
+    final url = Uri.https(
+      base, 
+      'tours/user',
+      {
+        'page': _toursPage.toString()
+      }
+    );
+
+    final resp = await http.get(
+      url,
+      headers: {
+        "token": "$token"
+      }
+    );
+    final decodedResp = json.decode(resp.body);
+    print("Tours del usuario: ");
+    print(decodedResp);
+    toursUserSink(decodedResp);
     return decodedResp;
   }
 

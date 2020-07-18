@@ -184,7 +184,10 @@ class ChatPageState extends State<ChatPage> {
   }
 
   Widget buildItem(int index, DocumentSnapshot document){
-    
+    String imageUser = "https://pluspng.com/img-png/user-png-icon-male-user-icon-512.png";
+    print("Contenido: ");
+    print(document['content']);
+
     if(document['idFrom']==email){ //id
       // Right (my message) - Nuestro mensaje se ubica a la derecha
       return Row(
@@ -213,15 +216,9 @@ class ChatPageState extends State<ChatPage> {
                  child: ClipRRect(
                    borderRadius: BorderRadius.circular(10.0),
                     child:
-                    /*Image.network(
-                      document['content'],
-                      width: 200.0,
-                      height: 200.0,
-                      fit: BoxFit.fill,
-                      scale: 1.0,
-                    )*/
+                    //(document['content'] == null || document['content'] == 'null') ? imageUser : "${document['content']}"
                     CachedNetworkImage(
-                      imageUrl: "${document['content']}",
+                      imageUrl: "${document['content']}" ,
                       //errorWidget: (context, url, error)=>Icon(Icons.error),
                       //cacheManager: baseCacheManager,
                       useOldImageOnUrlChange: true,
@@ -231,44 +228,12 @@ class ChatPageState extends State<ChatPage> {
                     )
                  )
                  
-                 
-                /* CachedNetworkImage(
-                   placeholder: (context, url) => Container(
-                     child: CircularProgressIndicator(
-                       valueColor: AlwaysStoppedAnimation<Color>(Color(0xfff5a623)),
-                     ),
-                     width: 200.0,
-                     height: 200.0,
-                     padding: EdgeInsets.all(70.0),
-                     decoration: BoxDecoration(
-                       color: Colors.grey,
-                       borderRadius: BorderRadius.all(Radius.circular(8.0))
-                     ),
-                   ),
-                   errorWidget: (context, url, error) => Material(
-                     child: Image.asset(
-                       'assets/no-image.jpg',
-                       width: 200.0,
-                       height: 200.0,
-                       fit: BoxFit.cover,
-                     ),
-                     borderRadius: BorderRadius.all(
-                       Radius.circular(8.0)
-                     ),
-                     clipBehavior: Clip.hardEdge,
-                   ),
-                   imageUrl: document['content'],
-                   width: 200.0,
-                   height: 200.0,
-                   fit: BoxFit.cover
-                 ),*/
-                 
                  //borderRadius: BorderRadius.all(Radius.circular(8.0)),
                  //clipBehavior: Clip.hardEdge,
                ),
                onPressed: (){
-                 Navigator.push(
-                              context, MaterialPageRoute(builder: (context) => FullPhoto(url: document['content'])));
+                //  Navigator.push(
+                //    context, MaterialPageRoute(builder: (context) => FullPhoto(url: document['content'])));
                },
                padding: EdgeInsets.all(0),
 
@@ -300,21 +265,8 @@ class ChatPageState extends State<ChatPage> {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(10.0),
                     child:
-                    /*Image.network(
-                      userAvatar,
-                      width: 40.0,
-                      height: 40.0,
-                      fit: BoxFit.fill,
-                      scale: 1.0,
-                    )*/
-                    userAvatar == null ? Image.asset(
-                      'assets/iconoapp/Selftour1.png',
-                      width: 40.0,
-                      height: 40.0,
-                      fit: BoxFit.fill,
-                    ):
                     CachedNetworkImage(
-                      imageUrl: "$userAvatar",
+                      imageUrl: (userAvatar == null || userAvatar == 'null') ? imageUser : "$userAvatar",
                       //errorWidget: (context, url, error)=>Icon(Icons.error),
                       //cacheManager: baseCacheManager,
                       useOldImageOnUrlChange: true,
@@ -323,25 +275,6 @@ class ChatPageState extends State<ChatPage> {
                       fit: BoxFit.fill,
                     )
                   )
-                  
-                  /*CachedNetworkImage(
-                    placeholder: (context, url) => Container(
-                      child: CircularProgressIndicator(
-                        strokeWidth: 1.0,
-                        valueColor: AlwaysStoppedAnimation<Color>(Color(0xfff5a623)),
-                      ),
-                      width: 35.0,
-                      height: 35.0,
-                      padding: EdgeInsets.all(10.0),
-                    ),
-                    imageUrl: userAvatar,
-                    width: 35.0,
-                    height: 35.0,
-                    fit: BoxFit.cover,
-                  ),
-                  //borderRadius: BorderRadius.all(
-                          Radius.circular(18.0),
-                  ),*/
                   //clipBehavior: Clip.hardEdge,
                 )
                 : Container(width: 35.0),
@@ -362,62 +295,21 @@ class ChatPageState extends State<ChatPage> {
                     child: Material(
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(10.0),
-                        child: 
-                        /*Image.network(
-                          document['content'],
-                          width: 200.0,
-                          height: 200.0,
-                          fit: BoxFit.fill,
-                        )*/
+                        child:
+                        //(document['content'] == null || document['content'] == 'null') ? imageUser : "${document['content']}"
                         CachedNetworkImage(
                           imageUrl: "${document['content']}",
                           //errorWidget: (context, url, error)=>Icon(Icons.error),
                           //cacheManager: baseCacheManager,
                           useOldImageOnUrlChange: true,
                           width: 200.0,
-                          height: 200.0,
                           fit: BoxFit.fill,
                         )
                       )
-                      
-                      /*CachedNetworkImage(
-                        placeholder: (context, url) => Container(
-                          child: CircularProgressIndicator(
-                            valueColor: AlwaysStoppedAnimation<Color>(Color(0xfff5a623)),
-                          ),
-                          width: 200.0,
-                          height: 200.0,
-                          padding: EdgeInsets.all(70.0),
-                          decoration: BoxDecoration(
-                            color: Colors.grey,
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(8.0),
-                            ),
-                          )
-                        ),
-                        errorWidget: (context, url, error) => Material(
-                          child: Image.asset(
-                            'assets/no-image.jpg',
-                            width: 200.0,
-                            height: 200.0,
-                            fit: BoxFit.cover,
-                          ),
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(8.0),
-                          ),
-                          clipBehavior: Clip.hardEdge,
-                        ),
-                        imageUrl: document['content'],
-                        width: 200.0,
-                        height: 200.0,
-                        fit: BoxFit.cover,
-                      ),*/
-                      //borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                      //clipBehavior: Clip.hardEdge,
                     ),
                     onPressed: (){
-                      Navigator.push(context,
-                                    MaterialPageRoute(builder: (context) => FullPhoto(url: document['content'])));
+                      // Navigator.push(context,
+                      //               MaterialPageRoute(builder: (context) => FullPhoto(url: document['content'])));
                     },
                     padding: EdgeInsets.all(0),
                   ),
@@ -692,7 +584,7 @@ class ChatPageState extends State<ChatPage> {
               child: IconButton(
                 icon: Icon(Icons.send),
                 onPressed: ()=> onSendMessage(textEditingController.text, 0),
-                color: Colors.lightBlue, //primarycolor
+                color: Colors.black, //primarycolor
               ),
             ),
             color: Colors.white,
@@ -722,7 +614,7 @@ class ChatPageState extends State<ChatPage> {
             .orderBy('timestamp',descending: true)
             .limit(20)
             .snapshots(),
-        builder: (BuildContext context, AsyncSnapshot snapshot){
+        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot){
           
           if(!snapshot.hasData){
             return Center(

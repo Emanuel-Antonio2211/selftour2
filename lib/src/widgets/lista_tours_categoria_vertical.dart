@@ -35,10 +35,25 @@ class _ListaToursCategoriaVerticalState extends State<ListaToursCategoriaVertica
   AppState _appState = AppState();
 
   @override
-  void initState() { 
-    
+  void initState(){
     super.initState();
-    
+    widget._pageController.addListener((){
+      if(widget._pageController.position.pixels >= widget._pageController.position.maxScrollExtent - 10){
+        //print('Cargar siguientes tours');
+        //widget.siguientePagina();
+        widget._pageController.position.didEndScroll();
+        print("Ejecutando siguiente página");
+        fetchData();
+      }else{
+        isloading = false;
+      }
+    });
+  }
+
+  @override
+  void dispose(){
+    super.dispose();
+    widget._pageController.dispose();
   }
   
   Future<Null> cargarTours()async{
@@ -47,16 +62,38 @@ class _ListaToursCategoriaVerticalState extends State<ListaToursCategoriaVertica
     Timer(duration, ()async{
       //Se borra la lista para generar otra
       widget.listaTours.clear();
-      _appState.userLocation().then((value)async{
-        state = value[1].toString();
-        codCountry = value[5].toString();
-        await provider.getToursC(state,codCountry,widget.ctid).then((datos){
-        final listaToursC = new ListaToursC.fromJsonList(datos['Tours']['data']);
-        for(int i = 0; i<listaToursC.itemsTours.length; i++){
-          widget.listaTours.add(listaToursC.itemsTours[i]);
-        }
-      });
-      });
+      // _appState.userLocation().then((value)async{
+      //   state = value[1].toString();
+      //   codCountry = value[5].toString();
+      //   await provider.getToursC(state,codCountry,widget.ctid).then((datos){
+      //   final listaToursC = new ListaToursC.fromJsonList(datos['Tours']['data']);
+      //   for(int i = 0; i<listaToursC.itemsTours.length; i++){
+      //     widget.listaTours.add(listaToursC.itemsTours[i]);
+      //   }
+      // });
+      // });
+
+      // _appState.ubicacion().then((value)async{
+      //     print("Datos del usuario:");
+      //     print(value[1]);
+      //     print(value[3]);
+      //     await provider.getToursC(value[1],value[3],widget.ctid).then((datos){
+      //       final listaToursC = new ListaToursC.fromJsonList(datos['Tours']['data']);
+      //       for(int i = 0; i<listaToursC.itemsTours.length; i++){
+      //         widget.listaTours.add(listaToursC.itemsTours[i]);
+      //       }
+      //     });
+      // });
+
+      print("Datos del usuario:");
+      print(prefs.estadoUser);
+      print(prefs.countryCode);
+      await provider.getToursC(prefs.estadoUser.toString(),prefs.countryCode.toString(),widget.ctid).then((datos){
+            final listaToursC = new ListaToursC.fromJsonList(datos['Tours']['data']);
+            for(int i = 0; i<listaToursC.itemsTours.length; i++){
+              widget.listaTours.add(listaToursC.itemsTours[i]);
+            }
+          });
       
       print("Ctid");
       print(widget.ctid);
@@ -69,14 +106,7 @@ class _ListaToursCategoriaVerticalState extends State<ListaToursCategoriaVertica
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    widget._pageController.addListener((){
-      if(widget._pageController.position.pixels >= widget._pageController.position.maxScrollExtent - 10){
-        //print('Cargar siguientes tours');
-        //widget._pageController.position.didEndScroll();
-        //widget.siguientePagina();
-        fetchData();
-      }
-    });
+    
     return Container(
       //color: Colors.grey,
       height: size.height * 0.8,
@@ -111,10 +141,8 @@ class _ListaToursCategoriaVerticalState extends State<ListaToursCategoriaVertica
     return Timer(duration,cargar);
   }
 
-  void cargar(){
-    setState(() {
-      
-    });
+  void cargar()async{
+    String noData = AppTranslations.of(context).text('title_nodata');
     //isloading = false;
     widget._pageController.animateTo(
       widget._pageController.position.pixels + 100,
@@ -122,21 +150,59 @@ class _ListaToursCategoriaVerticalState extends State<ListaToursCategoriaVertica
       duration: Duration(milliseconds: 250)
     );
     //widget.siguientePagina();
-    _appState.userLocation().then((value)async{
-        state = value[1].toString();
-        codCountry = value[5].toString();
-        await provider.getToursC(state,codCountry,widget.ctid).then((result){
-          setState(() {
-            isloading = false;
-          });
-          final listaToursC = new ListaToursC.fromJsonList(result['Tours']['data']);
-          for(int i = 0; i < listaToursC.itemsTours.length; i++){
-            widget.listaTours.add(listaToursC.itemsTours[i]);
+    
+    // _appState.userLocation().then((value)async{
+    //     state = value[1].toString();
+    //     codCountry = value[5].toString();
+    //     await provider.getToursC(state,codCountry,widget.ctid).then((result){
+    //       setState(() {
+    //         isloading = false;
+    //       });
+    //       final listaToursC = new ListaToursC.fromJsonList(result['Tours']['data']);
+    //       for(int i = 0; i < listaToursC.itemsTours.length; i++){
+    //         widget.listaTours.add(listaToursC.itemsTours[i]);
             
+    //       }
+    //     });
+    //   }
+    // );
+
+    // _appState.ubicacion().then((value)async{
+    //     print("Datos del usuario:");
+    //     print(value[1]);
+    //     print(value[3]);
+    //     await provider.getToursC(value[1],value[3],widget.ctid).then((datos){
+    //       setState(() {
+    //         isloading = false;
+    //       });
+    //       final listaToursC = new ListaToursC.fromJsonList(datos['Tours']['data']);
+    //       for(int i = 0; i<listaToursC.itemsTours.length; i++){
+    //         widget.listaTours.add(listaToursC.itemsTours[i]);
+    //       }
+    //     });
+    //   });
+
+      print("Datos del usuario:");
+      print(prefs.estadoUser);
+      print(prefs.countryCode);
+      
+     final datos = await provider.getToursC(prefs.estadoUser.toString(),prefs.countryCode.toString(),widget.ctid);
+
+      setState(() {
+        isloading = false;
+      });
+
+      if(ConnectionState.active != null){
+        if(datos.containsKey('Tours')){
+          final listaToursC = new ListaToursC.fromJsonList(datos['Tours']['data']);
+          for(int i = 0; i<listaToursC.itemsTours.length; i++){
+            widget.listaTours.add(listaToursC.itemsTours[i]);
           }
-        });
+        }else if(datos.containsKey('dataTours')){
+          print(noData);
+        }
       }
-    );
+      widget._pageController.position.didEndScroll();
     
     print("Lista paginado");
     print(widget.listaTours);
@@ -373,7 +439,7 @@ class _ListaToursCategoriaVerticalState extends State<ListaToursCategoriaVertica
           padding: EdgeInsets.only(right: 8.0),
           child: Align(
             alignment: Alignment.bottomRight,
-            heightFactor: 11.7,
+            heightFactor: 12.5,
             child: Padding(
               padding: EdgeInsets.only(right: size.width * 0.05),
               child: Text(
@@ -479,10 +545,26 @@ class _ListaToursCategoriaGridState extends State<ListaToursCategoriaGrid> {
   AppState _appState = AppState();
 
   @override
-  void initState() { 
-    
+  void initState(){
     super.initState();
-    
+    _scrollController.addListener((){
+      if(_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 10){
+        //_scrollController.position.didEndScroll();
+        //print('Cargar siguientes categorías');
+        //Se ejecuta la función para mostrar la siguiente página
+        //de categorías
+        //widget.siguientePagina();
+        fetchData();
+      }else{
+        isloading = false;
+      }
+    });
+  }
+
+  @override
+  void dispose(){
+   super.dispose();
+    _scrollController.dispose();
   }
   
   Future<Null> cargarTours()async{
@@ -491,16 +573,38 @@ class _ListaToursCategoriaGridState extends State<ListaToursCategoriaGrid> {
     Timer(duration, ()async{
       //Se borra la lista para generar otra
       widget.listaTours.clear();
-      _appState.userLocation().then((value)async{
-        state = value[1].toString();
-        codCountry = value[5].toString();
-        await categoriasProvider.getToursC(state,codCountry,widget.ctid).then((datos){
+      // _appState.userLocation().then((value)async{
+      //   state = value[1].toString();
+      //   codCountry = value[5].toString();
+      //   await categoriasProvider.getToursC(state,codCountry,widget.ctid).then((datos){
+      //     final listaToursC = new ListaToursC.fromJsonList(datos['Tours']['data']);
+      //     for(int i = 0; i<listaToursC.itemsTours.length; i++){
+      //       widget.listaTours.add(listaToursC.itemsTours[i]);
+      //     }
+      //   });
+      // });
+
+      // _appState.ubicacion().then((value)async{
+      //   print("Datos del usuario:");
+      //   print(value[1]);
+      //   print(value[3]);
+      //   await categoriasProvider.getToursC(value[1],value[3],widget.ctid).then((datos){
+      //     final listaToursC = new ListaToursC.fromJsonList(datos['Tours']['data']);
+      //     for(int i = 0; i<listaToursC.itemsTours.length; i++){
+      //       widget.listaTours.add(listaToursC.itemsTours[i]);
+      //     }
+      //   });
+      // });
+
+      print("Datos del usuario:");
+      print(prefs.estadoUser);
+      print(prefs.countryCode);
+      await categoriasProvider.getToursC(prefs.estadoUser.toString(),prefs.countryCode.toString(),widget.ctid).then((datos){
           final listaToursC = new ListaToursC.fromJsonList(datos['Tours']['data']);
           for(int i = 0; i<listaToursC.itemsTours.length; i++){
             widget.listaTours.add(listaToursC.itemsTours[i]);
           }
         });
-      });
       
       print("Ctid");
       print(widget.ctid);
@@ -514,16 +618,7 @@ class _ListaToursCategoriaGridState extends State<ListaToursCategoriaGrid> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    _scrollController.addListener((){
-      if(_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 10){
-        //_scrollController.position.didEndScroll();
-        //print('Cargar siguientes categorías');
-        //Se ejecuta la función para mostrar la siguiente página
-        //de categorías
-        //widget.siguientePagina();
-        fetchData();
-      }
-    });
+  
     return Container(
       //color: Colors.grey,
       height: size.height * 0.8,
@@ -569,30 +664,61 @@ class _ListaToursCategoriaGridState extends State<ListaToursCategoriaGrid> {
     return Timer(duration,cargar);
   }
 
-  void cargar(){
-    setState(() {
-      
-    });
+  void cargar()async{
+    String noData = AppTranslations.of(context).text('title_nodata');
     _scrollController.animateTo(
-      _scrollController.position.pixels + 100,
+      _scrollController.position.pixels + 20,
       curve: Curves.fastOutSlowIn, 
       duration: Duration(milliseconds: 250)
     );
     //widget.siguientePagina();
-    _appState.userLocation().then((value)async{
-      state = value[1].toString();
-      codCountry = value[5].toString();
-      await categoriasProvider.getToursC(state,codCountry,widget.ctid).then((result){
-        setState(() {
-          isloading = false;
-        });
-        final listaToursC = new ListaToursC.fromJsonList(result['Tours']['data']);
-        for(int i = 0; i < listaToursC.itemsTours.length; i++){
+
+    // _appState.userLocation().then((value)async{
+    //   state = value[1].toString();
+    //   codCountry = value[5].toString();
+    //   await categoriasProvider.getToursC(state,codCountry,widget.ctid).then((result){
+    //     setState(() {
+    //       isloading = false;
+    //     });
+    //     final listaToursC = new ListaToursC.fromJsonList(result['Tours']['data']);
+    //     for(int i = 0; i < listaToursC.itemsTours.length; i++){
+    //       widget.listaTours.add(listaToursC.itemsTours[i]);
+    //     }
+    //   });
+    // });
+
+    // _appState.ubicacion().then((value)async{
+    //     print("Datos del usuario:");
+    //     print(value[1]);
+    //     print(value[3]);
+    //     await categoriasProvider.getToursC(value[1],value[3],widget.ctid).then((datos){
+    //       setState(() {
+    //         isloading = false;
+    //       });
+    //       final listaToursC = new ListaToursC.fromJsonList(datos['Tours']['data']);
+    //       for(int i = 0; i<listaToursC.itemsTours.length; i++){
+    //         widget.listaTours.add(listaToursC.itemsTours[i]);
+    //       }
+    //     });
+    //   });
+
+      print("Datos del usuario:");
+      print(prefs.estadoUser);
+      print(prefs.countryCode);
+     final datos = await categoriasProvider.getToursC(prefs.estadoUser.toString(),prefs.countryCode.toString(),widget.ctid);
+      setState(() {
+        isloading = false;
+      });
+      if(datos.containsKey('Tours')){
+        final listaToursC = new ListaToursC.fromJsonList(datos['Tours']['data']);
+        for(int i = 0; i<listaToursC.itemsTours.length; i++){
           widget.listaTours.add(listaToursC.itemsTours[i]);
         }
-      });
-    });
-    
+      }else if(datos.containsKey('dataTours')){
+        print(noData);
+      }
+      
+      _scrollController.position.didEndScroll();
     print("Lista paginado");
     print(widget.listaTours);
     

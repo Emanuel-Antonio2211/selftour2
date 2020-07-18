@@ -9,7 +9,6 @@ import 'package:http/http.dart' as http;
 import 'package:mime_type/mime_type.dart';
 import 'package:selftourapp/src/preferencias_usuario/preferencias_usuario.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
-import 'package:flutter_twitter_login/flutter_twitter_login.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:selftourapp/src/providers/push_notifications_provider.dart';
 import 'package:dio/dio.dart';
@@ -51,10 +50,10 @@ class UsuarioProvider{
   bool isLogged = false;
   FirebaseUser myUser;
   //Twitter Sign in
-    var twitterlogin = new TwitterLogin(
+    /*var twitterlogin = new TwitterLogin(
       consumerKey: '16CajoQjMsVVwX09Bwg2uommR',
       consumerSecret: 'mkxtZHEtJIe3lzDh8xD2BP9sEosVDTXr7On2nJSWjdv0o0oblK'
-    );
+    );*/
   //Va a contener la instancia de GoogleSignin
   //Nos trae la composición de todo lo que existe en Google
   final GoogleSignIn googleSignIn = GoogleSignIn( scopes: [
@@ -232,17 +231,19 @@ class UsuarioProvider{
   }
 
   Future<FirebaseUser> logEmailPassword(String email,String password)async{
-    try{
-       myUser = await _auth.signInWithEmailAndPassword(email: email, password: password);
-      assert(myUser != null);
-      assert(await myUser.getIdToken() != null);
-      final FirebaseUser currentUser = await _auth.currentUser();
-      assert(myUser.uid == currentUser.uid);
-      return myUser;  
-    }catch(e){
-      print(e); 
-      return null;
-    }
+    // try{
+    //    myUser = await _auth.signInWithEmailAndPassword(email: email, password: password);
+    //   assert(myUser != null);
+    //   assert(await myUser.getIdToken() != null);
+    //   final FirebaseUser currentUser = await _auth.currentUser();
+    //   assert(myUser.uid == currentUser.uid);
+    //   return myUser;  
+    // }catch(e){
+    //   print(e); 
+    //   return null;
+    // }
+    myUser = await _auth.signInWithEmailAndPassword(email: email, password: password);
+    return myUser;
   }
 
   Future<FirebaseUser> registerEmail(String email,String password)async{
@@ -251,6 +252,8 @@ class UsuarioProvider{
         email: email,
         password: password
       );
+    print("Respuesta del registro: ");
+    print(myUser);
     return myUser;
       
       //assert(myUser != null);
@@ -268,7 +271,10 @@ class UsuarioProvider{
       "phone": "$telefono"
     };
 
-    final resp = await http.post('https://api-users.selftours.app/users',
+    //String apiRegisterUser = "https://api-users.selftours.app/users";
+    String apiRegisterUser = "https://api-users.selftours.app/signup";
+
+    final resp = await http.post(apiRegisterUser,
     headers: {HttpHeaders.contentTypeHeader:'application/json'},
     body: json.encode(registerData)
     );
@@ -283,108 +289,118 @@ class UsuarioProvider{
     //Evalua si la respuesta decodificada, si contiene el idtoken,
   //Quiere decir que la informacion proveida es un correo y contraseña valido
   //y tengo la informacion
-   if(decodedResp.containsKey('token')){
-     //Guardar el idtoken en el dispositivo
-      prefs.token=decodedResp['token'];
-      //prefs.name = decodedResp['data']['name'];
-      //prefs.email = decodedResp['data']['mail'];
-      prefs.phone = decodedResp['phone'];
+  //  if(decodedResp.containsKey('token')){
 
-      var decoded = parseJwt(prefs.token);
-      prefs.iduser = decoded['id'].toString();
-      prefs.name = decoded['name'].toString();
-      prefs.email = decoded['user'].toString();
-      print("Id User: "+prefs.iduser);
-      if(decoded['user'] != null){
-        firebaseMessaging.getToken().then((token){
-            prefs.tokenFCM = token;
-            print("Token 1");
-          });
+  //    //Guardar el idtoken en el dispositivo
+  //     //prefs.token=decodedResp['token'];
+
+  //     //prefs.name = decodedResp['data']['name'];
+  //     //prefs.email = decodedResp['data']['mail'];
+  //     // prefs.phone = decodedResp['phone'];
+
+  //     // var decoded = parseJwt(prefs.token);
+  //     // prefs.iduser = decoded['id'].toString();
+  //     // prefs.name = decoded['name'].toString();
+  //     // prefs.email = decoded['user'].toString();
+  //     // print("Id User: "+prefs.iduser);
+
+  //   //   if(decoded['user'] != null){
+  //   //     firebaseMessaging.getToken().then((token){
+  //   //         prefs.tokenFCM = token;
+  //   //         print("Token 1");
+  //   //       });
         
-        print(prefs.tokenFCM);
+  //   //     print(prefs.tokenFCM);
 
-      // Check is already sign up - Checa si está logueado
-      // id myUser.providerData[1].uid
-      final QuerySnapshot result = await Firestore.instance.collection('users').where('email',isEqualTo: decoded['user']).getDocuments();
-      final List<DocumentSnapshot> documents = result.documents;
-      final coleccion = Firestore.instance.collection('users').document('email').collection('tokensfcm');
+  //   //   // Check is already sign up - Checa si está logueado
+  //   //   // id myUser.providerData[1].uid
+  //   //   final QuerySnapshot result = await Firestore.instance.collection('users').where('email',isEqualTo: decoded['user']).getDocuments();
+  //   //   final List<DocumentSnapshot> documents = result.documents;
+  //   //   final coleccion = Firestore.instance.collection('users').document('email').collection('tokensfcm');
 
-      if(documents.length == 0){
-        // Update data to server if new user - Actualiza los datos del servidor
-        // si el usuario es nuevo
-        // id myUser.providerData[1].uid
-        Firestore.instance.collection('users').document(decoded['user']).setData(
-          {
-            'tokenfcm':"${prefs.tokenFCM}",
-            'nickname':decoded['name'],
-            'id': decoded['id'],
-            'email': decoded['user'],
-            'photoUrl':null,
-            'createdAt': DateTime.now().millisecondsSinceEpoch.toString(),
-            'chattingWith': null
-          }
-        );
+  //   //   if(documents.length == 0){
+  //   //     // Update data to server if new user - Actualiza los datos del servidor
+  //   //     // si el usuario es nuevo
+  //   //     // id myUser.providerData[1].uid
+  //   //     Firestore.instance.collection('users').document(decoded['user']).setData(
+  //   //       {
+  //   //         'tokenfcm':"${prefs.tokenFCM}",
+  //   //         'nickname':decoded['name'],
+  //   //         'id': decoded['id'],
+  //   //         'email': decoded['user'],
+  //   //         'photoUrl':null,
+  //   //         'createdAt': DateTime.now().millisecondsSinceEpoch.toString(),
+  //   //         'chattingWith': null
+  //   //       }
+  //   //     );
 
-        Firestore.instance.runTransaction((transaction)async{
-          await transaction.set(
-            coleccion.document(),
-            {
-              'token': prefs.tokenFCM.toString()
-            }
-          );
-        }).then((result){
-          print(result);
-        }).catchError((error){
-          print(error);
-        });
-        // Write data to local - Escribir los datos en local
-       // FirebaseUser currentUser = user;
+  //   //     Firestore.instance.runTransaction((transaction)async{
+  //   //       await transaction.set(
+  //   //         coleccion.document(),
+  //   //         {
+  //   //           'token': prefs.tokenFCM.toString()
+  //   //         }
+  //   //       );
+  //   //     }).then((result){
+  //   //       print(result);
+  //   //     }).catchError((error){
+  //   //       print(error);
+  //   //     });
+  //   //     // Write data to local - Escribir los datos en local
+  //   //    // FirebaseUser currentUser = user;
         
-      }else{
-        print("El usuario existe");
-        final QuerySnapshot result = await Firestore.instance.collection('users').where('email',isEqualTo: prefs.email).getDocuments(); //authUser.providerData[1].email
-        final List<DocumentSnapshot> documents = result.documents;
-        final  coleccion = Firestore.instance.collection('users').document('${prefs.email}').collection('tokensfcm');
+  //   //   }else{
+  //   //     print("El usuario existe");
+  //   //     final QuerySnapshot result = await Firestore.instance.collection('users').where('email',isEqualTo: prefs.email).getDocuments(); //authUser.providerData[1].email
+  //   //     final List<DocumentSnapshot> documents = result.documents;
+  //   //     final  coleccion = Firestore.instance.collection('users').document('${prefs.email}').collection('tokensfcm');
         
-        if(documents.single.data['tokenfcm'] != prefs.tokenFCM ){
+  //   //     if(documents.single.data['tokenfcm'] != prefs.tokenFCM ){
                 
-          // Firestore.instance.collection('users').document(prefs.email).setData(
-          //   {
-          //     'tokenfcm':"$tokenFCM",
-          //     'nickname': prefs.name,//authUser.providerData[1].displayName
-          //     'id': prefs.iduser,//authUser.providerData[1].uid
-          //     'idtokens': tokenFCM,
-          //     'email': prefs.email,//authUser.providerData[1].email
-          //     'photoUrl': prefs.photoUrl,//authUser.providerData[1].photoUrl
-          //     'createdAt': DateTime.now().millisecondsSinceEpoch.toString()
-          //     //'chattingWith': null
-          //   }
-          // );
-          Firestore.instance.collection('users').document(prefs.email).updateData({
-            'tokenfcm': prefs.tokenFCM.toString()
-          });
-          print("Escribiendo datos");
-          Firestore.instance.runTransaction((transaction)async{
-            await transaction.set(
-              coleccion.document(),
-              {
-                'token': prefs.tokenFCM.toString()
-              }
-            );
-          }).then((result){
-            print(result);
-          }).catchError((error){
-            print(error);
-          });
-        }else{
-          print("tiene el mismo token fcm");
-        }
-      }
-    }
-     //TODO: Salvar el token en el storage
-    return {'ok':true, 'token':decodedResp['token']};
+  //   //       // Firestore.instance.collection('users').document(prefs.email).setData(
+  //   //       //   {
+  //   //       //     'tokenfcm':"$tokenFCM",
+  //   //       //     'nickname': prefs.name,//authUser.providerData[1].displayName
+  //   //       //     'id': prefs.iduser,//authUser.providerData[1].uid
+  //   //       //     'idtokens': tokenFCM,
+  //   //       //     'email': prefs.email,//authUser.providerData[1].email
+  //   //       //     'photoUrl': prefs.photoUrl,//authUser.providerData[1].photoUrl
+  //   //       //     'createdAt': DateTime.now().millisecondsSinceEpoch.toString()
+  //   //       //     //'chattingWith': null
+  //   //       //   }
+  //   //       // );
+  //   //       Firestore.instance.collection('users').document(prefs.email).updateData({
+  //   //         'tokenfcm': prefs.tokenFCM.toString()
+  //   //       });
+  //   //       print("Escribiendo datos");
+  //   //       Firestore.instance.runTransaction((transaction)async{
+  //   //         await transaction.set(
+  //   //           coleccion.document(),
+  //   //           {
+  //   //             'token': prefs.tokenFCM.toString()
+  //   //           }
+  //   //         );
+  //   //       }).then((result){
+  //   //         print(result);
+  //   //       }).catchError((error){
+  //   //         print(error);
+  //   //       });
+  //   //     }else{
+  //   //       print("tiene el mismo token fcm");
+  //   //     }
+  //   //   }
+  //   // }
+
+  //    //TODO: Salvar el token en el storage
+  //   return {'ok':true, 'token':decodedResp['token']};
+  //  }else{
+  //    return {'ok':false,'mensaje':decodedResp['error']['error']['sqlMessage']};
+  //  }
+
+   if(decodedResp['resp']['msg'] == "Signed up "){
+     return {'msg': decodedResp['resp']['msg']}; //Updated from DB Signed up
    }else{
-     return {'ok':false,'mensaje':decodedResp['error']['error']['sqlMessage']};
+     return {'msg': decodedResp['resp']['msg']};
    }
    
   }
@@ -460,6 +476,7 @@ class UsuarioProvider{
   }
 
   //Iniciar sesión en Twitter
+  /*
     Future<FirebaseUser> loginWithTwitter() async {
     final TwitterLoginResult twitterLoginResult = await twitterlogin.authorize();
     String newMessage;
@@ -524,7 +541,7 @@ class UsuarioProvider{
       //_message = newMessage;
     });*/
   }
-
+*/
   //Iniciar sesión en Google
   Future<FirebaseUser> loginWithGoogle() async{
     //Se crea una instancia de GoogleSignAccount
@@ -538,13 +555,14 @@ class UsuarioProvider{
 
     
     var info = parseJwt(gSA.idToken);
-    print("info: $info");
+    print("info: ${info['email']}");
     //Se hace la autenticacion con firebase
     //Verifica si la cuenta existe
    myUser = await _auth.signInWithCredential(GoogleAuthProvider.getCredential(idToken: gSA.idToken,accessToken:gSA.accessToken));
    //prefs.token = gSA.idToken;
     
-    print(myUser);
+    print("Usuario Firebase Google: ");
+    print(myUser.email);
     myUser.getIdToken().then((value){
       print(value);
     });
@@ -594,7 +612,7 @@ class UsuarioProvider{
    //Cerrar sesión en Firebase
     await _auth.signOut().then((onValue){
       facebookLogin.logOut();
-      twitterlogin.logOut();
+      //twitterlogin.logOut();
       
       //Cerrar sesión en google
       googleSignIn.signOut();
@@ -857,7 +875,8 @@ class UsuarioProvider{
     );
 
     final decodedResp = json.decode(resp.body);
-
+    print("Datos Obtenidos del usuario: ");
+    print(decodedResp);
     editionSink(decodedResp);
     return decodedResp;
   }
@@ -865,11 +884,13 @@ class UsuarioProvider{
   //Método para reestablecer la contraseña
   Future<void> resetPassword(String email,String languageCode)async{
     _auth.setLanguageCode(languageCode);
-    _auth.sendPasswordResetEmail(email: email ).whenComplete((){
+
+   return _auth.sendPasswordResetEmail(email: email );
+    // _auth.sendPasswordResetEmail(email: email ).whenComplete((){
       
-    }).catchError((error){
-      print("Error al enviar el correo para resetear contraseña");
-      print("El correo tal vez no existe o no fue encontrado como registrado");
-    });
+    // }).catchError((error){
+    //   print("Error al enviar el correo para resetear contraseña");
+    //   print("El correo tal vez no existe o no fue encontrado como registrado");
+    // });
   }
 }

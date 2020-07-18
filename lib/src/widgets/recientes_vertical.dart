@@ -6,6 +6,7 @@ import 'package:selftourapp/src/googlemaps/states/app_state.dart';
 import 'package:selftourapp/src/models/tour_categoria_model.dart';
 import 'package:selftourapp/src/providers/categorias_providers.dart';
 import 'package:selftourapp/src/translation_class/app_translations.dart';
+import 'package:selftourapp/src/preferencias_usuario/preferencias_usuario.dart';
 
 class RecienteVertical extends StatefulWidget {
   final List<InfoTour> listaRecientes;
@@ -21,6 +22,7 @@ class _RecienteVerticalState extends State<RecienteVertical> {
   final _scrollController = ScrollController();
 
   final categoriaProvider = CategoriasProvider();
+  PreferenciasUsuario prefs = PreferenciasUsuario();
   String state;
   String codCountry;
   AppState _appState = AppState();
@@ -28,25 +30,61 @@ class _RecienteVerticalState extends State<RecienteVertical> {
 
   @override
   void initState() {
-    
     super.initState();
-    
+    _scrollController.addListener((){
+      if(_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 10){
+        //_scrollController.position.didEndScroll();
+        //print('Cargar siguientes categorías');
+        //Se ejecuta la función para mostrar la siguiente página
+        //de categorías
+        //widget.siguientePagina();
+        //fetchData();
+      }else{
+        isloading = false;
+      }
+    });
+  }
+
+  @override
+  void dispose(){
+    super.dispose();
+    _scrollController.dispose();
   }
 
   Future<Null> cargarRecientes()async{
     final duration = Duration(seconds: 2);
 
-    Timer(duration, (){
+    Timer(duration, ()async{
       widget.listaRecientes.clear();
-      _appState.userLocation().then((value)async{
-        state = value[1].toString();
-        codCountry = value[5].toString();
-       final result = await categoriaProvider.recientesPag(state,codCountry);
-        final recientes = ListaToursC.fromJsonList(result['tours'][0]['data_tour']);
-        for(int i = 0; i < recientes.itemsTours.length; i++){
-            widget.listaRecientes.add(recientes.itemsTours[i]);
-          }
-      });
+      // _appState.userLocation().then((value)async{
+      //   state = value[1].toString();
+      //   codCountry = value[5].toString();
+      //  final result = await categoriaProvider.recientesPag(state,codCountry);
+      //   final recientes = ListaToursC.fromJsonList(result['tours'][0]['data_tour']);
+      //   for(int i = 0; i < recientes.itemsTours.length; i++){
+      //       widget.listaRecientes.add(recientes.itemsTours[i]);
+      //     }
+      // });
+
+      // _appState.ubicacion().then((value)async{
+      //   print("Datos del usuario:");
+      //   print(value[1]);
+      //   print(value[3]);
+      //   final result = await categoriaProvider.recientesPag(value[1],value[3]);
+      //   final recientes = ListaToursC.fromJsonList(result['tours'][0]['data_tour']);
+      //   for(int i = 0; i < recientes.itemsTours.length; i++){
+      //       widget.listaRecientes.add(recientes.itemsTours[i]);
+      //     }
+      // });
+
+      print("Datos del usuario:");
+      print(prefs.estadoUser);
+      print(prefs.countryCode);
+      final result = await categoriaProvider.recientesPag(prefs.estadoUser,prefs.countryCode);
+      final recientes = ListaToursC.fromJsonList(result['tours'][0]['data_tour']);
+      for(int i = 0; i < recientes.itemsTours.length; i++){
+          widget.listaRecientes.add(recientes.itemsTours[i]);
+        }
     });
     print("Lista Cargada");
     print(widget.listaRecientes);
@@ -56,16 +94,7 @@ class _RecienteVerticalState extends State<RecienteVertical> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    _scrollController.addListener((){
-      if(_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 10){
-        //_scrollController.position.didEndScroll();
-        //print('Cargar siguientes categorías');
-        //Se ejecuta la función para mostrar la siguiente página
-        //de categorías
-        //widget.siguientePagina();
-        //fetchData();
-      }
-    });
+    
     return Container(
       height: size.height * 0.8,
       child: Stack(
@@ -317,6 +346,7 @@ class _RecienteGridState extends State<RecienteGrid> {
   final _scrollController = ScrollController();
 
   final categoriaProvider = CategoriasProvider();
+  PreferenciasUsuario prefs = PreferenciasUsuario();
   String state;
   String codCountry;
   AppState _appState = AppState();
@@ -324,25 +354,61 @@ class _RecienteGridState extends State<RecienteGrid> {
 
   @override
   void initState() {
-    
     super.initState();
-    
+    _scrollController.addListener((){
+      if(_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 10){
+        //_scrollController.position.didEndScroll();
+        //print('Cargar siguientes categorías');
+        //Se ejecuta la función para mostrar la siguiente página
+        //de categorías
+        //widget.siguientePagina();
+        //fetchData();
+      }else{
+        isloading = false;
+      }
+    });
+  }
+
+  @override
+  void dispose(){
+    super.dispose();
+    _scrollController.dispose();
   }
 
   Future<Null> cargarRecientes()async{
     final duration = Duration(seconds: 2);
 
-    Timer(duration, (){
+    Timer(duration, ()async{
       widget.listaRecientes.clear();
-      _appState.userLocation().then((value)async{
-        state = value[1].toString();
-        codCountry = value[5].toString();
-        final result = await categoriaProvider.recientesPag(state,codCountry);
+      // _appState.userLocation().then((value)async{
+      //   state = value[1].toString();
+      //   codCountry = value[5].toString();
+      //   final result = await categoriaProvider.recientesPag(state,codCountry);
+      //   final recientes = ListaToursC.fromJsonList(result['tours'][0]['data_tour']);
+      //   for(int i = 0; i < recientes.itemsTours.length; i++){
+      //     widget.listaRecientes.add(recientes.itemsTours[i]);
+      //   }
+      // });
+
+      // _appState.ubicacion().then((value)async{
+      //   print("Datos del usuario:");
+      //   print(value[1]);
+      //   print(value[3]);
+      //   final result = await categoriaProvider.recientesPag(value[1],value[3]);
+      //   final recientes = ListaToursC.fromJsonList(result['tours'][0]['data_tour']);
+      //   for(int i = 0; i < recientes.itemsTours.length; i++){
+      //       widget.listaRecientes.add(recientes.itemsTours[i]);
+      //     }
+      // });
+
+      print("Datos del usuario:");
+      print(prefs.estadoUser);
+      print(prefs.countryCode);
+      final result = await categoriaProvider.recientesPag(prefs.estadoUser,prefs.countryCode);
         final recientes = ListaToursC.fromJsonList(result['tours'][0]['data_tour']);
         for(int i = 0; i < recientes.itemsTours.length; i++){
-          widget.listaRecientes.add(recientes.itemsTours[i]);
-        }
-      });
+            widget.listaRecientes.add(recientes.itemsTours[i]);
+          }
     });
     print("Lista Cargada");
     print(widget.listaRecientes);
@@ -352,16 +418,7 @@ class _RecienteGridState extends State<RecienteGrid> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    _scrollController.addListener((){
-      if(_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 10){
-        //_scrollController.position.didEndScroll();
-        //print('Cargar siguientes categorías');
-        //Se ejecuta la función para mostrar la siguiente página
-        //de categorías
-        //widget.siguientePagina();
-        //fetchData();
-      }
-    });
+    
     return Container(
       height: size.height * 0.8,
       child: Stack(
@@ -397,7 +454,7 @@ class _RecienteGridState extends State<RecienteGrid> {
   void cargar(){
     isloading = false;
     _scrollController.animateTo(
-      _scrollController.position.pixels + 100,
+      _scrollController.position.pixels + 20,
       curve: Curves.fastOutSlowIn, 
       duration: Duration(milliseconds: 250)
     );

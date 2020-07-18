@@ -18,7 +18,7 @@ class _ToursFavoritosPageState extends State<ToursFavoritosPage> {
   Set<InfoTour> listaGuardado = Set<InfoTour>();
   PreferenciasUsuario prefs = PreferenciasUsuario();
   CategoriasProvider categoriasProvider = CategoriasProvider();
-  List<InfoTour> listaFavoritos = List();
+  //List<InfoTour> listaFavoritos = List();
   String state;
   String codCountry;
   AppState _appState = AppState();
@@ -40,18 +40,20 @@ class _ToursFavoritosPageState extends State<ToursFavoritosPage> {
       
     // });
 
-    Future<List<InfoTour>> cargarTour()async{
-      //ListaToursC listaToursC;
-      List<InfoTour> result;
-      _appState.userLocation().then((value)async{
-        state = value[1].toString();
-        codCountry = value[5].toString();
-        result = await categoriasProvider.verFavoritos();
-      });
+    // Future<List<InfoTour>> cargarTour()async{
+    //   //ListaToursC listaToursC;
+    //   List<InfoTour> result;
+    //   // _appState.userLocation().then((value)async{
+    //   //   state = value[1].toString();
+    //   //   codCountry = value[5].toString();
+    //   //   result = await categoriasProvider.verFavoritos();
+    //   // });
+
+    //   result = await categoriasProvider.verFavoritos();
       
-      // listaToursC = new ListaToursC.fromJsonList(result['Tours']['data']);
-      return result;
-    }
+    //   // listaToursC = new ListaToursC.fromJsonList(result['Tours']['data']);
+    //   return result;
+    // }
     
     return Scaffold(
       appBar: AppBar(
@@ -84,7 +86,7 @@ class _ToursFavoritosPageState extends State<ToursFavoritosPage> {
         child: StreamBuilder(
           stream: categoriasProvider.tourFavoritoStream,
          // initialData: InitialData,
-          builder: (BuildContext context, AsyncSnapshot<List<InfoTour>> snapshot) {
+          builder: (BuildContext context, AsyncSnapshot<Map<String,dynamic>> snapshot) {
             String errorDatos = AppTranslations.of(context).text('title_errorDatos');
             switch(snapshot.connectionState){
               case ConnectionState.waiting:
@@ -112,9 +114,26 @@ class _ToursFavoritosPageState extends State<ToursFavoritosPage> {
                 );
               break;
               case ConnectionState.done:
-                if(snapshot.hasData && snapshot.data.length > 0){
-                  final listatour = snapshot.data;
-                  return Favoritos(listaFavoritos: listatour);
+                if(snapshot.hasData){
+                  if(snapshot.data['resp']['msg'] == "NO SE ENCONTRO NINGUN TOUR"){
+                    return Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        SafeArea(
+                          child: SizedBox(
+                            height: size.height * 0.4,
+                          ),
+                        ),
+                        Center(
+                          child: Text('$noData')
+                        ),
+                      ],
+                    );
+                  }else{
+                    final favoritos = ListaToursC.fromJsonList(snapshot.data['resp']['tours']);
+                    return Favoritos(listaFavoritos: favoritos.itemsTours);
+                  }
+                  
                 }else if(snapshot.hasError){
                   return Center(
                     child: Column(
@@ -141,16 +160,33 @@ class _ToursFavoritosPageState extends State<ToursFavoritosPage> {
                         ),
                       ),
                       Center(
-                        child: Text('$noData')
+                        child: CircularProgressIndicator()
                       ),
                     ],
                   );
                 }
               break;
               case ConnectionState.active:
-                if(snapshot.hasData && snapshot.data.length > 0){
-                  final listatour = snapshot.data;
-                  return Favoritos(listaFavoritos: listatour );
+                if(snapshot.hasData){
+                  if(snapshot.data['resp']['msg'] == "NO SE ENCONTRO NINGUN TOUR"){
+                    return Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        SafeArea(
+                          child: SizedBox(
+                            height: size.height * 0.4,
+                          ),
+                        ),
+                        Center(
+                          child: Text('$noData')
+                        ),
+                      ],
+                    );
+                  }else{
+                    final favoritos = ListaToursC.fromJsonList(snapshot.data['resp']['tours']);
+                    return Favoritos(listaFavoritos: favoritos.itemsTours);
+                  }
+                  
                 }else if(snapshot.hasError){
                   return Center(
                     child: Column(
@@ -177,7 +213,7 @@ class _ToursFavoritosPageState extends State<ToursFavoritosPage> {
                         ),
                       ),
                       Center(
-                        child: Text('$noData')
+                        child: CircularProgressIndicator()
                       ),
                     ],
                   );
@@ -310,8 +346,9 @@ class _FavoritosState extends State<Favoritos> {
         
       // });
       provider.verFavoritos().then((result){
-        for(int i = 0; i < result.length; i++){
-          widget.listaFavoritos.add(result[i]);
+        final favoritos = new ListaToursC.fromJsonList(result['resp']['tours']);
+        for(int i = 0; i < favoritos.itemsTours.length; i++){
+          widget.listaFavoritos.add(favoritos.itemsTours[i]);
         }
       });
 
@@ -371,19 +408,27 @@ class _FavoritosState extends State<Favoritos> {
       curve: Curves.fastOutSlowIn,
       duration: Duration(milliseconds: 250)
     );
-    await _appState.userLocation().then((value)async{
-        state = value[1].toString();
-        codCountry = value[5].toString();
-        await provider.verFavoritos().then((resp){
+    // await _appState.userLocation().then((value)async{
+    //     state = value[1].toString();
+    //     codCountry = value[5].toString();
+
+    //   });
+      await provider.verFavoritos().then((resp){
           setState(() {
             isloading = false;
           });
-          for(int i = 0; i < resp.length; i++){
-            widget.listaFavoritos.add(resp[i]);
+          //['resp']['msg'] == "NO SE ENCONTRO NINGUN TOUR"
+          
+          if(resp['resp']['tours'].length > 0){
+            final favoritos = new ListaToursC.fromJsonList(resp['resp']['tours']);
+            for(int i = 0; i < favoritos.itemsTours.length; i++){
+              widget.listaFavoritos.add(favoritos.itemsTours[i]);
+            }
+          }else if(resp['resp']['msg'] == "NO SE ENCONTRO NINGUN TOUR"){
+            print("No hay datos");
           }
+          
         });
-
-      });
     //widget.siguientePagina();
   }
 
@@ -446,7 +491,7 @@ class _FavoritosState extends State<Favoritos> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
                                 Container(
-                                  width: size.width * 0.5,
+                                  width: size.width * 0.4,
                                   child: Text(
                                     tour.title,
                                     overflow: TextOverflow.ellipsis,
@@ -456,6 +501,21 @@ class _FavoritosState extends State<Favoritos> {
                                   ),
                                 )
                               ],
+                            ),
+                          ),
+                          Positioned(
+                            top: size.height * 0.033,
+                            right: size.width * 0.02,
+                            child: Card(
+                              color: Colors.redAccent,
+                              child: Text(
+                                '\$ ${double.parse(tour.price.toString()).toString()}',
+                                style: TextStyle(
+                                  fontFamily: 'Point-SemiBold',
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white
+                                ),
+                              ),
                             ),
                           )
                         ],

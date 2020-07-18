@@ -288,18 +288,18 @@ Widget _botonIngresar(LoginBloc bloc){
 }
 
 _login(LoginBloc bloc,BuildContext context) async {
- Map info = await usuarioProvider.loginIn(bloc.mail, bloc.pass);
+ //Map info = await usuarioProvider.loginIn(bloc.mail, bloc.pass);
  
- String errorLog = AppTranslations.of(context).text('title_errorlog');
+ //String errorLog = AppTranslations.of(context).text('title_errorlog');
 //await bloc.signInEmail(bloc.mail,bloc.pass, context);
-
- if(info['success']){
-   //Navigator.pushReplacementNamed(context, 'menuprincipal');
-    await bloc.signInEmail(bloc.mail, bloc.pass, context).then((result){});
-   //Navigator.pop(context);
- }else{
-   mostrarAlerta(context,info['mensaje'],'$errorLog','assets/error.png');
- }
+  await bloc.signInEmail(bloc.mail, bloc.pass, context);
+//  if(info['success']){
+//    //Navigator.pushReplacementNamed(context, 'menuprincipal');
+//     await bloc.signInEmail(bloc.mail, bloc.pass, context).then((result){});
+//    //Navigator.pop(context);
+//  }else{
+//    mostrarAlerta(context,info['mensaje'],'$errorLog','assets/error.png');
+//  }
   
 }
 

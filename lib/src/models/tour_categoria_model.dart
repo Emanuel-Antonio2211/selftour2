@@ -30,11 +30,15 @@ class InfoTour {
   dynamic ctidss;
 
   int idtour;
+  int idt;
   int iduser;
   Map<String,dynamic> userData;
   String user;
   String name;
   String title = '';
+  String creation_date;
+  int idMaker;
+  String tourMaker;
   String description;
   int shop;
   String fulldescription;
@@ -89,11 +93,15 @@ class InfoTour {
     this.icon,
     this.ctidss,
     this.idtour,
+    this.idt,
     this.iduser,
     this.user,
     this.userData,
     this.name,
     this.title,
+    this.creation_date,
+    this.idMaker,
+    this.tourMaker,
     this.description,
     this.shop,
     this.fulldescription,
@@ -140,11 +148,15 @@ class InfoTour {
   // en formato json
   InfoTour.fromJsonMap(Map<String,dynamic> json){
     idtour        = json['idtour'];
+    idt           = json['_idt'];
     iduser        = json['iduser'];
     //user          = json['user'];
     userData      = json['user_data'];
     name          = json['name'];
     title         = json['title'];
+    creation_date = json['creation_date'];
+    idMaker       = json['_idmaker'];
+    tourMaker     = json['tourmaker'];
     description   = json['description'];
     shop          = json['shop'];
     fulldescription = json['full_description'];

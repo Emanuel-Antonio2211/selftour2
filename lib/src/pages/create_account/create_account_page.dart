@@ -353,16 +353,17 @@ Widget _botonContinuar(LoginBloc bloc){
 }
 
 _registrar(BuildContext context,LoginBloc bloc)async{
-  String error = AppTranslations.of(context).text('title_errorreg');
- Map info = await usuarioProvider.usuarioNuevo(bloc.name, bloc.mail, bloc.pass, bloc.phone);
+  //String error = AppTranslations.of(context).text('title_errorreg');
+  //Map info = await usuarioProvider.usuarioNuevo(bloc.name, bloc.mail, bloc.pass, bloc.phone);
   
-  if(info['ok']){
-    //Navigator.pop(context);
-    await bloc.createUser(context,bloc.mail, bloc.pass);
+  // if(info['ok']){
+  //   //Navigator.pop(context);
+  //   await bloc.createUser(context,bloc.mail, bloc.pass);
     
-  }else{
-    mostrarAlerta(context, info['mensaje'],'$error', 'assets/error.png');
-  }
+  // }else{
+  //   mostrarAlerta(context, info['mensaje'],'$error', 'assets/error.png');
+  // }
+  await bloc.createUser(context,bloc.name,bloc.mail, bloc.pass,bloc.phone);
   //Navigator.pushReplacementNamed(context, 'slidepage');
   //Navigator.popAndPushNamed(context, 'slidepage');
 }

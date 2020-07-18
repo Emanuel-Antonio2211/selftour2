@@ -339,9 +339,14 @@ class _MapaState extends State<Mapa> {
             ),
           ),
         ),
-        body: appState.lastPosition == null ? Center(
+        /*
+        
+        appState.lastPosition == null ? Center(
                 child: CircularProgressIndicator(),
-              ) : Stack(
+              ) : 
+        
+        */
+        body: Stack(
           children: <Widget>[
             FutureBuilder(//, ${tour.route.first['site']}, ${tour.city} tour.route.first['site'] tour.route.last['site']
               future: categoriasProvider.ruta("${tour.route.first['lat']}, ${tour.route.first['lng']}", "${tour.route.first['lat']}, ${tour.route.first['lng']} ", result),
@@ -591,65 +596,20 @@ class _MapaState extends State<Mapa> {
     AppState appState = AppState();
     MarkerId markerId = MarkerId(tours.title.toString());
     InfoWindow infoWindow = InfoWindow(title: tours.title.toString());
-   // List<String> imagenes = List();
-    List<String> sites = List();
-
-    //Text site;
+    List<dynamic> sites = List();
+    List<Widget> items = List();
+    Card item;
     
     for(int j = 0; j < tour.route.length; j++){
-        sites.add(j.toString());//tour.route[j]['site'].toString()
+        sites.add((j+1));//tour.route[j]['site'].toString()
+
       }
 
-      /*for(int s = 0; s < sites.length; s++){
-        site = Text(
-          '${sites.toString()}',
-          style: TextStyle(
-            fontFamily: 'Point-SemiBold',
-            fontSize: 11.0,
-            fontStyle: FontStyle.italic)
-        );
-      }*/
-      //print("Sitios");
-      //print(sites);
-    
-    return tour.route.map((detalletour){
-      /*for(int i = 0; i< tour['gallery'].length; i++){
-        imagenes.add(tour['gallery'][0]['url']);
-      }
-
-      
-     print("Imagenes: $imagenes");*/
-
-     /*for(int n = 0; n <= detalletour.length; n++){
-       print(n+1);
-     }*/
-     
-      return GestureDetector(
-        onTap: ()async{
-          /*_acercar(double.parse(detalletour['lat']) ,double.parse( detalletour['lng']));
-          final Uint8List markerIcon = await getBytesFromCanvas(140, 20,'${detalletour['site'].toString()}');
-          final http.Response response = await http.get(detalletour['gallery'][0]['url'].toString());
-          //final File markerImageFile = await DefaultCacheManager().getSingleFile(imageUrl);
-       setState(() {
-        _marcadores.add(
-          Marker(
-            consumeTapEvents: true,
-            visible: true,
-            markerId: markerId,
-            position: LatLng(double.parse(detalletour['lat']), double.parse(detalletour['lng'])),
-            infoWindow: infoWindow,
-            icon: BitmapDescriptor.fromBytes(markerIcon),
-            onTap: (){
-              
-            }
-          )
-
-         
-        );
-        
-       });*/
-        },
-        child: Card(
+    for(int i = 0; i < tour.route.length; i++){
+      final detalletour = tour.route[i];
+      // print("Lista Tour: ");
+      // print("${i+1} ${detalletour['site']}");
+      item = Card(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
@@ -712,7 +672,7 @@ class _MapaState extends State<Mapa> {
                     ),*/
                     //site,
                     Text(
-                      '${detalletour['site'].toString()}',
+                      '${(i+1).toString()}.- ${detalletour['site'].toString()}',
                       style: TextStyle(
                         fontFamily: 'Point-SemiBold',
                         fontSize: 11.0,
@@ -769,7 +729,7 @@ class _MapaState extends State<Mapa> {
                               
                             final origen = Location(name: '${appState.initialPosition.toString()}',latitude: appState.initialPosition.latitude,longitude: appState.initialPosition.longitude );
                             final destino = Location(name: '${detalletour['site']}',latitude: double.parse(detalletour['lat']) ,longitude: double.parse(detalletour['lng']) );
-                            await _directions.startNavigation( origin: origen, destination: destino,mode: NavigationMode.walking,simulateRoute: false,language: "${prefs.idioma}", units: VoiceUnits.metric);
+                            await _directions.startNavigation( origin: origen, destination: destino,mode: NavigationMode.walking,simulateRoute: false,language: "${prefs.idioma}");//units: VoiceUnits.imperial
                            
                               
                             // await appState.userLocation().then((result){
@@ -792,12 +752,12 @@ class _MapaState extends State<Mapa> {
                             final origen = Location(name: '${appState.initialPosition.toString()}',latitude: appState.initialPosition.latitude,longitude: appState.initialPosition.longitude );
                             final destino = Location(name: '${detalletour['site']}',latitude: double.parse(detalletour['lat']) ,longitude: double.parse(detalletour['lng']) );
                             //_directions.startNavigation( origin: origen, destination: destino,mode: NavigationMode.cycling,simulateRoute: false,language: 'German',units: VoiceUnits.metric);
-                            await _directions.startNavigation( origin: origen, destination: destino,mode: NavigationMode.cycling,simulateRoute: false,language: "${prefs.idioma}",units: VoiceUnits.metric);
+                            await _directions.startNavigation( origin: origen, destination: destino,mode: NavigationMode.cycling,simulateRoute: false,language: "${prefs.idioma}");//units: VoiceUnits.metric
                           }else if(value == 3){
                             print("Opcion: $value");
                             final origen = Location(name: '${appState.initialPosition.toString()}',latitude: appState.initialPosition.latitude,longitude: appState.initialPosition.longitude );
                             final destino = Location(name: '${detalletour['site']}',latitude: double.parse(detalletour['lat']) ,longitude: double.parse(detalletour['lng']) );
-                            await _directions.startNavigation( origin: origen, destination: destino,mode: NavigationMode.driving,simulateRoute: false,language: "${prefs.idioma}",units: VoiceUnits.metric);
+                            await _directions.startNavigation( origin: origen, destination: destino,mode: NavigationMode.driving,simulateRoute: false,language: "${prefs.idioma}");//units: VoiceUnits.metric
                           }
                           //print("Opcion: $value");
                         },
@@ -918,9 +878,310 @@ class _MapaState extends State<Mapa> {
 
             ],
           ),
-        ),
-      );
-    }).toList();
+        );
+
+        items.add(item);
+    }
+    return items;
+    
+    // return tour.route.map((detalletour){
+    //   return GestureDetector(
+    //     onTap: ()async{
+    //       /*_acercar(double.parse(detalletour['lat']) ,double.parse( detalletour['lng']));
+    //       final Uint8List markerIcon = await getBytesFromCanvas(140, 20,'${detalletour['site'].toString()}');
+    //       final http.Response response = await http.get(detalletour['gallery'][0]['url'].toString());
+    //       //final File markerImageFile = await DefaultCacheManager().getSingleFile(imageUrl);
+    //    setState(() {
+    //     _marcadores.add(
+    //       Marker(
+    //         consumeTapEvents: true,
+    //         visible: true,
+    //         markerId: markerId,
+    //         position: LatLng(double.parse(detalletour['lat']), double.parse(detalletour['lng'])),
+    //         infoWindow: infoWindow,
+    //         icon: BitmapDescriptor.fromBytes(markerIcon),
+    //         onTap: (){
+              
+    //         }
+    //       )
+
+         
+    //     );
+        
+    //    });*/
+    //     },
+    //     child: Card(
+    //       child: Column(
+    //         crossAxisAlignment: CrossAxisAlignment.start,
+    //         children: <Widget>[
+    //           GestureDetector(
+    //             onTap: ()async{
+    //               _acercar(double.parse(detalletour['lat']) ,double.parse( detalletour['lng']));
+    //                 final Uint8List markerIcon = await getBytesFromCanvas(140, 20,'${detalletour['site'].toString()}');
+    //                 //final http.Response response = await http.get(detalletour['gallery'][0]['url'].toString());
+    //                 //final File markerImageFile = await DefaultCacheManager().getSingleFile(imageUrl);
+    //               setState(() {
+    //                 _marcadores.add(
+    //                   Marker(
+    //                     consumeTapEvents: true,
+    //                     visible: true,
+    //                     markerId: markerId,
+    //                     position: LatLng(double.parse(detalletour['lat']), double.parse(detalletour['lng'])),
+    //                     infoWindow: infoWindow,
+    //                     icon: BitmapDescriptor.fromBytes(markerIcon),
+    //                     onTap: (){
+                          
+    //                     }
+    //                   )
+
+                    
+    //                 );
+                    
+    //               });
+    //             },
+    //             child: ClipRRect(
+    //               borderRadius: BorderRadius.only(topLeft: Radius.circular(5.0),topRight: Radius.circular(5.0)),
+    //               child: 
+    //               /*Image.network(
+    //                 tour['gallery'][0]['url'].toString(),
+    //                 width: size.width * 0.65,//size.width * 0.65
+    //                 height: size.height * 0.2,
+    //                 fit: BoxFit.fill,
+    //                 scale: 1.0,
+    //               )*/
+    //               CachedNetworkImage(
+    //                 imageUrl: "${detalletour['gallery'][0]['url'].toString()}",
+    //                 //errorWidget: (context, url, error)=>Icon(Icons.error),
+    //                 //cacheManager: baseCacheManager,
+    //                 useOldImageOnUrlChange: true,
+    //                 width: size.width * 0.65,//size.width * 0.65
+    //                 height: size.height * 0.2,
+    //                 fit: BoxFit.fill,
+    //               )
+    //             ),
+    //           ),
+    //           Padding(
+    //             padding: EdgeInsets.symmetric(horizontal: 6.0,vertical: 10.0),
+    //             child: Row(
+    //               children: <Widget>[
+    //                 /*Text(
+    //                   '${tour.toString()}. ',//tour['_idsite'].toString()
+    //                   style: TextStyle(
+    //                     fontFamily: 'Point-SemiBold',
+    //                     fontSize: 11.0,
+    //                     fontStyle: FontStyle.italic)
+    //                 ),*/
+    //                 //site,
+    //                 Text(
+    //                   '${detalletour['site'].toString()}',
+    //                   style: TextStyle(
+    //                     fontFamily: 'Point-SemiBold',
+    //                     fontSize: 11.0,
+    //                     fontStyle: FontStyle.italic)
+    //                 ),
+    //               ],
+    //             )
+    //           ),
+    //           SizedBox(
+    //             height:size.height * 0.01 
+    //           ),
+    //           Padding(
+    //             padding: EdgeInsets.symmetric(horizontal: 10.0),
+    //             child: Row(
+    //               children: <Widget>[
+    //                 Container(
+    //                   alignment: Alignment.center,
+    //                   decoration: BoxDecoration(
+    //                     borderRadius: BorderRadius.circular(10.0),
+    //                     color: Color(0xFFD62250),
+    //                   ),
+    //                   width: size.width * 0.27,
+    //                   height: size.height * 0.04,
+    //                   child: PopupMenuButton(
+    //                     onSelected: (value)async{
+    //                       PreferenciasUsuario prefs = PreferenciasUsuario();
+    //                       if(value == 1){
+    //                         print("Opcion: $value");
+    //                         // String origin;
+    //                         // String destination;
+    //                         // String calle;
+    //                         // String numero;
+    //                         /*await appState.userLocation().then((result){
+    //                             // prefs.ciudad = result[0];
+    //                             // prefs.estado = result[1];
+    //                             // prefs.pais = result[2];
+    //                             // origin = result[3];
+    //                             // destination = result[4];
+    //                             // calle = result[5];
+    //                             // numero = result[6];
+
+    //                             print(result[0]);
+    //                             print(result[1]);
+    //                             print(result[2]);
+    //                             print(result[3]);
+    //                             print(result[4]);
+    //                             print(result[5]);
+    //                             print(result[6]);
+    //                             print(result[7]);
+    //                             print(result[8]);
+    //                             print(result[9]);
+    //                             print(result[10]);
+    //                           });*/
+                              
+    //                         final origen = Location(name: '${appState.initialPosition.toString()}',latitude: appState.initialPosition.latitude,longitude: appState.initialPosition.longitude );
+    //                         final destino = Location(name: '${detalletour['site']}',latitude: double.parse(detalletour['lat']) ,longitude: double.parse(detalletour['lng']) );
+    //                         await _directions.startNavigation( origin: origen, destination: destino,mode: NavigationMode.walking,simulateRoute: false,language: "${prefs.idioma}", units: VoiceUnits.metric);
+                           
+                              
+    //                         // await appState.userLocation().then((result){
+    //                         //     prefs.ciudad = result[0];
+    //                         //     prefs.estado = result[1];
+    //                         //     prefs.pais = result[2];
+    //                         //     origin = result[3];
+    //                         //     destination = result[4];
+    //                         //     calle = result[5];
+    //                         //     numero = result[6];
+    //                         //   });
+    //                         //   Navigator.push(context, MaterialPageRoute(
+    //                         //     builder: (BuildContext context){
+    //                         //       return NavigationRoute(origin: '${calle.toString()} No.${numero.toString()},${origin.toString()},${destination.toString()},${prefs.ciudad}, ${prefs.estado}, ${prefs.pais}', destination: detalletour['site']);
+    //                         //     }
+    //                         //     )
+    //                         //   );
+    //                       }else if(value == 2){
+    //                         print("Opcion: $value");
+    //                         final origen = Location(name: '${appState.initialPosition.toString()}',latitude: appState.initialPosition.latitude,longitude: appState.initialPosition.longitude );
+    //                         final destino = Location(name: '${detalletour['site']}',latitude: double.parse(detalletour['lat']) ,longitude: double.parse(detalletour['lng']) );
+    //                         //_directions.startNavigation( origin: origen, destination: destino,mode: NavigationMode.cycling,simulateRoute: false,language: 'German',units: VoiceUnits.metric);
+    //                         await _directions.startNavigation( origin: origen, destination: destino,mode: NavigationMode.cycling,simulateRoute: false,language: "${prefs.idioma}",units: VoiceUnits.metric);
+    //                       }else if(value == 3){
+    //                         print("Opcion: $value");
+    //                         final origen = Location(name: '${appState.initialPosition.toString()}',latitude: appState.initialPosition.latitude,longitude: appState.initialPosition.longitude );
+    //                         final destino = Location(name: '${detalletour['site']}',latitude: double.parse(detalletour['lat']) ,longitude: double.parse(detalletour['lng']) );
+    //                         await _directions.startNavigation( origin: origen, destination: destino,mode: NavigationMode.driving,simulateRoute: false,language: "${prefs.idioma}",units: VoiceUnits.metric);
+    //                       }
+    //                       //print("Opcion: $value");
+    //                     },
+    //                     child: Text('$navegar',style: TextStyle(color: Colors.white,fontFamily: 'Point-SemiBold',fontSize: 10.0),),
+    //                     itemBuilder: (context){
+    //                       String caminando = AppTranslations.of(context).text('title_walking');
+    //                       String bicicleta = AppTranslations.of(context).text('title_bicycle');
+    //                       String auto = AppTranslations.of(context).text('title_car');
+
+    //                       return [
+    //                         PopupMenuItem(
+    //                           value: 1,
+    //                           child: Row(
+    //                             mainAxisSize: MainAxisSize.min,
+    //                             children: <Widget>[
+    //                               Icon(
+    //                                 Icons.directions_walk,
+    //                                 color: Color(0xFFD62250)
+    //                               ),
+    //                               SizedBox(
+    //                                 width: size.width * 0.02,
+    //                               ),
+    //                               Text(
+    //                                 "$caminando",
+    //                                 style: TextStyle(
+    //                                   fontFamily: 'Point-SemiBold'
+    //                                 ),
+    //                               )
+    //                             ],
+    //                           ),
+    //                         ),
+    //                         PopupMenuItem(
+    //                           value: 2,
+    //                           child: Row(
+    //                             mainAxisSize: MainAxisSize.min,
+    //                             children: <Widget>[
+    //                               Icon(
+    //                                 Icons.directions_bike,
+    //                                 color: Color(0xFFD62250)
+    //                               ),
+    //                               SizedBox(
+    //                                 width: size.width * 0.02,
+    //                               ),
+    //                               Text(
+    //                                 "$bicicleta",
+    //                                 style: TextStyle(
+    //                                   fontFamily: 'Point-SemiBold'
+    //                                 ),
+    //                               )
+    //                             ],
+    //                           ),
+    //                         ),
+    //                         PopupMenuItem(
+    //                           value: 3,
+    //                           child: Row(
+    //                             mainAxisSize: MainAxisSize.min,
+    //                             children: <Widget>[
+    //                               Icon(
+    //                                 Icons.drive_eta,
+    //                                 color: Color(0xFFD62250)
+    //                               ),
+    //                               SizedBox(
+    //                                 width: size.width * 0.02,
+    //                               ),
+    //                               Text(
+    //                                 "$auto",
+    //                                 style: TextStyle(
+    //                                   fontFamily: 'Point-SemiBold'
+    //                                 ),
+    //                               )
+    //                             ],
+    //                           ),
+    //                         ),
+    //                       ];
+    //                     },
+    //                   )
+                      
+    //                   /*RaisedButton(
+    //                     shape: StadiumBorder(),
+    //                     child: Text('$navegar',style: TextStyle(fontFamily: 'Point-SemiBold',fontSize: 10.0),),
+    //                     textTheme: ButtonTextTheme.primary,
+    //                     color: Color(0xFFD62250),
+    //                     onPressed: ()async{
+
+    //                         //appState.sendRequest("${tour['site'].toString()}, ${tours.city.toString()}");
+    //                       final origen = Location(name: '${appState.initialPosition.toString()}',latitude: appState.initialPosition.latitude,longitude: appState.initialPosition.longitude );
+    //                       final destino = Location(name: '${tour['site']}',latitude: double.parse(tour['lat']) ,longitude: double.parse(tour['lng']) );
+    //                       await _directions.startNavigation( origin: origen, destination: destino,mode: NavigationMode.driving,simulateRoute: false);
+    //                     },
+    //                   ),*/
+    //                 ),
+    //                 SizedBox(
+    //                   width: size.width * 0.02,
+    //                 ),
+    //                 Container(
+    //                     width: size.width * 0.3,
+    //                     height: size.height * 0.04,
+    //                     child: RaisedButton(
+    //                       shape: StadiumBorder(),
+    //                       child: Text('$verdetalle',style: TextStyle(fontFamily: 'Point-SemiBold',fontSize: 10.0),),
+    //                       textTheme: ButtonTextTheme.primary,
+    //                       color: Color(0xFFD62250),
+    //                       onPressed: (){
+    //                         Navigator.of(context).push(MaterialPageRoute(
+    //                           builder: (context){
+    //                             return DetalleSitio(title: detalletour['site'].toString(), image: detalletour['gallery'][0]['url'].toString(), descripcion: detalletour['description'].toString(), imagen: detalletour['gallery']);
+    //                             //detallesSitio(detalletour['site'].toString(), detalletour['gallery'][0]['url'].toString(), detalletour['description'].toString(),detalletour['gallery']);
+    //                           },
+    //                           fullscreenDialog: true
+    //                         ));
+                            
+    //                       },
+    //                   ),
+    //                 )
+    //               ],
+    //             ),
+    //           ),
+
+    //         ],
+    //       ),
+    //     ),
+    //   );
+    // }).toList();
     
   }
 

@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:selftourapp/src/pages/usuario/chat_page.dart';
@@ -16,10 +15,21 @@ class _ChatUsuariosPageState extends State<ChatUsuariosPage> {
   Widget build(BuildContext context) {
     PreferenciasUsuario prefs = new PreferenciasUsuario();
     String noData = AppTranslations.of(context).text('title_nodatos');
+    String mensajes = AppTranslations.of(context).text('title_mensajes');
+    final size = MediaQuery.of(context).size;
+
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
         backgroundColor: Colors.white,
+        centerTitle: true,
+        title: Text(
+          "$mensajes".toUpperCase(),
+          style: TextStyle(
+            fontFamily: 'Point-SemiBold',
+            fontWeight: FontWeight.bold
+          ),
+        ),
         leading: IconButton(
           icon: Icon(
             Icons.arrow_back,
@@ -33,49 +43,136 @@ class _ChatUsuariosPageState extends State<ChatUsuariosPage> {
       ),
       body: StreamBuilder(
             stream: Firestore.instance.collection('users').where('chattingWith',isEqualTo: '${prefs.email.toString()}').snapshots(), //prefs.iduser.toString()
-            builder: (context,snapshot){
+            builder: (context, AsyncSnapshot<QuerySnapshot>snapshot){
+              
               switch(snapshot.connectionState){
                 case ConnectionState.waiting:
-                  return Center(
-                    child: CircularProgressIndicator()
+                  return Column(
+                    children: <Widget>[
+                      SizedBox(
+                        height: size.height * 0.23,
+                      ),
+                      Center(
+                        child: CircularProgressIndicator()
+                      ),
+                    ],
                   );
                 break;
                 case ConnectionState.none:
-                  return Center(
-                    child: Text('$noData')
+                  return Column(
+                    children: <Widget>[
+                      SizedBox(
+                        height: size.height * 0.23,
+                      ),
+                      Center(
+                        child: Text(
+                          '$noData',
+                          style: TextStyle(
+                            fontFamily: 'Point-SemiBold'
+                          ),
+                        )
+                      ),
+                    ],
                   );
                 break;
                 case ConnectionState.done:
                   if(!snapshot.hasData){
-                    return Center(
-                      child: Text('$noData')
+                    return Column(
+                      children: <Widget>[
+                        SizedBox(
+                          height: size.height * 0.23,
+                        ),
+                        Center(
+                          child: CircularProgressIndicator()
+                        ),
+                      ],
                     );
                   }else{
-                    return ListView.builder(
-                      itemCount: snapshot.data.documents.length,
-                      itemBuilder: (context,index){
-                        return itemUser(context, snapshot.data.documents[index]);
-                      },
-                    );
+                    if(snapshot.data.documents.isEmpty || snapshot.data.documents.length == 0 || snapshot.data.documents == null){
+                      return Column(
+                        children: <Widget>[
+                          SizedBox(
+                            height: size.height * 0.23,
+                          ),
+                          Center(
+                            child: Text(
+                              '$noData',
+                              style: TextStyle(
+                                fontFamily: 'Point-SemiBold'
+                              ),
+                            )
+                          ),
+                        ],
+                      );
+                    }else{
+                      return ListView.builder(
+                        itemCount: snapshot.data.documents.length,
+                        itemBuilder: (context,index){
+                          return itemUser(context, snapshot.data.documents[index]);
+                        },
+                      );
+                    }
+                    
                   }
                 break;
                 case ConnectionState.active:
+                  print("Mensajes: ");
+                  print(snapshot.data.documents);
+                  print(prefs.token);
                   if(!snapshot.hasData){
-                    return Center(
-                      child: Text('$noData')
+                    return Column(
+                      children: <Widget>[
+                        SizedBox(
+                          height: size.height * 0.23,
+                        ),
+                        Center(
+                          child: CircularProgressIndicator()
+                        ),
+                      ],
                     );
                   }else{
-                    return ListView.builder(
-                      itemCount: snapshot.data.documents.length,
-                      itemBuilder: (context,index){
-                        return itemUser(context, snapshot.data.documents[index]);
-                      },
-                    );
+                    if(snapshot.data.documents.isEmpty || snapshot.data.documents.length == 0 || snapshot.data.documents == null){
+                      return Column(
+                        children: <Widget>[
+                          SizedBox(
+                            height: size.height * 0.23,
+                          ),
+                          Center(
+                            child: Text(
+                              '$noData',
+                              style: TextStyle(
+                                fontFamily: 'Point-SemiBold'
+                              ),
+                            )
+                          ),
+                        ],
+                      );
+                    }else{
+                      return ListView.builder(
+                        itemCount: snapshot.data.documents.length,
+                        itemBuilder: (context,index){
+                          return itemUser(context, snapshot.data.documents[index]);
+                        },
+                      );
+                    }
+                    
                   }
                 break;
                 default:
-                  return Center(
-                    child: Text('$noData')
+                  return Column(
+                    children: <Widget>[
+                      SizedBox(
+                        height: size.height * 0.23,
+                      ),
+                      Center(
+                        child: Text(
+                          '$noData',
+                          style: TextStyle(
+                            fontFamily: 'Point-SemiBold'
+                          ),
+                        )
+                      ),
+                    ],
                   );
                 
               }
@@ -98,31 +195,24 @@ class _ChatUsuariosPageState extends State<ChatUsuariosPage> {
 
   Widget itemUser(BuildContext context, DocumentSnapshot snapshot){
     final size = MediaQuery.of(context).size;
+    String imageUser = "https://pluspng.com/img-png/user-png-icon-male-user-icon-512.png";
     //if(snapshot[''])
     return Card(
       child: Container(
         child: FlatButton(
           child: Row(
             children: <Widget>[
-              ClipRRect(
-                borderRadius: BorderRadius.circular(5.0),
-                child: 
-                /*Image.network(
-                  snapshot['photoUrl'].toString(),
-                  width: size.width * 0.3,
-                  height: size.height * 0.15,
-                  fit: BoxFit.fill,
-                  scale: 1.0,
-                )*/
-                CachedNetworkImage(
-                  imageUrl: "${snapshot['photoUrl'].toString()}",
-                  //errorWidget: (context, url, error)=>Icon(Icons.error),
-                  //cacheManager: baseCacheManager,
-                  useOldImageOnUrlChange: true,
-                  width: size.width * 0.3,
-                  height: size.height * 0.15,
-                  fit: BoxFit.fill,
-                )
+              Container(
+                width: size.width * 0.3,
+                height: size.height * 0.15,
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: NetworkImage(
+                      (snapshot['photoUrl'] == 'null' || snapshot['photoUrl'] == null || snapshot['photoUrl'] == '') ? imageUser : "${snapshot['photoUrl'].toString()}",
+                    ),
+                  ),
+                  shape: BoxShape.circle,
+                ),
               ),
               SizedBox(
                 width: size.width * 0.04,

@@ -17,6 +17,7 @@ import 'package:selftourapp/src/providers/categorias_providers.dart';
 import 'package:selftourapp/src/translation_class/app_translations.dart';
 import 'package:selftourapp/src/widgets/lista_tours_categoria_vertical.dart';
 import 'package:selftourapp/src/pages/tours/tours_mapa_page.dart';
+import 'package:selftourapp/src/preferencias_usuario/preferencias_usuario.dart';
 
 class ListaTourPage extends StatefulWidget {
 
@@ -27,6 +28,8 @@ class ListaTourPage extends StatefulWidget {
 class _ListaTourPageState extends State<ListaTourPage> with SingleTickerProviderStateMixin{
   final List<InfoTour> listaTour=List();
   final categoriasProvider = new CategoriasProvider();
+  PreferenciasUsuario prefs = PreferenciasUsuario();
+  
   AppState _appState = AppState();
   String state;
   String codCountry;
@@ -190,20 +193,45 @@ class _ListaTourPageState extends State<ListaTourPage> with SingleTickerProvider
     var size = MediaQuery.of(context).size;
     //ToursProvider toursProvider = new ToursProvider();
     final categoriasProvider = new CategoriasProvider();
-    _appState.userLocation().then((value){
-      state = value[1].toString();
-      codCountry = value[5].toString();
-      categoriasProvider.getToursC(state,codCountry,categoria.ctidss.toString());
-    });
+    // _appState.userLocation().then((value){
+    //   state = value[1].toString();
+    //   codCountry = value[5].toString();
+    //   categoriasProvider.getToursC(state,codCountry,categoria.ctidss.toString());
+    // });
+
+    // _appState.ubicacion().then((value){
+    //   print("Datos del usuario:");
+    //   print(value[1]);
+    //   print(value[3]);
+    //   categoriasProvider.getToursC(value[1],value[3],categoria.ctidss.toString());
+    // });
+
+    print("Datos del usuario:");
+    print(prefs.estadoUser);
+    print(prefs.countryCode);
+    categoriasProvider.getToursC(prefs.estadoUser.toString(),prefs.countryCode.toString(),categoria.ctidss.toString());
     
     Future<List<InfoTour>> cargarTours()async{
       ListaToursC listaToursC;
       Map<String,dynamic> result;
-      _appState.userLocation().then((value)async{
-        state = value[1].toString();
-        codCountry = value[5].toString();
-        result = await categoriasProvider.getToursC(state,codCountry,categoria.ctidss.toString());
-      });
+      // _appState.userLocation().then((value)async{
+      //   state = value[1].toString();
+      //   codCountry = value[5].toString();
+      //   result = await categoriasProvider.getToursC(state,codCountry,categoria.ctidss.toString());
+      // });
+
+      // _appState.ubicacion().then((value)async{
+      //   print("Datos del usuario:");
+      //   print(value[1]);
+      //   print(value[3]);
+      //   // categoriasProvider.recomendadosPag(value[1],value[3]);
+      //   result = await categoriasProvider.getToursC(value[1],value[3],categoria.ctidss.toString());
+      // });
+
+      print("Datos del usuario:");
+      print(prefs.estadoUser);
+      print(prefs.countryCode);
+      result = await categoriasProvider.getToursC(prefs.estadoUser.toString(),prefs.countryCode.toString(),categoria.ctidss.toString());
       
       listaToursC = new ListaToursC.fromJsonList(result['Tours']['data']);
       print("Lista C");
@@ -269,7 +297,6 @@ class _ListaTourPageState extends State<ListaTourPage> with SingleTickerProvider
                     );
                   break;
                   case ConnectionState.done:
-                   
                     if(snapshot.data.containsKey('Tours')){
                       final listaToursC = new ListaToursC.fromJsonList(snapshot.data['Tours']['data']);
                       //final ningunDato = snapshot.data['dataTours']['msg'].toString();
@@ -440,7 +467,18 @@ class _ListaTourPageState extends State<ListaTourPage> with SingleTickerProvider
     String noData = AppTranslations.of(context).text('title_nodata');
     //ToursProvider toursProvider = new ToursProvider();
     final categoriasProvider = new CategoriasProvider();
-    categoriasProvider.getToursC(state,codCountry,categoria.ctidss.toString());
+
+    // _appState.ubicacion().then((value)async{
+    //     print("Datos del usuario:");
+    //     print(value[1]);
+    //     print(value[3]);
+    //     categoriasProvider.getToursC(value[1],value[3],categoria.ctidss.toString());
+    // });
+
+    print("Datos del usuario:");
+    print(prefs.estadoUser);
+    print(prefs.countryCode);
+    categoriasProvider.getToursC(prefs.estadoUser,prefs.countryCode,categoria.ctidss.toString());
     // void cargarTour()async{
     //   await categoriasProvider.getToursC(categoria.ctidss.toString());
     // }
@@ -448,11 +486,23 @@ class _ListaTourPageState extends State<ListaTourPage> with SingleTickerProvider
     Future<List<InfoTour>> cargarTour()async{
       ListaToursC listaToursC;
       Map<String,dynamic> result;
-      _appState.userLocation().then((value)async{
-        state = value[1].toString();
-        codCountry = value[5].toString();
-        result = await categoriasProvider.getToursC(state,codCountry,categoria.ctidss.toString());
-      });
+      // _appState.userLocation().then((value)async{
+      //   state = value[1].toString();
+      //   codCountry = value[5].toString();
+      //   result = await categoriasProvider.getToursC(state,codCountry,categoria.ctidss.toString());
+      // });
+
+      // _appState.ubicacion().then((value)async{
+      //     print("Datos del usuario:");
+      //     print(value[1]);
+      //     print(value[3]);
+      //     result = await categoriasProvider.getToursC(value[1],value[3],categoria.ctidss.toString());
+      // });
+
+      print("Datos del usuario:");
+      print(prefs.estadoUser);
+      print(prefs.countryCode);
+      result = await categoriasProvider.getToursC(prefs.estadoUser,prefs.countryCode,categoria.ctidss.toString());
       
       listaToursC = new ListaToursC.fromJsonList(result['Tours']['data']);
       return listaToursC.itemsTours;

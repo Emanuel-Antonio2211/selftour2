@@ -5,6 +5,7 @@ import 'dart:async';
 import 'package:selftourapp/src/models/tour_categoria_model.dart';
 import 'package:selftourapp/src/translation_class/app_translations.dart';
 import 'package:selftourapp/src/providers/categorias_providers.dart';
+import 'package:selftourapp/src/preferencias_usuario/preferencias_usuario.dart';
 
 class RecomendadoVertical extends StatefulWidget {
   final List<InfoTour> listaRecomendados;
@@ -18,6 +19,7 @@ class RecomendadoVertical extends StatefulWidget {
 class _RecomendadoVerticalState extends State<RecomendadoVertical> {
   final _scrollController = ScrollController();
   final categoriasProvider = CategoriasProvider();
+  PreferenciasUsuario prefs = PreferenciasUsuario();
   bool isloading = false;
   String state;
   String codCountry;
@@ -26,24 +28,60 @@ class _RecomendadoVerticalState extends State<RecomendadoVertical> {
   @override
   void initState() { 
     super.initState();
-    
+    _scrollController.addListener((){
+      if(_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 10){
+        //_scrollController.position.didEndScroll();
+        //print('Cargar siguientes categorías');
+        //Se ejecuta la función para mostrar la siguiente página
+        //de categorías
+        //widget.siguientePagina();
+        //fetchData();
+      }else{
+        isloading = false;
+      }
+    });
+  }
+
+  @override
+  void dispose(){
+    super.dispose();
+    _scrollController.dispose();
   }
 
   Future<Null> cargarRecomendados()async{
     final duration = Duration(seconds: 2);
 
-    Timer(duration, (){
+    Timer(duration, ()async{
       widget.listaRecomendados.clear();
-      _appState.userLocation().then((value)async{
-        state = value[1].toString();
-        codCountry = value[5].toString();
-       final result = await categoriasProvider.recomendadosPag(state,codCountry);
-        final recomendados = ListaToursC.fromJsonList(result['tours'][0]['data_tour']);
-        for(int i = 0; i < recomendados.itemsTours.length; i++){
-          widget.listaRecomendados.add(recomendados.itemsTours[i]);
-        }
-      });
+      // _appState.userLocation().then((value)async{
+      //   state = value[1].toString();
+      //   codCountry = value[5].toString();
+      //  final result = await categoriasProvider.recomendadosPag(state,codCountry);
+      //   final recomendados = ListaToursC.fromJsonList(result['tours'][0]['data_tour']);
+      //   for(int i = 0; i < recomendados.itemsTours.length; i++){
+      //     widget.listaRecomendados.add(recomendados.itemsTours[i]);
+      //   }
+      // });
       
+      // _appState.ubicacion().then((value)async{
+      //   print("Datos del usuario:");
+      //   print(value[1]);
+      //   print(value[3]);
+      //   final resultado = await categoriasProvider.recomendadosPag(value[1],value[3]);
+      //   final recomendados = ListaToursC.fromJsonList(resultado['tours'][0]['data_tour']);
+      //   for(int i = 0; i < recomendados.itemsTours.length; i++){
+      //     widget.listaRecomendados.add(recomendados.itemsTours[i]);
+      //   }
+      // });
+
+      print("Datos del usuario:");
+      print(prefs.estadoUser);
+      print(prefs.countryCode);
+      final resultado = await categoriasProvider.recomendadosPag(prefs.estadoUser,prefs.countryCode);
+      final recomendados = ListaToursC.fromJsonList(resultado['tours'][0]['data_tour']);
+      for(int i = 0; i < recomendados.itemsTours.length; i++){
+        widget.listaRecomendados.add(recomendados.itemsTours[i]);
+      }
 
     });
     print("Lista Cargada");
@@ -54,16 +92,7 @@ class _RecomendadoVerticalState extends State<RecomendadoVertical> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    _scrollController.addListener((){
-      if(_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 10){
-        //_scrollController.position.didEndScroll();
-        //print('Cargar siguientes categorías');
-        //Se ejecuta la función para mostrar la siguiente página
-        //de categorías
-        //widget.siguientePagina();
-        //fetchData();
-      }
-    });
+    
     return Container(
       height: size.height * 0.8,
       child: Stack(
@@ -97,7 +126,7 @@ class _RecomendadoVerticalState extends State<RecomendadoVertical> {
   void cargar(){
     isloading = false;
     _scrollController.animateTo(
-      _scrollController.position.pixels + 100,
+      _scrollController.position.pixels + 20,
       curve: Curves.fastOutSlowIn, 
       duration: Duration(milliseconds: 250)
     );
@@ -314,6 +343,7 @@ class _RecomendadoGridState extends State<RecomendadoGrid> {
   final _scrollController = ScrollController();
   bool isloading = false;
   final categoriasProvider = CategoriasProvider();
+  PreferenciasUsuario prefs = PreferenciasUsuario();
   String state;
   String codCountry;
   AppState _appState = AppState();
@@ -321,24 +351,60 @@ class _RecomendadoGridState extends State<RecomendadoGrid> {
   @override
   void initState() { 
     super.initState();
-    
+    _scrollController.addListener((){
+      if(_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 10){
+        //_scrollController.position.didEndScroll();
+        //print('Cargar siguientes categorías');
+        //Se ejecuta la función para mostrar la siguiente página
+        //de categorías
+        //widget.siguientePagina();
+        //fetchData();
+      }else{
+        isloading = false;
+      }
+    });
+  }
+
+  @override
+  void dispose(){
+    super.dispose();
+    _scrollController.dispose();
   }
 
   Future<Null> cargarRecomendados()async{
     final duration = Duration(seconds: 2);
 
-    Timer(duration, (){
+    Timer(duration, ()async{
       widget.listaRecomendados.clear();
-        _appState.userLocation().then((value)async{
-        state = value[1].toString();
-        codCountry = value[5].toString();
-       final result = await categoriasProvider.recomendadosPag(state,codCountry);
-        final recomendados = ListaToursC.fromJsonList(result['tours'][0]['data_tour']);
-        for(int i = 0; i < recomendados.itemsTours.length; i++){
-          widget.listaRecomendados.add(recomendados.itemsTours[i]);
-        }
-      });
+      //   _appState.userLocation().then((value)async{
+      //   state = value[1].toString();
+      //   codCountry = value[5].toString();
+      //  final result = await categoriasProvider.recomendadosPag(state,codCountry);
+      //   final recomendados = ListaToursC.fromJsonList(result['tours'][0]['data_tour']);
+      //   for(int i = 0; i < recomendados.itemsTours.length; i++){
+      //     widget.listaRecomendados.add(recomendados.itemsTours[i]);
+      //   }
+      // });
       
+      // _appState.ubicacion().then((value)async{
+      //   print("Datos del usuario:");
+      //   print(value[1]);
+      //   print(value[3]);
+      //   final resultado = await categoriasProvider.recomendadosPag(value[1],value[3]);
+      //   final recomendados = ListaToursC.fromJsonList(resultado['tours'][0]['data_tour']);
+      //   for(int i = 0; i < recomendados.itemsTours.length; i++){
+      //     widget.listaRecomendados.add(recomendados.itemsTours[i]);
+      //   }
+      // });
+
+      print("Datos del usuario:");
+      print(prefs.estadoUser);
+      print(prefs.countryCode);
+      final resultado = await categoriasProvider.recomendadosPag(prefs.estadoUser,prefs.countryCode);
+      final recomendados = ListaToursC.fromJsonList(resultado['tours'][0]['data_tour']);
+      for(int i = 0; i < recomendados.itemsTours.length; i++){
+        widget.listaRecomendados.add(recomendados.itemsTours[i]);
+      }
 
     });
     print("Lista Cargada");
@@ -349,16 +415,7 @@ class _RecomendadoGridState extends State<RecomendadoGrid> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    _scrollController.addListener((){
-      if(_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 10){
-        //_scrollController.position.didEndScroll();
-        //print('Cargar siguientes categorías');
-        //Se ejecuta la función para mostrar la siguiente página
-        //de categorías
-        //widget.siguientePagina();
-        //fetchData();
-      }
-    });
+    
     return Container(
       height: size.height * 0.8,
       //color: Colors.lightBlueAccent,
@@ -395,7 +452,7 @@ class _RecomendadoGridState extends State<RecomendadoGrid> {
   void cargar(){
     isloading = false;
     _scrollController.animateTo(
-      _scrollController.position.pixels + 100,
+      _scrollController.position.pixels + 20,
       curve: Curves.fastOutSlowIn, 
       duration: Duration(milliseconds: 250)
     );

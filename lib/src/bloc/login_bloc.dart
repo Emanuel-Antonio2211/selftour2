@@ -1,6 +1,7 @@
 //Este archivo va a contener todos los casos de uso de la aplicación
 import 'dart:async'; //Para manejar streams
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -263,15 +264,34 @@ class LoginBloc with Validators implements Bloc{
           mostrarAlerta(context, result['_dtu']['msg'].toString() , '', 'assets/error.png'); //result['_dtu']['msg']
         }
       }).catchError((error){
-        mostrarAlerta(context, error.toString(), error.toString(), 'assets/error.png');
+        mostrarAlerta(context, error.toString(), '', 'assets/error.png');
       });
     }).catchError((error){
-      mostrarAlerta(context, error.toString(), '', 'assets/error.png');
+      String invalidCredential = AppTranslations.of(context).text('title_invalid_credential');
+      String userDisabled = AppTranslations.of(context).text('title_user_disabled');
+      String accountExist = AppTranslations.of(context).text('title_account_exist');
+      String googleaccountsDisabled = AppTranslations.of(context).text('title_accounts_disabled');
+      String invalidactionCode = AppTranslations.of(context).text('title_action_code_invalid');
+      print(error);
+      if(error.code == "ERROR_INVALID_CREDENTIAL"){
+        mostrarAlerta(context, "$invalidCredential", '', 'assets/error.png');
+      }else if(error.code == "ERROR_USER_DISABLED"){
+        mostrarAlerta(context, "$userDisabled", '', 'assets/error.png');
+      }else if(error.code == "ERROR_ACCOUNT_EXISTS_WITH_DIFFERENT_CREDENTIAL"){
+        mostrarAlerta(context, "$accountExist", '', 'assets/error.png');
+      }else if(error.code == "ERROR_OPERATION_NOT_ALLOWED"){
+        mostrarAlerta(context, "$googleaccountsDisabled", '', 'assets/error.png');
+      }else if(error.code == "ERROR_INVALID_ACTION_CODE"){
+        mostrarAlerta(context, "$invalidactionCode", '', 'assets/error.png');
+      }else{
+        mostrarAlerta(context, "${error.toString()}", '', 'assets/error.png');
+      }
     });
 
     return true;
   }
   //2. Sign In a la aplicacion con Twitter
+  /*
   signInTwitter(BuildContext context) async { //Se va a llamar en la interfaz
     _authrepository.signInFirebaseTwitter().then((FirebaseUser authUser){
       
@@ -292,6 +312,7 @@ class LoginBloc with Validators implements Bloc{
       mostrarAlerta(context, error.toString(), '', 'assets/error.png');
     });
   }
+  */
   //3. Sign In a la aplicacion con Google
 Future<bool> signInGoogle(BuildContext context) async { //Se va a llamar en la interfaz
   await _authrepository.signInFirebaseGoogle().then((FirebaseUser authUser)async{
@@ -326,7 +347,7 @@ Future<bool> signInGoogle(BuildContext context) async { //Se va a llamar en la i
    }else{
      streamFirebase.sink.add(authUser);
    }*/
-    await _authrepository.loginUserGoogle(authUser.providerData[0].uid.toString()).then((user)async{
+    await _authrepository.loginUserGoogle(authUser.uid.toString()).then((user)async{
       final result = user;
       if(result['_dtu']['msg'] == "Login Successfully"){
         
@@ -344,7 +365,7 @@ Future<bool> signInGoogle(BuildContext context) async { //Se va a llamar en la i
         
         prefs.iduser = decodedInfoUser['id'].toString();
         prefs.name = result['_dtu']['udt']['name'].toString();
-        prefs.email = authUser.providerData[1].email.toString();
+        prefs.email = authUser.providerData[0].email.toString();
         //prefs.phone = authUser.providerData[1].phoneNumber.toString();
         prefs.photoUrl = result['_dtu']['udt']['photoURL'].toString();//result['_dtu']['udt']['photoURL'].toString()
         if(authUser != null){
@@ -448,99 +469,525 @@ Future<bool> signInGoogle(BuildContext context) async { //Se va a llamar en la i
               print("Token Refresh");
               print(prefs.tokenFCM);
             });*/
+            
+            //Obtiene el sistema operativo
+            print("Sistema operativo: ");
+            print(Platform.operatingSystem);
           }
         }
         print("Datos del usuario decodificado");
         print(decodedInfoUser);
+
         streamFirebase.sink.add(authUser);
       }else{
         mostrarAlerta(context, result['_dtu']['msg'].toString() , '', 'assets/error.png'); //result['_dtu']['msg']
       }
     }).catchError((error){
-      mostrarAlerta(context, error.toString(), error.toString(), 'assets/error.png');
+      mostrarAlerta(context, error.toString(), '', 'assets/error.png');
     });
      //await usuarioNuevo(myUser.displayName, myUser.email, null, null);
    }).catchError((error){
-     //mostrarAlerta(context, error.toString(), error.toString(), 'assets/error.png');
-     print(error.toString());
+     String invalidCredential = AppTranslations.of(context).text('title_invalid_credential');
+     String userDisabled = AppTranslations.of(context).text('title_user_disabled');
+     String accountExist = AppTranslations.of(context).text('title_account_exist');
+     String googleaccountsDisabled = AppTranslations.of(context).text('title_accounts_disabled');
+     String invalidactionCode = AppTranslations.of(context).text('title_action_code_invalid');
+    print(error.toString());
+     if(error.code == "ERROR_INVALID_CREDENTIAL"){
+       mostrarAlerta(context, "$invalidCredential", '', 'assets/error.png');
+     }else if(error.code == "ERROR_USER_DISABLED"){
+       mostrarAlerta(context, "$userDisabled", '', 'assets/error.png');
+     }else if(error.code == "ERROR_ACCOUNT_EXISTS_WITH_DIFFERENT_CREDENTIAL"){
+       mostrarAlerta(context, "$accountExist", '', 'assets/error.png');
+     }else if(error.code == "ERROR_OPERATION_NOT_ALLOWED"){
+       mostrarAlerta(context, "$googleaccountsDisabled", '', 'assets/error.png');
+     }else if(error.code == "ERROR_INVALID_ACTION_CODE"){
+       mostrarAlerta(context, "$invalidactionCode", '', 'assets/error.png');
+     }else{
+       mostrarAlerta(context, "${error.toString()}", '', 'assets/error.png');
+     }
    });
    return true;
   }
 Future<void> signInEmail( String email,String pass, BuildContext context)async{
     //final size = MediaQuery.of(context).size;
-    String noverificado = AppTranslations.of(context).text('title_noverificado');
+    //String noverificado = AppTranslations.of(context).text('title_noverificado');
     await _authrepository.logEmailPassword(email, pass).then((authUser)async{
-      if(authUser == null){
-       await _authrepository.registerEmail(email, pass).then((user){
-          if(user.isEmailVerified){
-
-            mostrarAlerta(context, user.isEmailVerified.toString(), '', 'assets/error.png');
-          }else{
-            mostrarAlerta(context, '$noverificado', '', 'assets/error.png');
+      await _authrepository.loginUserGoogle(authUser.uid).then((result)async{
+        if(result['_dtu']['msg'] == "Login Successfully"){
+          String token = '';
+          String resultToken = '';
+          for(int i = 0; i < result['_dtu']['provider']['_uit'].length; i++){
+            token = token + result['_dtu']['provider']['_uit'][i].toString()+".";
+            resultToken = token.substring(0,token.length-1);
           }
-        }).catchError((error){
-          mostrarAlerta(context, error.toString(), '', 'assets/error.png');
-        });
-      }else{
-        streamFirebase.sink.add(authUser);
-        Navigator.pop(context);
-      }
+
+          print("Token: ");
+          print(resultToken);
+          //prefs.token = prefs.token + "${result['_dtu']['provider']['_uit'][0].toString()}" + "${result['_dtu']['provider']['_uit'][1].toString()}" + "${result['_dtu']['provider']['_uit'][2].toString()}";
+          prefs.token = resultToken;
+          final decodedInfoUser = parseJwt(prefs.token.toString());
+          
+          prefs.iduser = decodedInfoUser['id'].toString();
+          prefs.name = result['_dtu']['udt']['name'].toString();
+          prefs.email = authUser.providerData[0].email.toString();
+          //prefs.phone = authUser.providerData[1].phoneNumber.toString();
+          prefs.photoUrl = result['_dtu']['udt']['photoURL'].toString();//result['_dtu']['udt']['photoURL'].toString()
+          if(authUser != null){
+            // Check is already sign up - Checa si está logueado
+            firebaseMessaging.getToken().then((token){
+              //tokenFCM = token;
+              prefs.tokenFCM = token;
+              print("Token 1");
+            });
+            
+            //prefs.tokenFCM = tokenFCM;
+            print(prefs.tokenFCM);
+          /* Stream<String> fcmStream = firebaseMessaging.onTokenRefresh;
+            fcmStream.listen((token){
+              prefs.tokenFCM = token;
+              print("Token Refresh");
+              print(prefs.tokenFCM);
+            });*/
+            final QuerySnapshot result = await Firestore.instance.collection('users').where('email',isEqualTo: prefs.email).getDocuments(); //authUser.providerData[1].email
+            final List<DocumentSnapshot> documents = result.documents;
+
+            final coleccion = Firestore.instance.collection('users').document('${prefs.email}').collection('tokensfcm');
+            //final List<DocumentSnapshot> documentColeccion = coleccion.documents;
+            if(documents.length == 0){
+              // Update data to server if new user - Actualiza los datos del servidor
+              // si el usuario es nuevo myUser.providerData[1].uid
+              //authUser.providerData[1].email
+              Firestore.instance.collection('users').document(prefs.email).setData(
+                {
+                  'tokenfcm':"${prefs.tokenFCM.toString()}",
+                  'nickname': prefs.name,//authUser.providerData[1].displayName
+                  'id': prefs.iduser,//authUser.providerData[1].uid
+                  'email': prefs.email,//authUser.providerData[1].email
+                  'photoUrl': prefs.photoUrl,//authUser.providerData[1].photoUrl
+                  'createdAt': DateTime.now().millisecondsSinceEpoch.toString(),
+                  'chattingWith': null
+                }
+              );
+
+              Firestore.instance.runTransaction((transaction)async{
+                    await transaction.set(
+                      coleccion.document(),
+                      {
+                        'token': prefs.tokenFCM.toString()
+                      }
+                    );
+                  }).then((result){
+                    print(result);
+                  }).catchError((error){
+                    print(error);
+                  });
+              // Write data to local - Escribir los datos en local
+            // FirebaseUser currentUser = user;
+              
+            }else{
+              print("El usuario ya existe");
+              final QuerySnapshot result = await Firestore.instance.collection('users').where('email',isEqualTo: prefs.email).getDocuments(); //authUser.providerData[1].email
+              final List<DocumentSnapshot> documents = result.documents;
+              final  coleccion = Firestore.instance.collection('users').document('${prefs.email}').collection('tokensfcm');
+              //final List<DocumentSnapshot> documentColeccion = coleccion.documents;
+              //documentColeccion.single.data['token'] != prefs.tokenFCM
+
+              
+              if(documents.single.data['tokenfcm'] != prefs.tokenFCM ){
+                  
+                  // Firestore.instance.collection('users').document(prefs.email).setData(
+                  //   {
+                  //     'tokenfcm':"$tokenFCM",
+                  //     'nickname': prefs.name,//authUser.providerData[1].displayName
+                  //     'id': prefs.iduser,//authUser.providerData[1].uid
+                  //     'idtokens': tokenFCM,
+                  //     'email': prefs.email,//authUser.providerData[1].email
+                  //     'photoUrl': prefs.photoUrl,//authUser.providerData[1].photoUrl
+                  //     'createdAt': DateTime.now().millisecondsSinceEpoch.toString()
+                  //     //'chattingWith': null
+                  //   }
+                  // );
+                  Firestore.instance.collection('users').document(prefs.email).updateData({
+                    'tokenfcm': prefs.tokenFCM.toString()
+                  });
+                  print("Escribiendo datos");
+                  Firestore.instance.runTransaction((transaction)async{
+                    await transaction.set(
+                      coleccion.document(),
+                      {
+                        'token': prefs.tokenFCM.toString()
+                      }
+                    );
+                  }).then((result){
+                    print(result);
+                  }).catchError((error){
+                    print(error);
+                  });
+                }else{
+                  print("tiene el mismo token fcm");
+                }
+              
+              /*Stream<String> fcmStream = firebaseMessaging.onTokenRefresh;
+              fcmStream.listen((token){
+                prefs.tokenFCM = token;
+                print("Token Refresh");
+                print(prefs.tokenFCM);
+              });*/
+            }
+          }
+          print("Datos del usuario decodificado");
+          print(decodedInfoUser);
+          streamFirebase.sink.add(authUser);
+          Navigator.pop(context);
+          
+        }else{
+          mostrarAlerta(context, result['_dtu']['msg'].toString() , '', 'assets/error.png'); //result['_dtu']['msg']
+        }
+      }).catchError((error){
+        mostrarAlerta(context, "${error.toString()}", '', 'assets/error.png');
+      });
+      // if(authUser == null){
+      //  await _authrepository.registerEmail(email, pass).then((user){
+      //     if(user.isEmailVerified){
+
+      //       mostrarAlerta(context, user.isEmailVerified.toString(), '', 'assets/error.png');
+      //     }else{
+      //       mostrarAlerta(context, '$noverificado', '', 'assets/error.png');
+      //     }
+      //   }).catchError((error){
+      //     mostrarAlerta(context, error.toString(), '', 'assets/error.png');
+      //   });
+      // }else{
+      //   streamFirebase.sink.add(authUser);
+      //   Navigator.pop(context);
+      // }
       
     }).catchError((error){
-      mostrarAlerta(context, error.toString(),'', 'assets/error.png');
-    });
-   /* _authrepository.signInFirebaseEmail(email,pass, context).then((user){
-      //streamFirebase.sink.add(user);
-      if(user['success']){
+      String passIncorrect = AppTranslations.of(context).text('title_pass_incorrect');
+      String emailNoWritten = AppTranslations.of(context).text('title_correo_no_written');
+      String usernotFound = AppTranslations.of(context).text('title_user_not_found');
+      String userDisabled = AppTranslations.of(context).text('title_user_disabled');
+      String toomanyRequest = AppTranslations.of(context).text('title_too_many_request');
+      String emailpassnoEnabled = AppTranslations.of(context).text('title_email_pass_no_enabled');
 
-        
-      /*  showDialog(
-          context: context,
-          builder: (context){
-            return AlertDialog(
-              title: Text('Bienvenido'),
-              content: Container(
-                width: size.width * 0.5,
-                height: size.height * 0.4,
-                child: Column(
-                  children: <Widget>[
-                    RaisedButton(
-                      shape: StadiumBorder(),
-                      onPressed: (){
-                        Navigator.pop(context);
-                      },
-                      child: Text('Aceptar'),
-                    )
-                  ],
-                ),
-              ),
-              /*actions: <Widget>[
-                FlatButton(
-                  child: Text('Ok'),
-                  onPressed: ()=>Navigator.of(context).pop(),
-                )
-              ],*/
-            );
-            
-          }
-        );*/
-        Navigator.pop(context);
-        //bloc.signInEmail(bloc, context);
-        }else{
-          mostrarAlerta(context,user['mensaje'],'assets/error.png');
+      if(error.code == "ERROR_INVALID_EMAIL"){
+        mostrarAlerta(context, "$emailNoWritten",'', 'assets/error.png');
+      }else if(error.code == "ERROR_WRONG_PASSWORD"){
+        mostrarAlerta(context, "$passIncorrect",'', 'assets/error.png');
+      }else if(error.code == "ERROR_USER_NOT_FOUND"){
+        mostrarAlerta(context, "$usernotFound",'', 'assets/error.png');
+      }else if(error.code == "ERROR_USER_DISABLED"){
+        mostrarAlerta(context, "$userDisabled",'', 'assets/error.png');
+      }else if(error.code == "ERROR_TOO_MANY_REQUESTS"){
+        mostrarAlerta(context, "$toomanyRequest",'', 'assets/error.png');
+      }else if(error.code == "ERROR_OPERATION_NOT_ALLOWED"){
+        mostrarAlerta(context, "$emailpassnoEnabled",'', 'assets/error.png');
+      }else{
+        mostrarAlerta(context, "${error.toString()}",'', 'assets/error.png');
       }
-    });*/
+      
+    });
   }
 
-  createUser(BuildContext context,String email, String password)async{
+ Future<void> createUser(BuildContext context,String nombre,String email, String password,String telefono)async{
     String errorReg = AppTranslations.of(context).text('title_errorreg');
+    
     //String errorLog = AppTranslations.of(context).text('title_errorlog');
     await _authrepository.registerEmail(email, password).then((usuario)async{
-     await signInEmail(email, pass,context);
-      return usuario;
+     //await signInEmail(email, pass,context);
+        await _authrepository.usuarioNuevo(nombre, email, password, telefono).then((result)async{
+          if(result['msg'] == "Signed up "){
+              await _authrepository.loginUserGoogle(usuario.uid).then((resp)async{
+                if(resp['_dtu']['msg'] == "Login Successfully"){
+                  String token = '';
+                  String resultToken = '';
+                  for(int i = 0; i < resp['_dtu']['provider']['_uit'].length; i++){
+                    token = token + resp['_dtu']['provider']['_uit'][i].toString()+".";
+                    resultToken = token.substring(0,token.length-1);
+                  }
+
+                  print("Token: ");
+                  print(resultToken);
+                  //prefs.token = prefs.token + "${result['_dtu']['provider']['_uit'][0].toString()}" + "${result['_dtu']['provider']['_uit'][1].toString()}" + "${result['_dtu']['provider']['_uit'][2].toString()}";
+                  prefs.token = resultToken;
+                  final decodedInfoUser = parseJwt(prefs.token.toString());
+                  
+                  prefs.iduser = decodedInfoUser['id'].toString();
+                  prefs.name = resp['_dtu']['udt']['name'].toString();
+                  prefs.email = usuario.providerData[0].email.toString();
+                  //prefs.phone = authUser.providerData[1].phoneNumber.toString();
+                  prefs.photoUrl = resp['_dtu']['udt']['photoURL'].toString();//result['_dtu']['udt']['photoURL'].toString()
+                  if(usuario != null){
+                    // Check is already sign up - Checa si está logueado
+                    firebaseMessaging.getToken().then((token){
+                      //tokenFCM = token;
+                      prefs.tokenFCM = token;
+                      print("Token 1");
+                    });
+                    
+                    //prefs.tokenFCM = tokenFCM;
+                    print(prefs.tokenFCM);
+                  /* Stream<String> fcmStream = firebaseMessaging.onTokenRefresh;
+                    fcmStream.listen((token){
+                      prefs.tokenFCM = token;
+                      print("Token Refresh");
+                      print(prefs.tokenFCM);
+                    });*/
+                    final QuerySnapshot result = await Firestore.instance.collection('users').where('email',isEqualTo: prefs.email).getDocuments(); //authUser.providerData[1].email
+                    final List<DocumentSnapshot> documents = result.documents;
+
+                    final coleccion = Firestore.instance.collection('users').document('${prefs.email}').collection('tokensfcm');
+                    //final List<DocumentSnapshot> documentColeccion = coleccion.documents;
+                    if(documents.length == 0){
+                      // Update data to server if new user - Actualiza los datos del servidor
+                      // si el usuario es nuevo myUser.providerData[1].uid
+                      //authUser.providerData[1].email
+                      Firestore.instance.collection('users').document(prefs.email).setData(
+                        {
+                          'tokenfcm':"${prefs.tokenFCM.toString()}",
+                          'nickname': prefs.name,//authUser.providerData[1].displayName
+                          'id': prefs.iduser,//authUser.providerData[1].uid
+                          'email': prefs.email,//authUser.providerData[1].email
+                          'photoUrl': prefs.photoUrl,//authUser.providerData[1].photoUrl
+                          'createdAt': DateTime.now().millisecondsSinceEpoch.toString(),
+                          'chattingWith': null
+                        }
+                      );
+
+                      Firestore.instance.runTransaction((transaction)async{
+                            await transaction.set(
+                              coleccion.document(),
+                              {
+                                'token': prefs.tokenFCM.toString()
+                              }
+                            );
+                          }).then((result){
+                            print(result);
+                          }).catchError((error){
+                            print(error);
+                          });
+                      // Write data to local - Escribir los datos en local
+                    // FirebaseUser currentUser = user;
+                      
+                    }else{
+                      print("El usuario ya existe");
+                      final QuerySnapshot result = await Firestore.instance.collection('users').where('email',isEqualTo: prefs.email).getDocuments(); //authUser.providerData[1].email
+                      final List<DocumentSnapshot> documents = result.documents;
+                      final  coleccion = Firestore.instance.collection('users').document('${prefs.email}').collection('tokensfcm');
+                      //final List<DocumentSnapshot> documentColeccion = coleccion.documents;
+                      //documentColeccion.single.data['token'] != prefs.tokenFCM
+
+                      
+                      if(documents.single.data['tokenfcm'] != prefs.tokenFCM ){
+                          
+                          // Firestore.instance.collection('users').document(prefs.email).setData(
+                          //   {
+                          //     'tokenfcm':"$tokenFCM",
+                          //     'nickname': prefs.name,//authUser.providerData[1].displayName
+                          //     'id': prefs.iduser,//authUser.providerData[1].uid
+                          //     'idtokens': tokenFCM,
+                          //     'email': prefs.email,//authUser.providerData[1].email
+                          //     'photoUrl': prefs.photoUrl,//authUser.providerData[1].photoUrl
+                          //     'createdAt': DateTime.now().millisecondsSinceEpoch.toString()
+                          //     //'chattingWith': null
+                          //   }
+                          // );
+                          Firestore.instance.collection('users').document(prefs.email).updateData({
+                            'tokenfcm': prefs.tokenFCM.toString()
+                          });
+                          print("Escribiendo datos");
+                          Firestore.instance.runTransaction((transaction)async{
+                            await transaction.set(
+                              coleccion.document(),
+                              {
+                                'token': prefs.tokenFCM.toString()
+                              }
+                            );
+                          }).then((result){
+                            print(result);
+                          }).catchError((error){
+                            print(error);
+                          });
+                        }else{
+                          print("tiene el mismo token fcm");
+                        }
+                      
+                      /*Stream<String> fcmStream = firebaseMessaging.onTokenRefresh;
+                      fcmStream.listen((token){
+                        prefs.tokenFCM = token;
+                        print("Token Refresh");
+                        print(prefs.tokenFCM);
+                      });*/
+                    }
+                  }
+                  print("Datos del usuario decodificado");
+                  print(decodedInfoUser);
+                  streamFirebase.sink.add(usuario);
+                  Navigator.pop(context);
+                  
+                }else{
+                  mostrarAlerta(context, resp['_dtu']['msg'].toString() , '', 'assets/error.png'); //result['_dtu']['msg']
+                }
+              }).catchError((error){
+                mostrarAlerta(context, "${error.toString()}", '', 'assets/error.png');
+              });
+          }else{
+            await _authrepository.loginUserGoogle(usuario.uid).then((resp)async{
+                if(resp['_dtu']['msg'] == "Login Successfully"){
+                  String token = '';
+                  String resultToken = '';
+                  for(int i = 0; i < resp['_dtu']['provider']['_uit'].length; i++){
+                    token = token + resp['_dtu']['provider']['_uit'][i].toString()+".";
+                    resultToken = token.substring(0,token.length-1);
+                  }
+
+                  print("Token: ");
+                  print(resultToken);
+                  //prefs.token = prefs.token + "${result['_dtu']['provider']['_uit'][0].toString()}" + "${result['_dtu']['provider']['_uit'][1].toString()}" + "${result['_dtu']['provider']['_uit'][2].toString()}";
+                  prefs.token = resultToken;
+                  final decodedInfoUser = parseJwt(prefs.token.toString());
+                  
+                  prefs.iduser = decodedInfoUser['id'].toString();
+                  prefs.name = resp['_dtu']['udt']['name'].toString();
+                  prefs.email = usuario.providerData[0].email.toString();
+                  //prefs.phone = authUser.providerData[1].phoneNumber.toString();
+                  prefs.photoUrl = resp['_dtu']['udt']['photoURL'].toString();//result['_dtu']['udt']['photoURL'].toString()
+                  if(usuario != null){
+                    // Check is already sign up - Checa si está logueado
+                    firebaseMessaging.getToken().then((token){
+                      //tokenFCM = token;
+                      prefs.tokenFCM = token;
+                      print("Token 1");
+                    });
+                    
+                    //prefs.tokenFCM = tokenFCM;
+                    print(prefs.tokenFCM);
+                  /* Stream<String> fcmStream = firebaseMessaging.onTokenRefresh;
+                    fcmStream.listen((token){
+                      prefs.tokenFCM = token;
+                      print("Token Refresh");
+                      print(prefs.tokenFCM);
+                    });*/
+                    final QuerySnapshot result = await Firestore.instance.collection('users').where('email',isEqualTo: prefs.email).getDocuments(); //authUser.providerData[1].email
+                    final List<DocumentSnapshot> documents = result.documents;
+
+                    final coleccion = Firestore.instance.collection('users').document('${prefs.email}').collection('tokensfcm');
+                    //final List<DocumentSnapshot> documentColeccion = coleccion.documents;
+                    if(documents.length == 0){
+                      // Update data to server if new user - Actualiza los datos del servidor
+                      // si el usuario es nuevo myUser.providerData[1].uid
+                      //authUser.providerData[1].email
+                      Firestore.instance.collection('users').document(prefs.email).setData(
+                        {
+                          'tokenfcm':"${prefs.tokenFCM.toString()}",
+                          'nickname': prefs.name,//authUser.providerData[1].displayName
+                          'id': prefs.iduser,//authUser.providerData[1].uid
+                          'email': prefs.email,//authUser.providerData[1].email
+                          'photoUrl': prefs.photoUrl,//authUser.providerData[1].photoUrl
+                          'createdAt': DateTime.now().millisecondsSinceEpoch.toString(),
+                          'chattingWith': null
+                        }
+                      );
+
+                      Firestore.instance.runTransaction((transaction)async{
+                            await transaction.set(
+                              coleccion.document(),
+                              {
+                                'token': prefs.tokenFCM.toString()
+                              }
+                            );
+                          }).then((result){
+                            print(result);
+                          }).catchError((error){
+                            print(error);
+                          });
+                      // Write data to local - Escribir los datos en local
+                    // FirebaseUser currentUser = user;
+                      
+                    }else{
+                      print("El usuario ya existe");
+                      final QuerySnapshot result = await Firestore.instance.collection('users').where('email',isEqualTo: prefs.email).getDocuments(); //authUser.providerData[1].email
+                      final List<DocumentSnapshot> documents = result.documents;
+                      final  coleccion = Firestore.instance.collection('users').document('${prefs.email}').collection('tokensfcm');
+                      //final List<DocumentSnapshot> documentColeccion = coleccion.documents;
+                      //documentColeccion.single.data['token'] != prefs.tokenFCM
+
+                      
+                      if(documents.single.data['tokenfcm'] != prefs.tokenFCM ){
+                          
+                          // Firestore.instance.collection('users').document(prefs.email).setData(
+                          //   {
+                          //     'tokenfcm':"$tokenFCM",
+                          //     'nickname': prefs.name,//authUser.providerData[1].displayName
+                          //     'id': prefs.iduser,//authUser.providerData[1].uid
+                          //     'idtokens': tokenFCM,
+                          //     'email': prefs.email,//authUser.providerData[1].email
+                          //     'photoUrl': prefs.photoUrl,//authUser.providerData[1].photoUrl
+                          //     'createdAt': DateTime.now().millisecondsSinceEpoch.toString()
+                          //     //'chattingWith': null
+                          //   }
+                          // );
+                          Firestore.instance.collection('users').document(prefs.email).updateData({
+                            'tokenfcm': prefs.tokenFCM.toString()
+                          });
+                          print("Escribiendo datos");
+                          Firestore.instance.runTransaction((transaction)async{
+                            await transaction.set(
+                              coleccion.document(),
+                              {
+                                'token': prefs.tokenFCM.toString()
+                              }
+                            );
+                          }).then((result){
+                            print(result);
+                          }).catchError((error){
+                            print(error);
+                          });
+                        }else{
+                          print("tiene el mismo token fcm");
+                        }
+                      
+                      /*Stream<String> fcmStream = firebaseMessaging.onTokenRefresh;
+                      fcmStream.listen((token){
+                        prefs.tokenFCM = token;
+                        print("Token Refresh");
+                        print(prefs.tokenFCM);
+                      });*/
+                    }
+                  }
+                  print("Datos del usuario decodificado");
+                  print(decodedInfoUser);
+                  streamFirebase.sink.add(usuario);
+                  Navigator.pop(context);
+                  
+                }else{
+                  mostrarAlerta(context, resp['_dtu']['msg'].toString(), '', 'assets/error.png'); //result['_dtu']['msg']
+                }
+              }).catchError((error){
+                mostrarAlerta(context, "${error.toString()}", '', 'assets/error.png');
+              });
+            //mostrarAlerta(context, "${result['msg'].toString()}",'$errorReg', 'assets/error.png');
+          }
+        }).catchError((error){
+          mostrarAlerta(context, '${error.toString()}','$errorReg', 'assets/error.png');
+        });
+        
     }).catchError((error){
-      mostrarAlerta(context, error.toString(),'$errorReg', 'assets/error.png');
-      //return error;
+      String passNoSecure = AppTranslations.of(context).text('title_secure_password');
+      String emailNoWritten = AppTranslations.of(context).text('title_correo_no_written');
+      String emailisReady = AppTranslations.of(context).text('title_email_isready');
+      print("Respuesta Firebase Registro: ");
+      print(error);
+      if(error.code == "ERROR_WEAK_PASSWORD"){
+        mostrarAlerta(context, "$passNoSecure",'', 'assets/error.png');
+      }else if(error.code == "ERROR_INVALID_EMAIL"){
+        mostrarAlerta(context, "$emailNoWritten",'', 'assets/error.png');
+      }else if(error.code == "ERROR_EMAIL_ALREADY_IN_USE"){
+        mostrarAlerta(context, "$emailisReady",'', 'assets/error.png');
+      }else{
+        mostrarAlerta(context, "${error.toString()}",'', 'assets/error.png');
+      }
     });
 
     
@@ -550,6 +997,29 @@ Future<void> signInEmail( String email,String pass, BuildContext context)async{
       mostrarAlerta(context, error,'$errorLog', 'assets/error.png');
       //return error;
     });*/
+  }
+
+  Future<void> resetPassword(BuildContext context, String email, String languageCode)async{
+    String reseteoSuccess = AppTranslations.of(context).text('title_send_email');
+
+    await _authrepository.resetPassword(email, languageCode).then((value){
+      Navigator.pop(context);
+      mostrarMensajeResetPassword(context, '$reseteoSuccess $email', '');
+     
+    }).catchError((error){
+      String emailNoWritten = AppTranslations.of(context).text('title_correo_no_written');
+      String usernotFound = AppTranslations.of(context).text('title_user_not_found');
+      String errorReset = AppTranslations.of(context).text('title_error_reset');
+      
+      if(error.code == "ERROR_INVALID_EMAIL"){
+        mostrarMensajeErrorResetPassword(context, '$emailNoWritten' , '$errorReset');
+      }else if(error.code == "ERROR_USER_NOT_FOUND"){
+        mostrarMensajeErrorResetPassword(context, '$usernotFound' , '$errorReset');
+      }else{
+        mostrarMensajeErrorResetPassword(context, '${error.toString()}' , '$errorReset');
+      }
+      
+    });
   }
   //Ejecuta el cierre de sesión
   signOut() async {

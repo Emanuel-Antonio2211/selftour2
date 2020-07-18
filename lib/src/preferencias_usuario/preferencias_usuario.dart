@@ -32,7 +32,7 @@ class PreferenciasUsuario {
 
   // GET y SET del nombre
   //Grabar el token en el dispositivo
-  get token {
+  get token{
     return _prefs.getString('token') ?? '';
   }
 
@@ -70,7 +70,7 @@ class PreferenciasUsuario {
   get tokenVerif{
     return _prefs.getString('tokenVerif');
   }
-  get idTarjeta {
+  get idTarjeta{
     return _prefs.getString('idTarjeta');
   }
 
@@ -106,6 +106,20 @@ class PreferenciasUsuario {
 
   get idsell{
     return _prefs.getString('idsell');
+  }
+
+  set countryCode(String value){
+    _prefs.setString('countryCode', value);
+  }
+  get countryCode{
+    return _prefs.getString('countryCode') ?? '';
+  }
+
+  set estadoUser(String value){
+    _prefs.setString('estadoUser', value);
+  }
+  get estadoUser{
+    return _prefs.getString('estadoUser') ?? '';
   }
 
   set originLogin(String value){
@@ -162,7 +176,7 @@ class PreferenciasUsuario {
     _prefs.setString('tokenVerif', value);
   }
 
-  set idTarjeta (String value){
+  set idTarjeta(String value){
     _prefs.setString('idTarjeta', value);
   }
 

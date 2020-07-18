@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:selftourapp/src/pages/login/login_page.dart';
 import 'package:selftourapp/src/translation_class/app_translations.dart';
 
 
@@ -125,6 +126,132 @@ void mostrarMensaje(BuildContext context,String mensaje,String title){
             onPressed: ()=>Navigator.of(context).pop(),
           )
         ],*/
+      );
+    }
+  );
+}
+
+void mostrarMensajeResetPassword(BuildContext context,String mensaje,String title){
+  final size = MediaQuery.of(context).size;
+  String aceptar = AppTranslations.of(context).text('title_accept');
+  showDialog(
+    context: context,
+    builder: (context){
+      return AlertDialog(
+        title: Text(
+          '$title',
+          style: TextStyle(
+            fontFamily: 'Point-SemiBold'
+          ),
+        ),
+        content: Container(
+          width: size.width * 0.5,
+          height: size.height * 0.2,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(40.0)
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Flexible(
+                child: Text(
+                  mensaje,
+                  style: TextStyle(
+                    fontFamily: 'Point-SemiBold',
+                    fontSize: 14.0
+                    ),
+                  )
+                ),
+            ],
+          ),
+        ),
+       /* actions: <Widget>[
+          FlatButton(
+            child: Text('Ok'),
+            onPressed: ()=>Navigator.of(context).pop(),
+          )
+        ],*/
+        actions: <Widget>[
+          RaisedButton(
+            textTheme: ButtonTextTheme.primary,
+            color: Colors.green,
+            shape: StadiumBorder(),
+            child: Text(
+              '$aceptar',
+              style: TextStyle(
+                fontFamily: 'Point-SemiBold',
+                color: Colors.white
+              ),
+            ),
+            onPressed: (){
+              Navigator.pop(context);
+            },
+          ),
+        ],
+      );
+    }
+  );
+}
+
+void mostrarMensajeErrorResetPassword(BuildContext context,String mensaje,String title){
+  final size = MediaQuery.of(context).size;
+  String aceptar = AppTranslations.of(context).text('title_accept');
+  showDialog(
+    context: context,
+    builder: (context){
+      return AlertDialog(
+        title: Text(
+          '$title',
+          style: TextStyle(
+            fontFamily: 'Point-SemiBold',
+            color: Colors.red
+          ),
+        ),
+        content: Container(
+          width: size.width * 0.5,
+          height: size.height * 0.2,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(40.0)
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Flexible(
+                child: Text(
+                  mensaje,
+                  style: TextStyle(
+                    fontFamily: 'Point-SemiBold',
+                    color: Colors.red,
+                    fontSize: 14.0
+                    ),
+                  )
+                ),
+            ],
+          ),
+        ),
+       /* actions: <Widget>[
+          FlatButton(
+            child: Text('Ok'),
+            onPressed: ()=>Navigator.of(context).pop(),
+          )
+        ],*/
+        actions: <Widget>[
+          RaisedButton(
+            textTheme: ButtonTextTheme.primary,
+            color: Colors.green,
+            shape: StadiumBorder(),
+            child: Text(
+              '$aceptar',
+              style: TextStyle(
+                fontFamily: 'Point-SemiBold',
+                color: Colors.white
+              ),
+            ),
+            onPressed: (){
+              Navigator.pop(context);
+            },
+          ),
+        ],
       );
     }
   );

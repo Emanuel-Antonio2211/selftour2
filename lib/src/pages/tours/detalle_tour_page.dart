@@ -107,7 +107,7 @@ class _DetalleTourPageState extends State<DetalleTourPage> with SingleTickerProv
   void dispose() {
     // Dispose of the Tab Controller
     controller.dispose();
-    //_scrollController.dispose();
+    _scrollController.dispose();
     _scrollController.removeListener(scrollListener);
     //_scrollController.removeListener(_updateScrollPosition);
     super.dispose();
@@ -176,11 +176,11 @@ class _DetalleTourPageState extends State<DetalleTourPage> with SingleTickerProv
                         floating: false,
                         pinned: true,
                         flexibleSpace: FlexibleSpaceBar(
-                          titlePadding: EdgeInsets.symmetric(horizontal: 30.0),
+                          titlePadding: isShrink ? EdgeInsets.only(left: 50.0, right: 10.0) : EdgeInsets.symmetric(horizontal: 10.0),
                           collapseMode: CollapseMode.parallax,
-                          centerTitle: true, //isShrink ? size.height * 0.08 :  size.height * 0.25,
+                          centerTitle: isShrink ? false : true, //isShrink ? size.height * 0.08 :  size.height * 0.25,
                           title: Container(
-                            width: size.width * 1.0,
+                            width: isShrink ? size.width * 0.6 : size.width * 1.0,
                             height: isShrink ? size.height * 0.08 :  size.height * 0.25,
                             //color: Colors.grey,
                             child: Stack(
@@ -190,13 +190,14 @@ class _DetalleTourPageState extends State<DetalleTourPage> with SingleTickerProv
                                   //heightFactor: 14.0,
                                   child: Text(
                                     snapshot.data.single.title,
-                                    textAlign: TextAlign.center,
+                                    textAlign: isShrink ? TextAlign.start : TextAlign.center,
                                     style: TextStyle(
                                       color: isShrink ? Colors.black : Colors.white,
-                                        fontSize: 13.0,
-                                        fontFamily: 'Point-SemiBold',
-                                        fontWeight: FontWeight.bold
+                                      fontSize: isShrink ? 10.0 : 13.0,
+                                      fontFamily: 'Point-SemiBold',
+                                      fontWeight: FontWeight.bold
                                     ),
+                                    overflow: isShrink ? TextOverflow.ellipsis:TextOverflow.visible,
                                   ),
                                 ),
                                 Align(
@@ -529,39 +530,40 @@ class _DetalleTourPageState extends State<DetalleTourPage> with SingleTickerProv
                     ];
                   },
                   body: TabBarView(
-                            physics: ScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-                            controller: controller,
-                            children:<Widget>[ 
-                              /*SingleChildScrollView(
-                                
-                                child: Column(
-                                  children: <Widget>[
-                                    
-                                  ],
-                                ),
-                              ),*/
+                    //physics: ScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+                    physics: NeverScrollableScrollPhysics(),
+                    controller: controller,
+                    children:<Widget>[ 
+                      /*SingleChildScrollView(
+                        
+                        child: Column(
+                          children: <Widget>[
+                            
+                          ],
+                        ),
+                      ),*/
 
-                              _parrafoInformacion(context, snapshot.data.single),
-                              
-                              /*SingleChildScrollView(
-                                child: Column(
-                                  children: <Widget>[
-                                    _opiniones(context),
-                                    _comentariosUsuarios(context,snapshot.data.single)
-                                  ],
-                                ),
-                              ),*/
-                              _comentariosUsuarios(context,snapshot.data.single),
-                             
-                              SingleChildScrollView(
-                                child: Column(
-                                  children: <Widget>[
-                                    _ubicacionTour(context, snapshot.data.single)
-                                  ],
-                                ),
-                              )
-                            ]
-                          ),
+                      _parrafoInformacion(context, snapshot.data.single),
+                      
+                      /*SingleChildScrollView(
+                        child: Column(
+                          children: <Widget>[
+                            _opiniones(context),
+                            _comentariosUsuarios(context,snapshot.data.single)
+                          ],
+                        ),
+                      ),*/
+                      _comentariosUsuarios(context,snapshot.data.single),
+                      
+                      SingleChildScrollView(
+                        child: Column(
+                          children: <Widget>[
+                            _ubicacionTour(context, snapshot.data.single)
+                          ],
+                        ),
+                      )
+                    ]
+                  ),
                   
                   /*SliverFillRemaining(
                           fillOverscroll: true,
@@ -593,22 +595,22 @@ class _DetalleTourPageState extends State<DetalleTourPage> with SingleTickerProv
                         
                         
                   ],*/
-            ),
-            bottomSheet: isShrink ? Container(
-        color: Colors.white,
-        width: size.width * 1.0,
-        height: size.height * 0.07,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: <Widget>[
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 10.0),
-              child: botonEnviarMensaje(context, snapshot.data.single)
-            ),
-            botonComprar(context, snapshot.data.single )
-          ],
-        )
-      ):null,
+                  ),
+                  bottomSheet: isShrink ? Container(
+                  color: Colors.white,
+                  width: size.width * 1.0,
+                  height: size.height * 0.07,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: <Widget>[
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 10.0),
+                        child: botonEnviarMensaje(context, snapshot.data.single)
+                      ),
+                      botonComprar(context, snapshot.data.single )
+                    ],
+                  )
+                ):null,
               );
             }else{
               return Column(

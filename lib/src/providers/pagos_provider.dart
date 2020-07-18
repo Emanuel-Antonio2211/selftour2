@@ -1,8 +1,10 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
 //import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 //import 'package:http_auth/http_auth.dart' as httpAuth;
 //import 'package:openpay_flutter/model/card.dart';
@@ -10,7 +12,7 @@ import 'package:http/http.dart' as http;
 import 'package:selftourapp/src/models/tarjeta_model.dart';
 //import 'package:openpay_flutter/openpay_flutter.dart';
 
-class PagosProvider{
+class PagosProvider with ChangeNotifier{
   
   ///Credenciales OpenPay
   static String markerid = "mved55pnqueugtksu9kc";
@@ -27,7 +29,14 @@ class PagosProvider{
   static String encoded = stringToBase64.encode(credential);
   String decoded = stringToBase64.decode(encoded);
 
+  final _streamPagosController = StreamController<Map<String,dynamic>>.broadcast();
+
+  Function(Map<String,dynamic>) get pagosSink => _streamPagosController.sink.add;
+  Stream<Map<String,dynamic>> get pagosStream => _streamPagosController.stream;
   
+  void disposeStream(){
+    _streamPagosController?.close();
+  }
 
   PagosProvider();
 
@@ -35,7 +44,7 @@ class PagosProvider{
   final platform = const MethodChannel('samples.flutter.io/deviceid');
 
   String deviceId = "";
-
+  
 /*Future<String>getDeviceId()async{
  // String deviceSesionId;
 
@@ -71,8 +80,10 @@ Future<Map<String, dynamic>> crearToken(TarjetaModel tarjeta)async{
   final decodedResp= json.decode(resp.body);
 
   print(decodedResp);
+  notifyListeners();
 
   return decodedResp;
+  
 }
 
 Future<Map<String,dynamic>> obtenerToken(String tokenId)async{
@@ -93,7 +104,8 @@ Future<Map<String,dynamic>> obtenerToken(String tokenId)async{
   lista.add(
     decodedData
   );
-
+  pagosSink(decodedData);
+  notifyListeners();
   return decodedData;
 }
   
@@ -138,6 +150,7 @@ Future<Map<String,dynamic>> obtenerToken(String tokenId)async{
       list.add(tarjTemp);
     });*/
     //print(list[0].id);
+    notifyListeners();
     return decodedResp;
   }
 
@@ -166,6 +179,7 @@ Future<Map<String,dynamic>> obtenerToken(String tokenId)async{
     lista.add(
       decodedData
     );
+    notifyListeners();
     return lista;
   }
 
@@ -195,6 +209,7 @@ Future<Map<String,dynamic>> obtenerToken(String tokenId)async{
 
     final decodedResp = json.decode(resp.body);
     print(decodedResp);
+    notifyListeners();
     return decodedResp;
   }
 
@@ -363,7 +378,7 @@ Future<Map<String,dynamic>> obtenerToken(String tokenId)async{
     );
 
     final responseDecoded = json.decode(response.body);
-
+    notifyListeners();
     return responseDecoded;
   }
 }
