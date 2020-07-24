@@ -88,13 +88,13 @@ class CategoriasProvider{
     _tourCategoryStreamController?.close();
   }
 
-  Future<Map<String,dynamic>> getToursC(String state,String country,String ctidss) async{
+  Future<Map<String,dynamic>> getToursC(String state,String country,String ctidss,{String page = ''}) async{
    String _url = 'api-users.selftours.app';
     _toursPage++;
     final url = Uri.https(
       _url,
      '/tours/category/$ctidss',{
-        'page': '${_toursPage.toString()}',
+        'page': page == '' ? '${_toursPage.toString()}' : '$page',
         'items': '12',
         'state': '$state',
         'country': '$country'
@@ -246,7 +246,7 @@ class CategoriasProvider{
     return decodedData;
   }
 
-  Future<Map<String,dynamic>> getTours(String state, String country) async{
+  Future<Map<String,dynamic>> getTours(String state, String country,{String page = ''}) async{
     //Se evalúa si se está cargando datos
    /* if(_cargando){
       return [];
@@ -256,16 +256,16 @@ class CategoriasProvider{
     //Aumenta en uno los tours a mostrar en la pantalla
     _toursPage++;
 */
-_toursPage++;
+  _toursPage++;
     //Se define la url del proveedor de la lista de tours
     //?page=${_toursPage.toString()}&items=3
     final url = Uri.https(
       _url, 
       '/tours',
       {
-        'page': '${_toursPage.toString()}',
+        'page': page == '' ? '${_toursPage.toString()}': '$page',
         'items': '5',
-        //'state': '$state',
+        'state': '$state',
         'country': '$country'
       }
     );
@@ -405,10 +405,9 @@ _toursPage++;
       }
     );
     final decodedDataTC = json.decode(respuestaTC.body);
-    
-    //print(decodedDataTC['rows']);
+    // print("Detalles del tour: ");
+    // print(decodedDataTC['rows']);
     final detallerTour = new ListaToursC.fromJsonList(decodedDataTC['rows']);
-    //print(detallerTour.itemsTours);
     return 
     detallerTour.itemsTours;
   }
@@ -507,13 +506,13 @@ _toursPage++;
     return decodedResp;
 
   }
-  Future<Map<String,dynamic>> popularesPag(String state, String country)async{
+  Future<Map<String,dynamic>> popularesPag(String state, String country, {String page = ''})async{
     final String url = "api-users.selftours.app";
     _toursPage++;
     final _url = Uri.https(
       url, 
       'popularTours',{
-        'page': _toursPage.toString(),
+        'page': page == '' ? _toursPage.toString():page,
         'items': '5',
         'state': '$state',
         'country': '$country'
@@ -555,13 +554,13 @@ _toursPage++;
     return decodedResp;
   }
 
-  Future<Map<String,dynamic>> recientesPag(String state, String country)async{
+  Future<Map<String,dynamic>> recientesPag(String state, String country, {String page = ''})async{
     final String url = "api-users.selftours.app";
     _toursPage++;
     final _url = Uri.https(
       url, 
       'recentTours',{
-        'page': _toursPage.toString(),
+        'page': page == '' ? _toursPage.toString():page,
         'items': '5',
         'state': '$state',
         'country': '$country'
@@ -604,13 +603,13 @@ _toursPage++;
     
   }
 
-  Future<Map<String,dynamic>> recomendadosPag(String state, String country)async{
+  Future<Map<String,dynamic>> recomendadosPag(String state, String country,{String page = ''})async{
     final String url = "api-users.selftours.app";
     _toursPage++;
     final _url = Uri.https(
       url, 
       'recommendTours',{
-        'page': _toursPage.toString(),
+        'page': page == '' ? _toursPage.toString():page,
         'items': '5',
         'state': '$state',
         'country': '$country'

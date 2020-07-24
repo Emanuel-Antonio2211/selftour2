@@ -88,12 +88,12 @@ class _ListaToursCategoriaVerticalState extends State<ListaToursCategoriaVertica
       print("Datos del usuario:");
       print(prefs.estadoUser);
       print(prefs.countryCode);
-      await provider.getToursC(prefs.estadoUser.toString(),prefs.countryCode.toString(),widget.ctid).then((datos){
-            final listaToursC = new ListaToursC.fromJsonList(datos['Tours']['data']);
-            for(int i = 0; i<listaToursC.itemsTours.length; i++){
-              widget.listaTours.add(listaToursC.itemsTours[i]);
-            }
-          });
+      await provider.getToursC(prefs.estadoUser.toString(),prefs.countryCode.toString(),widget.ctid,page: '1').then((datos){
+        final listaToursC = new ListaToursC.fromJsonList(datos['Tours']['data']);
+        for(int i = 0; i<listaToursC.itemsTours.length; i++){
+          widget.listaTours.add(listaToursC.itemsTours[i]);
+        }
+      });
       
       print("Ctid");
       print(widget.ctid);
@@ -116,11 +116,14 @@ class _ListaToursCategoriaVerticalState extends State<ListaToursCategoriaVertica
             onRefresh: cargarTours,
             child: ListView.builder(
               scrollDirection: Axis.vertical,
+              shrinkWrap: true,
+              primary: true,
               //pageSnapping: false,
               controller: widget._pageController,
               //children: _tarjetas(context)
               itemCount: widget.listaTours.length,
-              physics: AlwaysScrollableScrollPhysics(),
+              //physics: AlwaysScrollableScrollPhysics(), //FixedExtentScrollPhysics() AlwaysScrollableScrollPhysics() BouncingScrollPhysics()
+              //ClampingScrollPhysics()
               itemBuilder: (context,i){
                 return _tarjeta(context, widget.listaTours[i]);
               },
@@ -439,7 +442,7 @@ class _ListaToursCategoriaVerticalState extends State<ListaToursCategoriaVertica
           padding: EdgeInsets.only(right: 8.0),
           child: Align(
             alignment: Alignment.bottomRight,
-            heightFactor: 12.5,
+            heightFactor: 11.7,
             child: Padding(
               padding: EdgeInsets.only(right: size.width * 0.05),
               child: Text(
@@ -599,12 +602,12 @@ class _ListaToursCategoriaGridState extends State<ListaToursCategoriaGrid> {
       print("Datos del usuario:");
       print(prefs.estadoUser);
       print(prefs.countryCode);
-      await categoriasProvider.getToursC(prefs.estadoUser.toString(),prefs.countryCode.toString(),widget.ctid).then((datos){
-          final listaToursC = new ListaToursC.fromJsonList(datos['Tours']['data']);
-          for(int i = 0; i<listaToursC.itemsTours.length; i++){
-            widget.listaTours.add(listaToursC.itemsTours[i]);
-          }
-        });
+      await categoriasProvider.getToursC(prefs.estadoUser.toString(),prefs.countryCode.toString(),widget.ctid, page: '1').then((datos){
+        final listaToursC = new ListaToursC.fromJsonList(datos['Tours']['data']);
+        for(int i = 0; i<listaToursC.itemsTours.length; i++){
+          widget.listaTours.add(listaToursC.itemsTours[i]);
+        }
+      });
       
       print("Ctid");
       print(widget.ctid);
@@ -627,10 +630,12 @@ class _ListaToursCategoriaGridState extends State<ListaToursCategoriaGrid> {
           RefreshIndicator(
           onRefresh: cargarTours,
           child: GridView.builder(
+            shrinkWrap: true,
+            primary: true,
             scrollDirection: Axis.vertical,
             controller: _scrollController,
             itemCount: widget.listaTours.length,
-            physics: AlwaysScrollableScrollPhysics(),
+            //physics: AlwaysScrollableScrollPhysics(),
             itemBuilder: (context,i){
               return _tarjeta(context, widget.listaTours[i]);
             },

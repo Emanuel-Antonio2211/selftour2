@@ -200,7 +200,6 @@ class _BusquedaTourPageState extends State<BusquedaTourPage> with AutomaticKeepA
                     if(snapshot.data['tours'][0]['data_tour'] != null){
                       final tours = new ListaToursC.fromJsonList(snapshot.data['tours'][0]['data_tour']);
                       return ToursGeneral(listaTours: tours.itemsTours);
-                      
                     }else if(snapshot.data['tours']['total'] == "empty"){
                       return Column(
                         children: <Widget>[

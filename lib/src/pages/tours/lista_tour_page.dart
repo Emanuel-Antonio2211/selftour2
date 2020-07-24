@@ -241,175 +241,43 @@ class _ListaTourPageState extends State<ListaTourPage> with SingleTickerProvider
     
 
     return SingleChildScrollView(
-          child: Column(
-          children: <Widget>[
-            StreamBuilder(
-              stream: categoriasProvider.tourCategoryStream,//categoriasProvider.getToursC(categoria.ctidss.toString())
-              builder: (BuildContext context, AsyncSnapshot<Map<String,dynamic>> snapshot) {
-                String noData = AppTranslations.of(context).text('title_nodata');
-                print("Snapshot: ");
-                print(snapshot);
-              //   print("Containskey Tours: ");
-              //   print(snapshot.data.containsKey('Tours'));
-              //  print("Containskey dataTours: ");
-              //  print(snapshot.data.containsKey('dataTours'));
-                
-                switch(snapshot.connectionState){
-                  case ConnectionState.waiting:
-                    return Column(
-                      children: <Widget>[
-                        SafeArea(
-                          child: SizedBox(
-                            height: size.height * 0.4,
-                          ),
+      child: Column(
+        children: <Widget>[
+          StreamBuilder(
+            stream: categoriasProvider.tourCategoryStream,//categoriasProvider.getToursC(categoria.ctidss.toString())
+            builder: (BuildContext context, AsyncSnapshot<Map<String,dynamic>> snapshot) {
+              String noData = AppTranslations.of(context).text('title_nodata');
+              print("Snapshot: ");
+              print(snapshot);
+            //   print("Containskey Tours: ");
+            //   print(snapshot.data.containsKey('Tours'));
+            //  print("Containskey dataTours: ");
+            //  print(snapshot.data.containsKey('dataTours'));
+              
+              switch(snapshot.connectionState){
+                case ConnectionState.waiting:
+                  return Column(
+                    children: <Widget>[
+                      SafeArea(
+                        child: SizedBox(
+                          height: size.height * 0.4,
                         ),
-                        // Center(
-                        //   child: Text(
-                        //     '$noData',
-                        //     style: TextStyle(
-                        //       fontFamily: 'Point-SemiBold'
-                        //     ),
-                        //   )
-                        // ),
-                        Center(
-                          child: CircularProgressIndicator()
-                        ),
-                      ],
-                    );
-                  break;
-                  case ConnectionState.none:
-                    return Column(
-                      children: <Widget>[
-                        SafeArea(
-                          child: SizedBox(
-                            height: size.height * 0.4,
-                          ),
-                        ),
-                        Center(
-                          child: Text(
-                            '$noData',
-                            style: TextStyle(
-                              fontFamily: 'Point-SemiBold'
-                            ),
-                          )
-                        ),
-                      ],
-                    );
-                  break;
-                  case ConnectionState.done:
-                    if(snapshot.data.containsKey('Tours')){
-                      final listaToursC = new ListaToursC.fromJsonList(snapshot.data['Tours']['data']);
-                      //final ningunDato = snapshot.data['dataTours']['msg'].toString();
-                      return ListaToursCategoriaVertical(
-                        listaTours: listaToursC.itemsTours,
-                        ctid: categoria.ctidss,
-                        siguientePagina: cargarTours
-                      );
-                    }else if(snapshot.data.containsKey('dataTours')){
-                      return Column(
-                        children: <Widget>[
-                          SafeArea(
-                            child: SizedBox(
-                              height: size.height * 0.4
-                            ),
-                          ),
-                          Center(
-                            child: Text(
-                              '$noData',
-                              style: TextStyle(
-                                fontFamily: 'Point-SemiBold'
-                              ),
-                            )
-                          ),
-                        ],
-                      );
-                      //snapshot.data['dataTours']['msg'] == "Any registered"
-                    }else{
-                      return Column(
-                        children: <Widget>[
-                          SafeArea(
-                            child: SizedBox(
-                              height: size.height * 0.4
-                            ),
-                          ),
-                          Center(
-                            child: Text(
-                              '$noData',
-                              style: TextStyle(
-                                fontFamily: 'Point-SemiBold'
-                              ),
-                            )
-                          ),
-                        ],
-                      );
-                    }
-                  break;
-                  case ConnectionState.active:
-                    
-                    if(snapshot.data.containsKey('Tours')){
-                      final listaToursC = new ListaToursC.fromJsonList(snapshot.data['Tours']['data']);
-                      return ListaToursCategoriaVertical(
-                        listaTours: listaToursC.itemsTours,
-                        ctid: categoria.ctidss,
-                        siguientePagina: cargarTours
-                      );
-                    }else if(snapshot.data.containsKey('dataTours')){
-                      return Column(
-                        children: <Widget>[
-                          SafeArea(
-                            child: SizedBox(
-                              height: size.height * 0.4
-                            ),
-                          ),
-                          Center(
-                            child: Text(
-                              '$noData',
-                              style: TextStyle(
-                                fontFamily: 'Point-SemiBold'
-                              ),
-                            )
-                          ),
-                        ],
-                      );
-                    }else{
-                      return Column(
-                        children: <Widget>[
-                          SafeArea(
-                            child: SizedBox(
-                              height: size.height * 0.4
-                            ),
-                          ),
-                          Center(
-                            child: Text(
-                              '$noData',
-                              style: TextStyle(
-                                fontFamily: 'Point-SemiBold'
-                              ),
-                            )
-                          ),
-                        ],
-                      );
-                    }
-                  break;
-                  default:
-                    return Column(
-                      children: <Widget>[
-                        SafeArea(
-                          child: SizedBox(
-                            height: size.height * 0.4,
-                          ),
-                        ),
-                        Center(
-                          child: CircularProgressIndicator()
-                        ),
-                      ],
-                    );
-                }
-                /*if(snapshot.hasData){
-                  return ListaToursCategoriaVertical(
-                    listaTours: snapshot.data,siguientePagina: categoriasProvider.getToursC,
+                      ),
+                      // Center(
+                      //   child: Text(
+                      //     '$noData',
+                      //     style: TextStyle(
+                      //       fontFamily: 'Point-SemiBold'
+                      //     ),
+                      //   )
+                      // ),
+                      Center(
+                        child: CircularProgressIndicator()
+                      ),
+                    ],
                   );
-                }else{
+                break;
+                case ConnectionState.none:
                   return Column(
                     children: <Widget>[
                       SafeArea(
@@ -427,12 +295,144 @@ class _ListaTourPageState extends State<ListaTourPage> with SingleTickerProvider
                       ),
                     ],
                   );
-                }*/
-                
-              },
-            ),
-          ],
-        ),
+                break;
+                case ConnectionState.done:
+                  if(snapshot.data.containsKey('Tours')){
+                    final listaToursC = new ListaToursC.fromJsonList(snapshot.data['Tours']['data']);
+                    //final ningunDato = snapshot.data['dataTours']['msg'].toString();
+                    return ListaToursCategoriaVertical(
+                      listaTours: listaToursC.itemsTours,
+                      ctid: categoria.ctidss,
+                      siguientePagina: cargarTours
+                    );
+                  }else if(snapshot.data.containsKey('dataTours')){
+                    return Column(
+                      children: <Widget>[
+                        SafeArea(
+                          child: SizedBox(
+                            height: size.height * 0.4
+                          ),
+                        ),
+                        Center(
+                          child: Text(
+                            '$noData',
+                            style: TextStyle(
+                              fontFamily: 'Point-SemiBold'
+                            ),
+                          )
+                        ),
+                      ],
+                    );
+                    //snapshot.data['dataTours']['msg'] == "Any registered"
+                  }else{
+                    return Column(
+                      children: <Widget>[
+                        SafeArea(
+                          child: SizedBox(
+                            height: size.height * 0.4
+                          ),
+                        ),
+                        Center(
+                          child: Text(
+                            '$noData',
+                            style: TextStyle(
+                              fontFamily: 'Point-SemiBold'
+                            ),
+                          )
+                        ),
+                      ],
+                    );
+                  }
+                break;
+                case ConnectionState.active:
+                  
+                  if(snapshot.data.containsKey('Tours')){
+                    final listaToursC = new ListaToursC.fromJsonList(snapshot.data['Tours']['data']);
+                    return ListaToursCategoriaVertical(
+                      listaTours: listaToursC.itemsTours,
+                      ctid: categoria.ctidss,
+                      siguientePagina: cargarTours
+                    );
+                  }else if(snapshot.data.containsKey('dataTours')){
+                    return Column(
+                      children: <Widget>[
+                        SafeArea(
+                          child: SizedBox(
+                            height: size.height * 0.4
+                          ),
+                        ),
+                        Center(
+                          child: Text(
+                            '$noData',
+                            style: TextStyle(
+                              fontFamily: 'Point-SemiBold'
+                            ),
+                          )
+                        ),
+                      ],
+                    );
+                  }else{
+                    return Column(
+                      children: <Widget>[
+                        SafeArea(
+                          child: SizedBox(
+                            height: size.height * 0.4
+                          ),
+                        ),
+                        Center(
+                          child: Text(
+                            '$noData',
+                            style: TextStyle(
+                              fontFamily: 'Point-SemiBold'
+                            ),
+                          )
+                        ),
+                      ],
+                    );
+                  }
+                break;
+                default:
+                  return Column(
+                    children: <Widget>[
+                      SafeArea(
+                        child: SizedBox(
+                          height: size.height * 0.4,
+                        ),
+                      ),
+                      Center(
+                        child: CircularProgressIndicator()
+                      ),
+                    ],
+                  );
+              }
+              /*if(snapshot.hasData){
+                return ListaToursCategoriaVertical(
+                  listaTours: snapshot.data,siguientePagina: categoriasProvider.getToursC,
+                );
+              }else{
+                return Column(
+                  children: <Widget>[
+                    SafeArea(
+                      child: SizedBox(
+                        height: size.height * 0.4,
+                      ),
+                    ),
+                    Center(
+                      child: Text(
+                        '$noData',
+                        style: TextStyle(
+                          fontFamily: 'Point-SemiBold'
+                        ),
+                      )
+                    ),
+                  ],
+                );
+              }*/
+              
+            },
+          ),
+        ],
+      ),
     );
     
     

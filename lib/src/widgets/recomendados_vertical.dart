@@ -77,7 +77,7 @@ class _RecomendadoVerticalState extends State<RecomendadoVertical> {
       print("Datos del usuario:");
       print(prefs.estadoUser);
       print(prefs.countryCode);
-      final resultado = await categoriasProvider.recomendadosPag(prefs.estadoUser,prefs.countryCode);
+      final resultado = await categoriasProvider.recomendadosPag(prefs.estadoUser,prefs.countryCode,page: '1');
       final recomendados = ListaToursC.fromJsonList(resultado['tours'][0]['data_tour']);
       for(int i = 0; i < recomendados.itemsTours.length; i++){
         widget.listaRecomendados.add(recomendados.itemsTours[i]);
@@ -100,9 +100,11 @@ class _RecomendadoVerticalState extends State<RecomendadoVertical> {
           RefreshIndicator(
             onRefresh: cargarRecomendados,
             child: ListView.builder(
+              shrinkWrap: true,
+              primary: true,
               controller: _scrollController,
               itemCount: widget.listaRecomendados.length,//snapshot.data.length
-              physics: AlwaysScrollableScrollPhysics(),
+              //physics: AlwaysScrollableScrollPhysics(),
               itemBuilder: (context,index){
                 return recomendados(context, widget.listaRecomendados[index]);
               },
@@ -400,7 +402,7 @@ class _RecomendadoGridState extends State<RecomendadoGrid> {
       print("Datos del usuario:");
       print(prefs.estadoUser);
       print(prefs.countryCode);
-      final resultado = await categoriasProvider.recomendadosPag(prefs.estadoUser,prefs.countryCode);
+      final resultado = await categoriasProvider.recomendadosPag(prefs.estadoUser,prefs.countryCode,page: '1');
       final recomendados = ListaToursC.fromJsonList(resultado['tours'][0]['data_tour']);
       for(int i = 0; i < recomendados.itemsTours.length; i++){
         widget.listaRecomendados.add(recomendados.itemsTours[i]);
@@ -424,10 +426,12 @@ class _RecomendadoGridState extends State<RecomendadoGrid> {
           RefreshIndicator(
             onRefresh: cargarRecomendados,
             child: GridView.builder(
+              shrinkWrap: true,
+              primary: true,
               scrollDirection: Axis.vertical,
               controller: _scrollController,
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
-              physics: AlwaysScrollableScrollPhysics(),
+              //physics: AlwaysScrollableScrollPhysics(),
               itemCount: widget.listaRecomendados.length,//snapshot.data.length
               itemBuilder: (context,i){
                 return recomendadoGrid(context, widget.listaRecomendados[i]);

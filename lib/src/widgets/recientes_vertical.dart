@@ -80,7 +80,7 @@ class _RecienteVerticalState extends State<RecienteVertical> {
       print("Datos del usuario:");
       print(prefs.estadoUser);
       print(prefs.countryCode);
-      final result = await categoriaProvider.recientesPag(prefs.estadoUser,prefs.countryCode);
+      final result = await categoriaProvider.recientesPag(prefs.estadoUser,prefs.countryCode,page: '1');
       final recientes = ListaToursC.fromJsonList(result['tours'][0]['data_tour']);
       for(int i = 0; i < recientes.itemsTours.length; i++){
           widget.listaRecientes.add(recientes.itemsTours[i]);
@@ -102,9 +102,11 @@ class _RecienteVerticalState extends State<RecienteVertical> {
           RefreshIndicator(
             onRefresh: cargarRecientes,
             child: ListView.builder(
+              shrinkWrap: true,
+              primary: true,
               controller: _scrollController,
               itemCount: widget.listaRecientes.length,//snapshot.data.length
-              physics: AlwaysScrollableScrollPhysics(),
+              //physics: AlwaysScrollableScrollPhysics(),
               itemBuilder: (context,index){
                 return recientes(context, widget.listaRecientes[index]);
               },
@@ -404,7 +406,7 @@ class _RecienteGridState extends State<RecienteGrid> {
       print("Datos del usuario:");
       print(prefs.estadoUser);
       print(prefs.countryCode);
-      final result = await categoriaProvider.recientesPag(prefs.estadoUser,prefs.countryCode);
+      final result = await categoriaProvider.recientesPag(prefs.estadoUser,prefs.countryCode,page: '1');
         final recientes = ListaToursC.fromJsonList(result['tours'][0]['data_tour']);
         for(int i = 0; i < recientes.itemsTours.length; i++){
             widget.listaRecientes.add(recientes.itemsTours[i]);
@@ -426,10 +428,12 @@ class _RecienteGridState extends State<RecienteGrid> {
           RefreshIndicator(
             onRefresh: cargarRecientes,
             child: GridView.builder(
+              shrinkWrap: true,
+              primary: true,
               scrollDirection: Axis.vertical,
               controller: _scrollController,
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
-              physics: AlwaysScrollableScrollPhysics(),
+              //physics: AlwaysScrollableScrollPhysics(),
               itemCount: widget.listaRecientes.length,//snapshot.data.length
               itemBuilder: (context,i){
                 return recienteGrid(context, widget.listaRecientes[i]);

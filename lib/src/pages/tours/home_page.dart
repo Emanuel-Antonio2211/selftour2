@@ -721,7 +721,6 @@ Future<void> getDatos()async{
     return StreamBuilder(
       stream: categorias.categoriasStream,//categorias.categoriasStream //categorias.getCategoria()
       builder: (BuildContext context, AsyncSnapshot<Map<String,dynamic>> snapshot) {
-        
         //Aquí evalúa si tiene datos
         switch(snapshot.connectionState){
           case ConnectionState.waiting:

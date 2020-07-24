@@ -79,7 +79,7 @@ class _PopularVerticalState extends State<PopularVertical> {
       print("Datos del usuario:");
       print(prefs.estadoUser);
       print(prefs.countryCode);
-      final result = await categoriaProvider.popularesPag(prefs.estadoUser,prefs.countryCode);
+      final result = await categoriaProvider.popularesPag(prefs.estadoUser,prefs.countryCode,page:'1');
       final populares = ListaToursC.fromJsonList(result['tours'][0]['data_tour']);
       for(int i = 0; i < populares.itemsTours.length; i++){
         widget.listaPopulares.add(populares.itemsTours[i]);
@@ -102,9 +102,11 @@ class _PopularVerticalState extends State<PopularVertical> {
           RefreshIndicator(
           onRefresh: cargarPopulares,
           child: ListView.builder(
+            shrinkWrap: true,
+            primary: true,
             controller: _scrollController,
             itemCount: widget.listaPopulares.length,
-            physics: AlwaysScrollableScrollPhysics(),
+            //physics: AlwaysScrollableScrollPhysics(),
             itemBuilder: (context,index){
               return populares(context, widget.listaPopulares[index]);
             },
@@ -403,7 +405,7 @@ class _PopularGridState extends State<PopularGrid> {
       print("Datos del usuario:");
       print(prefs.estadoUser);
       print(prefs.countryCode);
-      final result = await categoriaProvider.popularesPag(prefs.estadoUser,prefs.countryCode);
+      final result = await categoriaProvider.popularesPag(prefs.estadoUser,prefs.countryCode,page:'1');
       final populares = ListaToursC.fromJsonList(result['tours'][0]['data_tour']);
       for(int i = 0; i < populares.itemsTours.length; i++){
         widget.listaPopulares.add(populares.itemsTours[i]);
@@ -426,10 +428,12 @@ class _PopularGridState extends State<PopularGrid> {
           RefreshIndicator(
             onRefresh: cargarPopulares,
             child: GridView.builder(
+              shrinkWrap: true,
+              primary: true,
               scrollDirection: Axis.vertical,
               controller: _scrollController,
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
-              physics: AlwaysScrollableScrollPhysics(),
+              //physics: AlwaysScrollableScrollPhysics(),
               itemCount: widget.listaPopulares.length,
               itemBuilder: (context,i){
                 return popularGrid(context, widget.listaPopulares[i]);

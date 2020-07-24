@@ -79,7 +79,7 @@ class _ToursGeneralState extends State<ToursGeneral> {
       print("Datos del usuario:");
       print(prefs.estadoUser);
       print(prefs.countryCode);
-      final resultado = await provider.getTours(prefs.estadoUser.toString(),prefs.countryCode.toString());
+      final resultado = await provider.getTours(prefs.estadoUser.toString(),prefs.countryCode.toString(),page:'1');
       final tours = new ListaToursC.fromJsonList(resultado['tours'][0]['data_tour']);
       for(int i = 0; i < tours.itemsTours.length; i++){
         widget.listaTours.add(tours.itemsTours[i]);
@@ -102,9 +102,11 @@ class _ToursGeneralState extends State<ToursGeneral> {
           RefreshIndicator(
             onRefresh: cargarTours,
             child: ListView.builder(
+              shrinkWrap: true,
+              primary: true,
               scrollDirection: Axis.vertical,
               controller: _scrollController,
-              physics: AlwaysScrollableScrollPhysics(),
+              //physics: AlwaysScrollableScrollPhysics(),
               itemCount: widget.listaTours.length,
               itemBuilder: (context,i){
                 return _tarjeta(context,widget.listaTours[i]);
@@ -374,7 +376,7 @@ class _ToursGeneralState extends State<ToursGeneral> {
         ),
         Align(
           alignment: Alignment.bottomRight,
-          heightFactor: 11.7,
+          heightFactor: 11.9,
           child: Padding(
             padding: EdgeInsets.only(right: size.width * 0.05),
             child: Text(

@@ -48,7 +48,7 @@ class _CategoriaVerticalState extends State<CategoriaVertical> {
       child: ListView.builder(
         controller: _scrollController,
         itemCount: widget.categorias.length,
-        physics: AlwaysScrollableScrollPhysics(),
+        //physics: AlwaysScrollableScrollPhysics(),
         itemBuilder: (context,i){
           return categoria(context, widget.categorias[i]);
         },
@@ -219,7 +219,7 @@ class _CategoriaGridState extends State<CategoriaGrid> {
       child: GridView.builder(
         controller: _scrollController,
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
-        physics: AlwaysScrollableScrollPhysics(),
+        //physics: AlwaysScrollableScrollPhysics(),
         itemCount: widget.categorias.length,
         itemBuilder: (context,i){
           return categoriasGrid(context, widget.categorias[i]);
