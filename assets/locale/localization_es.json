@@ -49,7 +49,7 @@
     "title_siguiente": "Siguiente",
     "title_revisioncompra": "Revisión y pago de la compra",
     "title_metodopago": "Método de pago",
-    "title_tarjetacredito": "Tarjeta de crédito",
+    "title_tarjetacredito": "Tarjeta de crédito o débito",
     "title_titular": "Nombre del titular",
     "title_numtarjeta": "Número de la tarjeta",
     "title_MM": "MM",
@@ -106,7 +106,7 @@
     "title_exitopago": "Su pago se realizó con éxito",
     "title_pagosuccess": "Pago satisfactorio",
     "title_datostarjeta": "Ingresa los datos de tu tarjeta",
-    "title_add_tarjeta": "Agregar una tarjeta de crédito",
+    "title_add_tarjeta": "Agregar una tarjeta de crédito o débito",
     "title_select": "Seleccionar",
     "title_send_message": "Enviar mensaje",
     "title_show_message": "Ver mensajes",
@@ -209,5 +209,6 @@
     "title_error_reset": "Error",
     "title_mensajes": "Mensajes",
     "title_mis_tours": "Mis tours",
-    "title_created": "Creado el dia"
+    "title_created": "Creado el dia",
+    "title_acept": "Acepto"
 }

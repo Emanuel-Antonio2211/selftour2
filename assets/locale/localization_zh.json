@@ -33,7 +33,7 @@
     "title_siguiente": "下一個",
     "title_revisioncompra": "查看併購買付款",
     "title_metodopago": "付款方式",
-    "title_tarjetacredito": "信用卡卡",
+    "title_tarjetacredito": "信用卡或借记卡",
     "title_titular": "持有人姓名",
     "title_numtarjeta": "卡號",
     "title_MM": "MM",
@@ -108,7 +108,7 @@
     "title_exitopago": "您的付款成功",
     "title_pagosuccess": "滿意的付款",
     "title_datostarjeta": "輸入您的卡詳細信息",
-    "title_add_tarjeta": "添加信用卡",
+    "title_add_tarjeta": "添加信用卡或借记卡",
     "title_select": "选择",
     "title_send_message": "发送消息",
     "title_show_message": "查看訊息",
@@ -209,5 +209,6 @@
     "title_error_reset": "错误",
     "title_mensajes": "留言内容",
     "title_mis_tours": "我的旅行",
-    "title_created": "创造了一天"
+    "title_created": "创造了一天",
+    "title_acept": "我同意"
 }

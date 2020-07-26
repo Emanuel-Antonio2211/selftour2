@@ -33,7 +33,7 @@
     "title_siguiente": "Suivant",
     "title_revisioncompra": "Examen et paiement d'achat",
     "title_metodopago": "Procédé de paiement",
-    "title_tarjetacredito": "Carte de crédit",
+    "title_tarjetacredito": "Carte de crédit ou de débit",
     "title_titular": "Nom du titulaire",
     "title_numtarjeta": "Numéro de la carte",
     "title_MM": "MM",
@@ -108,7 +108,7 @@
     "title_exitopago": "Votre paiement a réussi",
     "title_pagosuccess": "Paiement satisfaisant",
     "title_datostarjeta": "Entrez les détails de votre carte",
-    "title_add_tarjeta": "Ajouter une carte de crédit",
+    "title_add_tarjeta": "Ajouter une Carte de Crédit ou Débit",
     "title_select": "Sélectionner",
     "title_send_message": "Envoyer message",
     "title_show_message": "Voir les messages",
@@ -209,5 +209,6 @@
     "title_error_reset": "Erreur",
     "title_mensajes": "Messages",
     "title_mis_tours": "Mes tours",
-    "title_created": "Créé le jour"
+    "title_created": "Créé le jour",
+    "title_acept": "je suis d'accord"
 }

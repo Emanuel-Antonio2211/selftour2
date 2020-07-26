@@ -476,6 +476,7 @@ class _ProfileHeadState extends State<ProfileHead> {
                   Container(
                     child: Column(
                       //scrollDirection: Axis.horizontal,
+                      mainAxisAlignment: MainAxisAlignment.start,
                       children: <Widget>[
                         Row(
                           children: <Widget>[
@@ -489,6 +490,8 @@ class _ProfileHeadState extends State<ProfileHead> {
                                     height: size.height * 0.1,
                                     image: prefs.photoUrl == '' ? AssetImage('assets/iconoapp/Selftour1.png') : NetworkImage('${prefs.photoUrl.toString()}'), //snapshot.data.photoUrl == null ? AssetImage('assets/iconoapp/Selftour1.png') : NetworkImage('${snapshot.data.photoUrl.toString()}')
                                     placeholder: AssetImage('assets/loading.gif'),
+                                    //fadeInDuration: Duration(seconds: 2),
+                                    fadeOutDuration: Duration(seconds: 2),
                                     fit: BoxFit.cover,
                                   ),
                                 ),
@@ -564,40 +567,41 @@ class _ProfileHeadState extends State<ProfileHead> {
                             child: Container(
                               color: Colors.transparent,
                               child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                //mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: <Widget>[
-                                  Row(
-                                    children: <Widget>[
-                                      ClipRRect(
-                                        borderRadius: BorderRadius.circular(5.0),
-                                        child: Container(
-                                          width: 30.0,
-                                          height: 30.0,
-                                          color: Colors.lightBlue,
-                                          child: Icon(
-                                            Icons.person_outline,
-                                            color: Colors.white,
-                                          )
+                                  Container(
+                                    width: size.width * 0.55,
+                                    child: Row(
+                                      children: <Widget>[
+                                        ClipRRect(
+                                          borderRadius: BorderRadius.circular(5.0),
+                                          child: Container(
+                                            width: 30.0,
+                                            height: 30.0,
+                                            color: Colors.lightBlue,
+                                            child: Icon(
+                                              Icons.person_outline,
+                                              color: Colors.white,
+                                            )
+                                          ),
                                         ),
-                                      ),
-                                      SizedBox(
-                                        width: size.width * 0.02,
-                                      ),
-                                      FlatButton(
-                                        padding: EdgeInsets.zero,
-                                        child: Text('$infoPers',style: TextStyle(
+                                        SizedBox(
+                                          width: size.width * 0.02,
+                                        ),
+                                        Text(
+                                          '$infoPers',
+                                          textAlign: TextAlign.start,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(
                                             fontFamily: 'Point-SemiBold'
                                           ),
                                         ),
-                                        onPressed: (){
-                                          Navigator.pushNamed(context, 'editarinfo');
-                                        },
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
                                   
                                   SizedBox(
-                                    width: size.width * 0.3,
+                                    width: size.width * 0.37,
                                   ),
                                   Icon(
                                     Icons.arrow_forward_ios,
@@ -692,44 +696,40 @@ class _ProfileHeadState extends State<ProfileHead> {
                               child: Container(
                                 color: Colors.transparent,
                                 child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                //mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: <Widget>[
-                                  Row(
-                                    children: <Widget>[
-                                      ClipRRect(
-                                        borderRadius: BorderRadius.circular(5.0),
-                                        child: Container(
-                                          width: 30.0,
-                                          height: 30.0,
-                                          color: Colors.black,
-                                          child: Icon(
-                                            Icons.library_books,
-                                            color: Colors.white)
+                                  Container(
+                                    width: size.width * 0.55,
+                                    child: Row(
+                                      children: <Widget>[
+                                        ClipRRect(
+                                          borderRadius: BorderRadius.circular(5.0),
+                                          child: Container(
+                                            width: 30.0,
+                                            height: 30.0,
+                                            color: Colors.black,
+                                            child: Icon(
+                                              Icons.library_books,
+                                              color: Colors.white)
+                                          ),
                                         ),
-                                      ),
-                                      SizedBox(
-                                        width: size.width * 0.03,
-                                      ),
-                                      FlatButton(
-                                        padding: EdgeInsets.zero,
-                                        //color: Colors.orange,
-                                        child: Text('$termserv',style: TextStyle(
+                                        SizedBox(
+                                          width: size.width * 0.02,
+                                        ),
+                                        Text(
+                                          '$termserv',
+                                          textAlign: TextAlign.start,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(
                                           fontFamily: 'Point-SemiBold'
                                           ),
                                         ),
-                                        onPressed: (){
-                                          Navigator.of(context).push(MaterialPageRoute(
-                                            builder: (context){
-                                              return TermServPage();
-                                            }
-                                          ));
-                                        },
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
                                   
                                   SizedBox(
-                                    width: size.width * 0.3,
+                                    width: size.width * 0.37,
                                   ),
                                   Icon(
                                     Icons.arrow_forward_ios,
@@ -764,44 +764,40 @@ class _ProfileHeadState extends State<ProfileHead> {
                               child: Container(
                                 color: Colors.transparent,
                                 child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                //mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: <Widget>[
-                                  Row(
-                                    children: <Widget>[
-                                      ClipRRect(
-                                        borderRadius: BorderRadius.circular(5.0),
-                                        child: Container(
-                                          width: 30.0,
-                                          height: 30.0,
-                                          color: Colors.grey,
-                                          child: Icon(
-                                            Icons.message,
-                                            color: Colors.white)
+                                  Container(
+                                    width: size.width * 0.55,
+                                    child: Row(
+                                      children: <Widget>[
+                                        ClipRRect(
+                                          borderRadius: BorderRadius.circular(5.0),
+                                          child: Container(
+                                            width: 30.0,
+                                            height: 30.0,
+                                            color: Colors.grey,
+                                            child: Icon(
+                                              Icons.message,
+                                              color: Colors.white)
+                                          ),
                                         ),
-                                      ),
-                                      SizedBox(
-                                        width: size.width * 0.03,
-                                      ),
-                                      FlatButton(
-                                        padding: EdgeInsets.zero,
-                                        //color: Colors.orange,
-                                        child: Text('$mensajes',style: TextStyle(
+                                        SizedBox(
+                                          width: size.width * 0.02,
+                                        ),
+                                        Text(
+                                          '$mensajes',
+                                          textAlign: TextAlign.start,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(
                                           fontFamily: 'Point-SemiBold'
                                           ),
                                         ),
-                                        onPressed: (){
-                                          Navigator.of(context).push(MaterialPageRoute(
-                                            builder: (context){
-                                              return ChatUsuariosPage();
-                                            }
-                                          ));
-                                        },
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
                                   
                                   SizedBox(
-                                    width: size.width * 0.3,
+                                    width: size.width * 0.37,
                                   ),
                                   Icon(
                                     Icons.arrow_forward_ios,
@@ -832,42 +828,40 @@ class _ProfileHeadState extends State<ProfileHead> {
                               child: Container(
                                 color: Colors.transparent,
                                 child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                //mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: <Widget>[
-                                  Row(
-                                    children: <Widget>[
-                                      ClipRRect(
-                                        borderRadius: BorderRadius.circular(5.0),
-                                        child: Container(
-                                          width: 30.0,
-                                          height: 30.0,
-                                          color: Colors.blueAccent,
-                                          child: Icon(
-                                            Icons.card_travel,
-                                            color: Colors.white)
+                                  Container(
+                                    width: size.width * 0.55,
+                                    child: Row(
+                                      children: <Widget>[
+                                        ClipRRect(
+                                          borderRadius: BorderRadius.circular(5.0),
+                                          child: Container(
+                                            width: 30.0,
+                                            height: 30.0,
+                                            color: Colors.blueAccent,
+                                            child: Icon(
+                                              Icons.card_travel,
+                                              color: Colors.white)
+                                          ),
                                         ),
-                                      ),
-                                      SizedBox(
-                                        width: size.width * 0.03,
-                                      ),
-                                      FlatButton(
-                                        padding: EdgeInsets.zero,
-                                        //color: Colors.orange,
-                                        child: Text(
+                                        SizedBox(
+                                          width: size.width * 0.02,
+                                        ),
+                                        Text(
                                           '$misTours',
+                                          textAlign: TextAlign.start,
+                                          overflow: TextOverflow.ellipsis,
                                           style: TextStyle(
                                           fontFamily: 'Point-SemiBold'
                                           ),
                                         ),
-                                        onPressed: (){
-                                          Navigator.pushNamed(context, 'toursuser');
-                                        },
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
                                   
                                   SizedBox(
-                                    width: size.width * 0.3,
+                                    width: size.width * 0.37,
                                   ),
                                   Icon(
                                     Icons.arrow_forward_ios,
@@ -898,40 +892,40 @@ class _ProfileHeadState extends State<ProfileHead> {
                                 child: Container(
                                   color: Colors.transparent,
                                   child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  //mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: <Widget>[
-                                    Row(
-                                      children: <Widget>[
-                                        ClipRRect(
-                                          borderRadius: BorderRadius.circular(5.0),
-                                          child: Container(
-                                            width: 30.0,
-                                            height: 30.0,
-                                            color: Colors.deepPurple,
-                                            child: Icon(
-                                              Icons.language,
-                                              color: Colors.white
-                                            )
+                                    Container(
+                                      width: size.width * 0.55,
+                                      child: Row(
+                                        children: <Widget>[
+                                          ClipRRect(
+                                            borderRadius: BorderRadius.circular(5.0),
+                                            child: Container(
+                                              width: 30.0,
+                                              height: 30.0,
+                                              color: Colors.deepPurple,
+                                              child: Icon(
+                                                Icons.language,
+                                                color: Colors.white
+                                              )
+                                            ),
                                           ),
-                                        ),
-                                        SizedBox(
-                                          width: size.width * 0.02,
-                                        ),
-                                        FlatButton(
-                                          padding: EdgeInsets.zero,
-                                          child: Text('$preflang',style: TextStyle(
+                                          SizedBox(
+                                            width: size.width * 0.02,
+                                          ),
+                                          Text(
+                                            '$preflang',
+                                            textAlign: TextAlign.start,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(
                                               fontFamily: 'Point-SemiBold'
                                             ),
                                           ),
-                                          onPressed: (){
-                                            Navigator.pushNamed(context, 'prefidioma');
-                                          },
-                                        ),
-                                      ],
+                                        ],
+                                      ),
                                     ),
-                                    
                                     SizedBox(
-                                    width: size.width * 0.25,
+                                      width: size.width * 0.37,
                                     ),
                                     Icon(
                                       Icons.arrow_forward_ios,
@@ -963,45 +957,41 @@ class _ProfileHeadState extends State<ProfileHead> {
                             child: Container(
                               color: Colors.transparent,
                               child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                //mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: <Widget>[
-                                  Row(
-                                    children: <Widget>[
-                                      ClipRRect(
-                                        borderRadius: BorderRadius.circular(5.0),
-                                        child: Container(
-                                          width: 30.0,
-                                          height: 30.0,
-                                          color: Colors.red,
-                                          child: Icon(
-                                            Icons.exit_to_app,
-                                            color: Colors.white
-                                          )
+                                  Container(
+                                    width: size.width * 0.55,
+                                    child: Row(
+                                      children: <Widget>[
+                                        ClipRRect(
+                                          borderRadius: BorderRadius.circular(5.0),
+                                          child: Container(
+                                            width: 30.0,
+                                            height: 30.0,
+                                            color: Colors.red,
+                                            child: Icon(
+                                              Icons.exit_to_app,
+                                              color: Colors.white
+                                            )
+                                          ),
                                         ),
-                                      ),
-                                      SizedBox(
-                                        width: size.width * 0.02,
-                                      ),
-                                      FlatButton(
-                                        padding: EdgeInsets.zero,
-                                        //color: Colors.orange,
-                                        child: Text('$logout',style: TextStyle(
+                                        SizedBox(
+                                          width: size.width * 0.02,
+                                        ),
+                                        Text(
+                                          '$logout',
+                                          textAlign: TextAlign.start,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(
                                           fontFamily: 'Point-SemiBold'
                                           ),
                                         ),
-                                        onPressed: (){
-                                          setState(() {
-                                            
-                                          });
-                                          userBloc.signOut();
-                                          Navigator.pushReplacementNamed(context, 'menuprincipal');
-                                        },
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
                                   
                                   SizedBox(
-                                  width: size.width * 0.43,
+                                  width: size.width * 0.37,
                                   ),
                                   Icon(
                                     Icons.arrow_forward_ios,

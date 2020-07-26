@@ -49,7 +49,7 @@
     "title_siguiente": "Next",
     "title_revisioncompra": "Review and purchase payment",
     "title_metodopago": "Payment method",
-    "title_tarjetacredito": "Credit card",
+    "title_tarjetacredito": "Credit or debit card",
     "title_titular": "Name of owner",
     "title_numtarjeta": "Card number",
     "title_MM": "MM",
@@ -108,7 +108,7 @@
     "title_exitopago": "Your payment was successful",
     "title_pagosuccess": "Satisfactory payment",
     "title_datostarjeta": "Enter your card details",
-    "title_add_tarjeta": "Add a credit card",
+    "title_add_tarjeta": "Add a credit or debit card",
     "title_select": "Select",
     "title_send_message": "Send message",
     "title_show_message": "See messages",
@@ -209,5 +209,6 @@
     "title_error_reset": "Error",
     "title_mensajes": "Messages",
     "title_mis_tours": "My tours",
-    "title_created": "Created the day"
+    "title_created": "Created the day",
+    "title_acept": "I agree"
 }

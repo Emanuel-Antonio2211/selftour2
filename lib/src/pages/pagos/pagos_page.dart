@@ -1425,21 +1425,21 @@ class _IngresoTarjetaPageState extends State<IngresoTarjetaPage> {
     //DetalleTour detalleTour = ModalRoute.of(context).settings.arguments;
     InfoTour detalleTour = ModalRoute.of(context).settings.arguments;
 
-if(Platform.isAndroid){
-  if(infoDato.isEmpty){
-      Future.delayed(
-          Duration(seconds: 3),(){
-        setState(() {
+  // if(Platform.isAndroid){
+  //   if(infoDato.isEmpty){
+  //     Future.delayed(
+  //         Duration(seconds: 3),(){
+  //       setState(() {
 
-        });
-        enlistar();
+  //       });
+  //       enlistar();
       
-      }
-      );
-    }else{
-      print(infoDato);
-    }
-}
+  //     }
+  //     );
+  //   }else{
+  //     print(infoDato);
+  //   }
+  // }
     
     return _ingresoTarjeta(detalleTour);
   }
@@ -1454,7 +1454,429 @@ if(Platform.isAndroid){
     String addcard = AppTranslations.of(context).text('title_addcard');
     String ingresar = AppTranslations.of(context).text('title_ingresar');
     final size = MediaQuery.of(context).size;
-    return Platform.isAndroid ? Scaffold(
+    return Scaffold(
+      appBar: AppBar(
+        elevation: 0.0,
+        automaticallyImplyLeading: false,
+        backgroundColor: Colors.white,
+        leading: IconButton(
+          icon: Icon(
+            Icons.clear,
+            color: Colors.black,
+          ),
+          onPressed: (){
+            Navigator.pop(context);
+          },
+        ),
+      ),
+      body: SingleChildScrollView(
+        child: Form(
+          key: formKey,
+          child: Column(
+            children: <Widget>[
+              SafeArea(
+                child: SizedBox(
+                  height: size.height * 0.03,
+                ),
+              ),
+              Text('$entertarjeta',style: TextStyle(fontFamily: 'Point-ExtraBold',fontSize: 20.0),),
+              SizedBox(
+                height: size.height * 0.04,
+              ),
+             /* Row(
+                children: <Widget>[
+                  Radio(
+                    value: 0,
+                    groupValue: _radioValue1,
+                    onChanged: (value){
+                      setState(() {
+                        _radioValue1 = value;
+                        _radioValue2 = value;
+                      });
+                    },
+                  ),
+                  Text('$tarjetacredito',style: TextStyle(fontFamily: 'Point-SemiBold',fontSize: 15.0),)
+                ],
+              ),*/
+              /*Row(
+                children: <Widget>[
+                  Radio(
+                    value: 1,
+                    groupValue: _radioValue1,
+                    onChanged: (value){
+                      setState(() {
+                        _radioValue2 = value;
+                        _radioValue1 = value;
+                      });
+                    },
+                  ),
+                  Text('Paypal',style: TextStyle(fontFamily: 'Point-SemiBold',fontSize: 15.0))
+                ],
+              ),*/
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20.0),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10.0),
+                  child:Container(
+                    width: size.width * 0.8,
+                    height: size.height * 0.5,
+                    color: Colors.black12,
+                    child: Column(
+                      children: <Widget>[
+                        Container(
+                          width: size.width * 0.7,
+                          child: TextFormField(
+                            initialValue: prefs.name,
+                            onSaved: (value){
+                              prefs.name = value;
+                              tarjeta.holderName = prefs.name;
+                            },
+                            textCapitalization: TextCapitalization.words,
+                            keyboardType: TextInputType.text,
+                            decoration: InputDecoration(
+                              labelText: '$titular',
+                              labelStyle: TextStyle(fontFamily: 'Point-SemiBold',color: Colors.grey)
+                            ),
+                          ),
+                        ),
+                        Container(
+                          width: size.width * 0.7,
+                          child: TextFormField(
+                            maxLength: 16,
+                            initialValue: tarjeta.cardNumber,
+                            onSaved: (value){
+                              tarjeta.cardNumber = value;
+                            },
+                            //textCapitalization: TextCapitalization.none,
+                            keyboardType: TextInputType.number,
+                            decoration: InputDecoration(
+                              labelText: '$numtarjeta',
+                              labelStyle: TextStyle(fontFamily: 'Point-SemiBold',color: Colors.grey)
+                            ),
+                          ),
+                        ),
+                        Container(
+                          width: size.width * 0.7,
+                          child: TextFormField(
+                            maxLength: 2,
+                            initialValue: tarjeta.expirationMonth,
+                            onSaved: (value){
+                              tarjeta.expirationMonth = value;
+                            },
+                            keyboardType: TextInputType.number,
+                            decoration: InputDecoration(
+                              labelText: '$mm',
+                              labelStyle: TextStyle(fontFamily: 'Point-SemiBold',color: Colors.grey)
+                            ),
+                          ),
+                        ),
+                        Container(
+                          width: size.width * 0.7,
+                          child: TextFormField(
+                            maxLength: 2,
+                            initialValue: tarjeta.expirationYear,
+                            onSaved: (value){
+                              tarjeta.expirationYear = value;
+                            },
+                            keyboardType: TextInputType.number,
+                            decoration: InputDecoration(
+                              labelText: '$aa',
+                              labelStyle: TextStyle(fontFamily: 'Point-SemiBold',color: Colors.grey)
+                            ),
+                          ),
+                        ),
+                        Container(
+                          width: size.width * 0.7,
+                          child: TextFormField(
+                            maxLength: 4,
+                            initialValue: tarjeta.cvv2,
+                            onSaved: (value){
+                              tarjeta.cvv2 = value;
+                            },
+                            //textCapitalization: TextCapitalization.characters,
+                            keyboardType: TextInputType.number,
+                            decoration: InputDecoration(
+                              labelText: '$cvc',
+                              labelStyle: TextStyle(fontFamily: 'Point-SemiBold',color: Colors.grey)
+                            ),
+                          ),
+                        ),
+                        Visibility(
+                          visible: false,
+                          child: Container(
+                            //color: Colors.transparent,
+                            width: size.width * 0.7,
+                            height: size.height * 0.1,
+                            child: TextFormField(
+                              style: TextStyle(color: Colors.transparent),
+                              enabled: false,
+                              initialValue: deviceSesionId,
+                              onSaved: (value){
+                                 deviceSesionId = value;
+                                tarjeta.deviceSesionId = deviceSesionId;
+                              },
+                              textCapitalization: TextCapitalization.characters,
+                              keyboardType: TextInputType.text,
+                              decoration: InputDecoration(
+                                disabledBorder: InputBorder.none
+                                //labelText: '$cvc',
+                                //labelStyle: TextStyle(fontFamily: 'Point-SemiBold',color: Colors.grey)
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    )
+                    
+                  ))
+              ),
+              SizedBox(
+                height: size.height * 0.1,
+              ),
+
+              ProgressButton(
+                defaultWidget: Text(
+                  '$addcard',
+                  style: TextStyle(
+                    fontFamily: 'Point-SemiBold',
+                    fontSize: 15.0,
+                    color: Colors.white
+                  ),
+                ),
+                progressWidget: ThreeSizeDot(
+                        //color_1: Colors.black54,
+                        //color_2: Colors.black54,
+                        //color_3: Colors.black54,
+                      ),
+                color: Colors.redAccent,
+                type: ProgressButtonType.Raised,
+                width: 154,
+                height: 38,
+                borderRadius: 5.0,
+                animate: false,
+                onPressed: ()async{
+                  await Future.delayed(Duration(seconds: 2),()async{
+                    if(formKey.currentState.validate()){
+                      formKey.currentState.save();
+                    await pagosProvider.crearToken(tarjeta).then((result)async{
+                      Map info = result;
+                      if(info['error_code'] == 1000){
+                        //Ocurrió un error en el servidor openpay
+                        String errorServerOpenpay = AppTranslations.of(context).text('title_error_server_openpay');
+                        //info['description']
+                        mostrarAlerta(context, errorServerOpenpay, '', 'assets/error.png');
+                      }else if(info['error_code']== 1001){
+                        //Formato de la petición no es json.
+                        //los campos no tienen el formato correcto, o la petición no tiene campos que son requeridos.
+                        String formatNotJson = AppTranslations.of(context).text('title_format_no_json');
+                        //info['description']
+                        mostrarAlerta(context, formatNotJson, '', 'assets/error.png');
+                      }else if(info['error_code'] == 1002){
+                        //La llamada no esta autenticada o la autenticación es incorrecta.
+                        String autenticacionIncorrect = AppTranslations.of(context).text('title_autentication_incorrect');
+                        //info['description']
+                        mostrarAlerta(context, autenticacionIncorrect, '', 'assets/error.png');
+                      }else if(info['error_code'] == 1003){
+                        //La operación no se pudo completar 
+                        //por que el valor de uno o más de los parametros no es correcto.
+                        String operacionNoCompleta = AppTranslations.of(context).text('title_operacion_not_complete');
+                        //info['description']
+                        mostrarAlerta(context, operacionNoCompleta, '', 'assets/error.png');
+                      }else if(info['error_code'] == 1004){
+                        //Un servicio necesario para el procesamiento de la
+                        //transacción no se encuentra disponible.
+                        String servicioNoDisponible = AppTranslations.of(context).text('title_service_not_enabled');
+                        //info['description']
+                        mostrarAlerta(context, servicioNoDisponible, '', 'assets/error.png');
+                      }else if(info['error_code'] == 1005){
+                        //Uno de los recursos requeridos no existe.
+                        String recursoNoDisponible = AppTranslations.of(context).text('title_resource_not_disabled');
+                        //info['description']
+                        mostrarAlerta(context, recursoNoDisponible, '', 'assets/error.png');
+                      }else if(info['error_code'] == 1006){
+                        //Ya existe una transacción con el mismo ID de orden.
+                        String transactionExist = AppTranslations.of(context).text('title_transaction_exist');
+                        //info['description']
+                        mostrarAlerta(context, transactionExist, '', 'assets/error.png');
+                      }else if(info['error_code'] == 1007){
+                        //La transferencia de fondos entre una cuenta de
+                        //banco o tarjeta y la cuenta de Openpay no fue aceptada.
+                        String transferNoAceptada = AppTranslations.of(context).text('title_transfer_not_acept');
+                        //info['description']
+                        mostrarAlerta(context, transferNoAceptada, '', 'assets/error.png');
+                      }else if(info['error_code'] == 1008){
+                        //Una de las cuentas requeridas en la petición se
+                        //encuentra desactivada.
+                        String cuentaDesactivada = AppTranslations.of(context).text('title_account_desactivate');
+                        //info['description']
+                        mostrarAlerta(context, cuentaDesactivada, '', 'assets/error.png');
+                      }else if(info['error_code'] == 1009){
+                        //El cuerpo de la petición es demasiado grande.
+                        String bodyMoreLonger = AppTranslations.of(context).text('title_require_more_long');
+                        //info['description']
+                        mostrarAlerta(context, bodyMoreLonger, '', 'assets/error.png');
+                      }else if(info['error_code'] == 1010){
+                        //Se esta utilizando la llave pública para hacer una
+                        //llamada que requiere la llave privada, o bien, se esta
+                        //usando la llave privada desde JavaScript.
+                        String keyPrivate = AppTranslations.of(context).text('title_key_private');
+                        //info['description']
+                        mostrarAlerta(context, keyPrivate,'', 'assets/error.png');
+                      }else if(info['error_code'] == 2001){
+                        //La cuenta de banco con esta CLABE ya se
+                        //encuentra registrada en el cliente.
+                        String cuentaRegistrada = AppTranslations.of(context).text('title_account_registered');
+                        //info['description']
+                        mostrarAlerta(context, cuentaRegistrada, '', 'assets/error.png');
+                      }else if(info['error_code'] == 2002){
+                        //La tarjeta con este número ya se encuentra
+                        //registrada en el cliente.
+                        String cardRegistered = AppTranslations.of(context).text('title_card_registered');
+                        //info['description']
+                        mostrarAlerta(context, cardRegistered,'', 'assets/error.png');
+                      }else if(info['error_code'] == 2003){
+                        //El cliente con este identificador externo (External ID)
+                        //ya existe.
+                        String clientExist = AppTranslations.of(context).text('title_client_exist');
+                        //info['description']
+                        mostrarAlerta(context, clientExist, '', 'assets/error.png');
+                      }else if(info['error_code'] == 2004){
+                        //El dígito verificador del número de tarjeta es inválido
+                        //de acuerdo al algoritmo Luhn.
+                        String digitInvalid = AppTranslations.of(context).text('title_digit_invalid');
+                        //info['description']
+                        mostrarAlerta(context, digitInvalid , '', 'assets/error.png');
+                      }else if(info['error_code'] == 2005){
+                        //La fecha de expiración de la tarjeta es anterior a la
+                        //fecha actual.
+                        String dateExpired = AppTranslations.of(context).text('title_date_expired');
+                        //info['description']
+                        mostrarAlerta(context, dateExpired , '', 'assets/error.png');
+                      }else if(info['error_code'] == 2006){
+                        //El código de seguridad de la tarjeta (CVV2) no fue
+                        //proporcionado.
+                        String codeSecurityEmpty = AppTranslations.of(context).text('title_code_security_empty');
+                        //info['description']
+                        mostrarAlerta(context, codeSecurityEmpty , '', 'assets/error.png');
+                      }else if(info['error_code'] == 2007){
+                        //El número de tarjeta es de prueba, solamente puede
+                        //usarse en Sandbox.
+                        String cardTest = AppTranslations.of(context).text('title_card_test');
+                        //info['description']
+                        mostrarAlerta(context, cardTest , '', 'assets/error.png');
+                      }else if(info['error_code'] == 2008){
+                        //La tarjeta consultada no es valida para puntos.
+                        String cardNoPoints = AppTranslations.of(context).text('title_card_not_points');
+                        //info['description']
+                        mostrarAlerta(context, cardNoPoints , '', 'assets/error.png');
+                      }else if(info['error_code'] == 2009){
+                        //El código de seguridad de la tarjeta (CVV2) no es valido.
+                        String codeSecurityNoValid = AppTranslations.of(context).text('title_card_not_valid');
+                        //info['description']
+                        mostrarAlerta(context, codeSecurityNoValid , '', 'assets/error.png');
+                      }else if(info['error_code'] == 3001){
+                        String tarjetaDeclinada = AppTranslations.of(context).text('title_card_declined');
+                        //La tarjeta fue declinada.
+                        //info['description']
+                        mostrarAlerta(context, tarjetaDeclinada, '', 'assets/error.png');
+                      }else if(info['error_code'] == 3002){
+                        //La tarjeta ha expirado.
+                        String tarjetaExpirada = AppTranslations.of(context).text('title_card_expired');
+                        //info['description']
+                        mostrarAlerta(context, tarjetaExpirada, '', 'assets/error.png');
+                      }else if(info['error_code'] == 3003){
+                        //La tarjeta no tiene fondos suficientes.
+                        String tarjetaSinFondos = AppTranslations.of(context).text('title_card_not_funds');
+                        //info['description']
+                        mostrarAlerta(context, tarjetaSinFondos, '', 'assets/error.png');
+                      }else if(info['error_code'] == 3004){
+                        //La tarjeta ha sido identificada como una tarjeta
+                        //robada.
+                        String tarjetaRobada = AppTranslations.of(context).text('title_card_lost');
+                        //info['description']
+                        mostrarAlerta(context, tarjetaRobada, '', 'assets/error.png');
+                      }else if(info['error_code'] == 3005){
+                        //La tarjeta ha sido identificada como una tarjeta
+                        //fraudulenta.
+                        String tarjetaFraudulenta = AppTranslations.of(context).text('title_card_fraudulent');
+                        //info['description']
+                        mostrarAlerta(context, tarjetaFraudulenta, '', 'assets/error.png');
+                      }else if(info['error_code'] == 3006){
+                        //La operación no esta permitida para este cliente o
+                        //esta transacción.
+                        String operacionNoPermitida = AppTranslations.of(context).text('title_operation_not_allowed');
+                        //info['description']
+                        mostrarAlerta(context, operacionNoPermitida, '', 'assets/error.png');
+                      }else if(info['error_code'] == 3008){
+                        //La tarjeta no es soportada en transacciones en linea.
+                        String tarjetaNoSoportadaOnline = AppTranslations.of(context).text('title_card_not_support_online');
+                        //info['description']
+                        mostrarAlerta(context, tarjetaNoSoportadaOnline, '', 'assets/error.png');
+                      }else if(info['error_code'] == 3009){
+                        //La tarjeta fue reportada como perdida.
+                        String tarjetaPerdida = AppTranslations.of(context).text('title_card_lost');
+                        //info['description']
+                        mostrarAlerta(context, tarjetaPerdida, '', 'assets/error.png');
+                      }else if(info['error_code'] == 3010){
+                        //El banco ha restringido la tarjeta.
+                        String bankRestrictedCard = AppTranslations.of(context).text('title_bank_restricted_card');
+                        //info['description']
+                        mostrarAlerta(context, bankRestrictedCard, '', 'assets/error.png');
+                      }else if(info['error_code'] == 3011){
+                        //El banco ha solicitado que la tarjeta sea retenida.
+                        //Contacte al banco.
+                        String tarjetaRetenida = AppTranslations.of(context).text('title_card_withheld');
+                        //info['description']
+                        mostrarAlerta(context, tarjetaRetenida, '', 'assets/error.png');
+                      }else if(info['error_code'] == 3012){
+                        //Se requiere solicitar al banco autorización para
+                        //realizar este pago.
+                        String solictarPago = AppTranslations.of(context).text('title_autorization_buy');
+                        //info['description']
+                        mostrarAlerta(context, solictarPago, '', 'assets/error.png');
+                      }else if(info['error_code'] == 4001){
+                        //La cuenta de Openpay no tiene fondos suficientes.
+                        String openpayNotFunds = AppTranslations.of(context).text('title_openpay_account_not_funds');
+                        //info['description']
+                        mostrarAlerta(context, openpayNotFunds, '', 'assets/error.png');
+                      }
+                      else{
+                        //formKey.currentState.save();
+                        prefs.idTarjeta = info['id'];
+                        await pagosProvider.obtenerToken(prefs.idTarjeta.toString());
+                        String tarjetaAgregado = AppTranslations.of(context).text('title_tarjetaAgregado');
+                        
+                      /*  Navigator.removeRoute(context,MaterialPageRoute(
+                          builder: (context){
+                            return IngresoTarjetaPage();
+                          },
+                          settings: RouteSettings(arguments: detalleTour)
+                        ) );*/
+                        //Navigator.pop(context);
+                      // Navigator.popUntil(context, ModalRoute.withName('metodopago'));
+                      //Navigator.popAndPushNamed(context,'metodopago',arguments: detalleTour);
+                        
+                        Navigator.popUntil(context, ModalRoute.withName('metodopago'));
+                        mostrarAviso(context, '$tarjetaAgregado', '', 'assets/check.jpg');
+                        //mostrarAlerta(context, 'Tarjeta Agregada', '', 'assets/check.jpg');
+                        //Navigator.pop(context);
+                    }
+                    
+                    });
+                    }else{
+                      String errorValidar = AppTranslations.of(context).text('title_errorValidar');
+                      mostrarAlerta(context, '$errorValidar', '', 'assets/error.png');
+                    }
+                  });
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+    /*
+    Platform.isAndroid ? Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
         backgroundColor: Colors.white,
@@ -1986,196 +2408,7 @@ if(Platform.isAndroid){
                 },
               ),
             )
-            
-            
-            /*RaisedButton(
-                textTheme: ButtonTextTheme.primary,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
-                color: Color(0xFFD62250),
-                child: Text('$addcard',style: TextStyle(fontFamily: 'Point-SemiBold',fontSize: 15.0,color: Colors.white),),
-                onPressed: ()async{
-                  
-                  //Navigator.popAndPushNamed(context, 'comprar',arguments: detalleTour);
-                  /*Navigator.pushAndRemoveUntil(context, MaterialPageRoute(
-                    builder: (context)=>PagosPage(),
-                    fullscreenDialog: true,
-                    settings: RouteSettings(arguments: detalleTour)
-                  ), ModalRoute.withName('ingresotarjeta'));
-                  */
-                 /* if(!formKey.currentState.validate()){
-                    mostrarAlerta(context, 'error al agregar tarjeta', '', 'assets/error.png');
-                  }else{
-                  formKey.currentState.save();
-                  pagosProvider.crearTarjeta(tarjeta).then((result){
-                    if(result.length >= 0){
-                      mostrarAlerta(context, 'Successfull', '', 'assets/check.jpg');
-                    }else{
-                      mostrarAlerta(context, 'No hay id', '', 'assets/error.png');
-                    }
-                  }).catchError((error){
-                    mostrarAlerta(context, '${error.toString()}', '', 'assets/error.png');
-                  });
-                  /*pagosProvider.crearTarjeta(tarjeta).then((a){
-                       Map info = a;
-                       if(info['id'] == ''){
-                         mostrarAlerta(context, '${info["id"]}', '', 'assets/check.jpg');
-                       }
-                     }).catchError((e){
-                       print(e);
-                       mostrarAlerta(context, '$e', '', 'assets/error.png');
-                     });*/
-                  //Navigator.pushNamed(context, 'comprar',arguments: detalleTour.comprado == true);
-                  }*/
-
-                  if(formKey.currentState.validate()){
-                  formKey.currentState.save();
-                  await pagosProvider.crearToken(tarjeta).then((result){
-                    Map info = result;
-                    if(info['error_code'] == 1000){
-                    //Ocurrió un error en el servidor openpay
-                    mostrarAlerta(context, info['description'], '', 'assets/error.png');
-                  }else if(info['error_code']== 1001){
-                    //Formato de la petición no es json.
-                    //os campos no tienen el formato correcto, o la petición no tiene campos que son requeridos.
-                    mostrarAlerta(context, info['description'], '', 'assets/error.png');
-                  }else if(info['error_code'] == 1002){
-                    //La llamada no esta autenticada o la autenticación es incorrecta.
-                    mostrarAlerta(context, info['description'], '', 'assets/error.png');
-                  }else if(info['error_code'] == 1003){
-                    //La operación no se pudo completar 
-                    //por que el valor de uno o más de los parametros no es correcto.
-                    mostrarAlerta(context, info['description'], '', 'assets/error.png');
-                  }else if(info['error_code'] == 1004){
-                    //Un servicio necesario para el procesamiento de la
-                    //transacción no se encuentra disponible.
-                    mostrarAlerta(context, info['description'], '', 'assets/error.png');
-                  }else if(info['error_code'] == 1005){
-                    //Uno de los recursos requeridos no existe.
-                    mostrarAlerta(context, info['description'], '', 'assets/error.png');
-                  }else if(info['error_code'] == 1006){
-                    //Ya existe una transacción con el mismo ID de orden.
-                    mostrarAlerta(context, info['description'], '', 'assets/error.png');
-                  }else if(info['error_code'] == 1007){
-                    //La transferencia de fondos entre una cuenta de
-                    //banco o tarjeta y la cuenta de Openpay no fue aceptada.
-                    mostrarAlerta(context, info['description'], '', 'assets/error.png');
-                  }else if(info['error_code'] == 1008){
-                    //Una de las cuentas requeridas en la petición se
-                    //encuentra desactivada.
-                    mostrarAlerta(context, info['description'], '', 'assets/error.png');
-                  }else if(info['error_code'] == 1009){
-                    //El cuerpo de la petición es demasiado grande.
-                    mostrarAlerta(context, info['description'], '', 'assets/error.png');
-                  }else if(info['error_code'] == 1010){
-                    //Se esta utilizando la llave pública para hacer una
-                    //lamada que requiere la llave privada, o bien, se esta
-                    //usando la llave privada desde JavaScript.
-                    mostrarAlerta(context, info['description'], '', 'assets/error.png');
-                  }else if(info['error_code'] == 2001){
-                    //La cuenta de banco con esta CLABE ya se
-                    //encuentra registrada en el cliente.
-                    mostrarAlerta(context, info['description'], '', 'assets/error.png');
-                  }else if(info['error_code'] == 2002){
-                    //La tarjeta con este número ya se encuentra
-                    //registrada en el cliente.
-                    mostrarAlerta(context, info['description'], '', 'assets/error.png');
-                  }else if(info['error_code'] == 2003){
-                    //El cliente con este identificador externo (External ID)
-                    //ya existe.
-                    mostrarAlerta(context, info['description'], '', 'assets/error.png');
-                  }else if(info['error_code'] == 2004){
-                    //El dígito verificador del número de tarjeta es inválido
-                    //de acuerdo al algoritmo Luhn.
-                    mostrarAlerta(context, info['description'], '', 'assets/error.png');
-                  }else if(info['error_code'] == 2005){
-                    //La fecha de expiración de la tarjeta es anterior a la
-                    //fecha actual.
-                    mostrarAlerta(context, info['description'], '', 'assets/error.png');
-                  }else if(info['error_code'] == 2006){
-                    //El código de seguridad de la tarjeta (CVV2) no fue
-                    //proporcionado.
-                    mostrarAlerta(context, info['description'], '', 'assets/error.png');
-                  }else if(info['error_code'] == 2007){
-                    //El número de tarjeta es de prueba, solamente puede
-                    //usarse en Sandbox.
-                    mostrarAlerta(context, info['description'], '', 'assets/error.png');
-                  }else if(info['error_code'] == 2008){
-                    //La tarjeta consultada no es valida para puntos.
-                    mostrarAlerta(context, info['description'], '', 'assets/error.png');
-                  }else if(info['error_code'] == 2009){
-                    //El código de seguridad de la tarjeta (CVV2) no no es valido.
-                    mostrarAlerta(context, info['description'], '', 'assets/error.png');
-                  }else if(info['error_code'] == 3001){
-                    //La tarjeta fue declinada.
-                    mostrarAlerta(context, info['description'], '', 'assets/error.png');
-                  }else if(info['error_code'] == 3002){
-                    //La tarjeta ha expirado.
-                    mostrarAlerta(context, info['description'], '', 'assets/error.png');
-                  }else if(info['error_code'] == 3003){
-                    //La tarjeta no tiene fondos suficientes.
-                    mostrarAlerta(context, info['description'], '', 'assets/error.png');
-                  }else if(info['error_code'] == 3004){
-                    //La tarjeta ha sido identificada como una tarjeta
-                    //robada.
-                    mostrarAlerta(context, info['description'], '', 'assets/error.png');
-                  }else if(info['error_code'] == 3005){
-                    //La tarjeta ha sido identificada como una tarjeta
-                    //fraudulenta.
-                    mostrarAlerta(context, info['description'], '', 'assets/error.png');
-                  }else if(info['error_code'] == 3006){
-                    //La operación no esta permitida para este cliente o
-                    //esta transacción.
-                    mostrarAlerta(context, info['description'], '', 'assets/error.png');
-                  }else if(info['error_code'] == 3008){
-                    //La tarjeta no es soportada en transacciones en linea.
-                    mostrarAlerta(context, info['description'], '', 'assets/error.png');
-                  }else if(info['error_code'] == 3009){
-                    //La tarjeta fue reportada como perdida.
-                    mostrarAlerta(context, info['description'], '', 'assets/error.png');
-                  }else if(info['error_code'] == 3010){
-                    //El banco ha restringido la tarjeta.
-                    mostrarAlerta(context, info['description'], '', 'assets/error.png');
-                  }else if(info['error_code'] == 3011){
-                    //El banco ha solicitado que la tarjeta sea retenida.
-                    //Contacte al banco.
-                    mostrarAlerta(context, info['description'], '', 'assets/error.png');
-                  }else if(info['error_code'] == 3012){
-                    //Se requiere solicitar al banco autorización para
-                    //realizar este pago.
-                    mostrarAlerta(context, info['description'], '', 'assets/error.png');
-                  }else if(info['error_code'] == 4001){
-                    //La cuenta de Openpay no tiene fondos suficientes.
-                    mostrarAlerta(context, info['description'], '', 'assets/error.png');
-                  }
-                  else{
-                    formKey.currentState.save();
-                    prefs.idTarjeta = info['id'];
-                    String tarjetaAgregado = AppTranslations.of(context).text('title_tarjetaAgregado');
-                    
-                  /*  Navigator.removeRoute(context,MaterialPageRoute(
-                      builder: (context){
-                        return IngresoTarjetaPage();
-                      },
-                      settings: RouteSettings(arguments: detalleTour)
-                    ) );*/
-                    //Navigator.pop(context);
-                   // Navigator.popUntil(context, ModalRoute.withName('metodopago'));
-                   //Navigator.popAndPushNamed(context,'metodopago',arguments: detalleTour);
-                    
-                     Navigator.popUntil(context, ModalRoute.withName('metodopago'));
-                    mostrarAviso(context, '$tarjetaAgregado', '', 'assets/check.jpg');
-                    //mostrarAlerta(context, 'Tarjeta Agregada', '', 'assets/check.jpg');
-                    //Navigator.pop(context);
-                  }
-                  
-                  });
-                  }else{
-                    String errorValidar = AppTranslations.of(context).text('title_errorValidar');
-                  mostrarAlerta(context, '$errorValidar', '', 'assets/error.png');
-                  }
-                  
-                },
-              )*/ : Container()
+            : Container()
             ],
           ),
         ),
@@ -2351,98 +2584,11 @@ if(Platform.isAndroid){
                             ),
                           ),
                         ),
-                       /* Container(
-                          width: size.width * 0.7,
-                          child: SwitchListTile(
-                            value: tarjeta.allowsCharges,
-                            activeColor: Colors.lightBlue,
-                            title: Text('Allows charges'),
-                            onChanged: (value){
-                              setState(() {
-                                tarjeta.allowsCharges = value;
-                              });
-                            },
-                          )
-                        ),*/
-                      /*Container(
-                          width: size.width * 0.7,
-                          child: SwitchListTile(
-                            value: tarjeta.allowsPayouts,
-                            activeColor: Colors.lightBlue,
-                            title: Text('Allows payouts'),
-                            onChanged: (value){
-                              setState(() {
-                                tarjeta.allowsPayouts = value;
-                              });
-                            },
-                          )
-                        ),*/
                       ],
                     )
                     
                   ))
               ),
-            /*  Text('Número de tarjeta',style: TextStyle(fontSize: 15.0),),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 20.0),
-                width: size.width * 0.7,
-                height: size.height * 0.04,
-                child: TextFormField(
-                  initialValue: '000 000 000',
-                  keyboardType: TextInputType.number,
-                ),
-              ),
-              SizedBox(
-                  height: size.height * 0.03,
-                  child: Container(
-                    padding: EdgeInsets.only(left: 10.0, right: 20.0),
-                    child: Divider(
-                      color: Colors.grey,
-                    ),
-                  ),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[
-                  Column(
-                    children: <Widget>[
-                      Text('Válido hasta',style: TextStyle(fontSize: 15.0),),
-                      Container(
-                        width: size.width * 0.2,
-                        height: size.height * 0.04,
-                        child: TextFormField(
-                          initialValue: 'MM/AA',
-                          keyboardType: TextInputType.datetime,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Column(
-                    children: <Widget>[
-                      Text('CVV',style: TextStyle(fontSize: 15.0),),
-                      Container(
-                        width: size.width * 0.2,
-                        height: size.height * 0.04,
-                        child: TextFormField(
-                          keyboardType: TextInputType.number,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Column(
-                    children: <Widget>[
-                      Text('Código Postal',style: TextStyle(fontSize: 15.0),),
-                      Container(
-                        width: size.width * 0.3,
-                        height: size.height * 0.04,
-                        child: TextFormField(
-                          keyboardType: TextInputType.number,
-                        ),
-                      ),
-                    ],
-                  )
-                ],
-              ),*/
               SizedBox(
                 height: size.height * 0.1,
               ),
@@ -2683,263 +2829,11 @@ if(Platform.isAndroid){
                   });
                 },
               ),
-              /*RaisedButton(
-                textTheme: ButtonTextTheme.primary,
-                shape: StadiumBorder(),
-                color: Colors.lightBlue,
-                child: Text('$addcard',style: TextStyle(fontFamily: 'Point-SemiBold',fontSize: 15.0,color: Colors.white),),
-                onPressed: ()async{
-                  
-                  //Navigator.popAndPushNamed(context, 'comprar',arguments: detalleTour);
-                  /*Navigator.pushAndRemoveUntil(context, MaterialPageRoute(
-                    builder: (context)=>PagosPage(),
-                    fullscreenDialog: true,
-                    settings: RouteSettings(arguments: detalleTour)
-                  ), ModalRoute.withName('ingresotarjeta'));
-                  */
-                 /* if(!formKey.currentState.validate()){
-                    mostrarAlerta(context, 'error al agregar tarjeta', '', 'assets/error.png');
-                  }else{
-                  formKey.currentState.save();
-                  pagosProvider.crearTarjeta(tarjeta).then((result){
-                    if(result.length >= 0){
-                      mostrarAlerta(context, 'Successfull', '', 'assets/check.jpg');
-                    }else{
-                      mostrarAlerta(context, 'No hay id', '', 'assets/error.png');
-                    }
-                  }).catchError((error){
-                    mostrarAlerta(context, '${error.toString()}', '', 'assets/error.png');
-                  });
-                  /*pagosProvider.crearTarjeta(tarjeta).then((a){
-                       Map info = a;
-                       if(info['id'] == ''){
-                         mostrarAlerta(context, '${info["id"]}', '', 'assets/check.jpg');
-                       }
-                     }).catchError((e){
-                       print(e);
-                       mostrarAlerta(context, '$e', '', 'assets/error.png');
-                     });*/
-                  //Navigator.pushNamed(context, 'comprar',arguments: detalleTour.comprado == true);
-                  }*/
-
-                  if(formKey.currentState.validate()){
-                  formKey.currentState.save();
-                    await pagosProvider.crearToken(tarjeta).then((result){
-                      Map info = result;
-                      if(info['error_code'] == 1000){
-                        //Ocurrió un error en el servidor openpay
-                        String errorServerOpenpay = AppTranslations.of(context).text('title_error_server_openpay');
-                        //info['description']
-                        mostrarAlerta(context, errorServerOpenpay, '', 'assets/error.png');
-                      }else if(info['error_code']== 1001){
-                        //Formato de la petición no es json.
-                        //los campos no tienen el formato correcto, o la petición no tiene campos que son requeridos.
-                        String formatNotJson = AppTranslations.of(context).text('title_format_no_json');
-                        //info['description']
-                        mostrarAlerta(context, formatNotJson, '', 'assets/error.png');
-                      }else if(info['error_code'] == 1002){
-                        //La llamada no esta autenticada o la autenticación es incorrecta.
-                        String autenticacionIncorrect = AppTranslations.of(context).text('title_autentication_incorrect');
-                        //info['description']
-                        mostrarAlerta(context, autenticacionIncorrect, '', 'assets/error.png');
-                      }else if(info['error_code'] == 1003){
-                        //La operación no se pudo completar 
-                        //por que el valor de uno o más de los parametros no es correcto.
-                        String operacionNoCompleta = AppTranslations.of(context).text('title_operacion_not_complete');
-                        //info['description']
-                        mostrarAlerta(context, operacionNoCompleta, '', 'assets/error.png');
-                      }else if(info['error_code'] == 1004){
-                        //Un servicio necesario para el procesamiento de la
-                        //transacción no se encuentra disponible.
-                        String servicioNoDisponible = AppTranslations.of(context).text('title_service_not_enabled');
-                        //info['description']
-                        mostrarAlerta(context, servicioNoDisponible, '', 'assets/error.png');
-                      }else if(info['error_code'] == 1005){
-                        //Uno de los recursos requeridos no existe.
-                        String recursoNoDisponible = AppTranslations.of(context).text('title_resource_not_disabled');
-                        //info['description']
-                        mostrarAlerta(context, recursoNoDisponible, '', 'assets/error.png');
-                      }else if(info['error_code'] == 1006){
-                        //Ya existe una transacción con el mismo ID de orden.
-                        String transactionExist = AppTranslations.of(context).text('title_transaction_exist');
-                        //info['description']
-                        mostrarAlerta(context, transactionExist, '', 'assets/error.png');
-                      }else if(info['error_code'] == 1007){
-                        //La transferencia de fondos entre una cuenta de
-                        //banco o tarjeta y la cuenta de Openpay no fue aceptada.
-                        String transferNoAceptada = AppTranslations.of(context).text('title_transfer_not_acept');
-                        //info['description']
-                        mostrarAlerta(context, transferNoAceptada, '', 'assets/error.png');
-                      }else if(info['error_code'] == 1008){
-                        //Una de las cuentas requeridas en la petición se
-                        //encuentra desactivada.
-                        String cuentaDesactivada = AppTranslations.of(context).text('title_account_desactivate');
-                        //info['description']
-                        mostrarAlerta(context, cuentaDesactivada, '', 'assets/error.png');
-                      }else if(info['error_code'] == 1009){
-                        //El cuerpo de la petición es demasiado grande.
-                        String bodyMoreLonger = AppTranslations.of(context).text('title_require_more_long');
-                        //info['description']
-                        mostrarAlerta(context, bodyMoreLonger, '', 'assets/error.png');
-                      }else if(info['error_code'] == 1010){
-                        //Se esta utilizando la llave pública para hacer una
-                        //llamada que requiere la llave privada, o bien, se esta
-                        //usando la llave privada desde JavaScript.
-                        String keyPrivate = AppTranslations.of(context).text('title_key_private');
-                        //info['description']
-                        mostrarAlerta(context, keyPrivate,'', 'assets/error.png');
-                      }else if(info['error_code'] == 2001){
-                        //La cuenta de banco con esta CLABE ya se
-                        //encuentra registrada en el cliente.
-                        String cuentaRegistrada = AppTranslations.of(context).text('title_account_registered');
-                        //info['description']
-                        mostrarAlerta(context, cuentaRegistrada, '', 'assets/error.png');
-                      }else if(info['error_code'] == 2002){
-                        //La tarjeta con este número ya se encuentra
-                        //registrada en el cliente.
-                        String cardRegistered = AppTranslations.of(context).text('title_card_registered');
-                        //info['description']
-                        mostrarAlerta(context, cardRegistered,'', 'assets/error.png');
-                      }else if(info['error_code'] == 2003){
-                        //El cliente con este identificador externo (External ID)
-                        //ya existe.
-                        String clientExist = AppTranslations.of(context).text('title_client_exist');
-                        //info['description']
-                        mostrarAlerta(context, clientExist, '', 'assets/error.png');
-                      }else if(info['error_code'] == 2004){
-                        //El dígito verificador del número de tarjeta es inválido
-                        //de acuerdo al algoritmo Luhn.
-                        String digitInvalid = AppTranslations.of(context).text('title_digit_invalid');
-                        //info['description']
-                        mostrarAlerta(context, digitInvalid , '', 'assets/error.png');
-                      }else if(info['error_code'] == 2005){
-                        //La fecha de expiración de la tarjeta es anterior a la
-                        //fecha actual.
-                        String dateExpired = AppTranslations.of(context).text('title_date_expired');
-                        //info['description']
-                        mostrarAlerta(context, dateExpired , '', 'assets/error.png');
-                      }else if(info['error_code'] == 2006){
-                        //El código de seguridad de la tarjeta (CVV2) no fue
-                        //proporcionado.
-                        String codeSecurityEmpty = AppTranslations.of(context).text('title_code_security_empty');
-                        //info['description']
-                        mostrarAlerta(context, codeSecurityEmpty , '', 'assets/error.png');
-                      }else if(info['error_code'] == 2007){
-                        //El número de tarjeta es de prueba, solamente puede
-                        //usarse en Sandbox.
-                        String cardTest = AppTranslations.of(context).text('title_card_test');
-                        //info['description']
-                        mostrarAlerta(context, cardTest , '', 'assets/error.png');
-                      }else if(info['error_code'] == 2008){
-                        //La tarjeta consultada no es valida para puntos.
-                        String cardNoPoints = AppTranslations.of(context).text('title_card_not_points');
-                        //info['description']
-                        mostrarAlerta(context, cardNoPoints , '', 'assets/error.png');
-                      }else if(info['error_code'] == 2009){
-                        //El código de seguridad de la tarjeta (CVV2) no es valido.
-                        String codeSecurityNoValid = AppTranslations.of(context).text('title_card_not_valid');
-                        //info['description']
-                        mostrarAlerta(context, codeSecurityNoValid , '', 'assets/error.png');
-                      }else if(info['error_code'] == 3001){
-                        String tarjetaDeclinada = AppTranslations.of(context).text('title_card_declined');
-                        //La tarjeta fue declinada.
-                        //info['description']
-                        mostrarAlerta(context, tarjetaDeclinada, '', 'assets/error.png');
-                      }else if(info['error_code'] == 3002){
-                        //La tarjeta ha expirado.
-                        String tarjetaExpirada = AppTranslations.of(context).text('title_card_expired');
-                        //info['description']
-                        mostrarAlerta(context, tarjetaExpirada, '', 'assets/error.png');
-                      }else if(info['error_code'] == 3003){
-                        //La tarjeta no tiene fondos suficientes.
-                        String tarjetaSinFondos = AppTranslations.of(context).text('title_card_not_funds');
-                        //info['description']
-                        mostrarAlerta(context, tarjetaSinFondos, '', 'assets/error.png');
-                      }else if(info['error_code'] == 3004){
-                        //La tarjeta ha sido identificada como una tarjeta
-                        //robada.
-                        String tarjetaRobada = AppTranslations.of(context).text('title_card_lost');
-                        //info['description']
-                        mostrarAlerta(context, tarjetaRobada, '', 'assets/error.png');
-                      }else if(info['error_code'] == 3005){
-                        //La tarjeta ha sido identificada como una tarjeta
-                        //fraudulenta.
-                        String tarjetaFraudulenta = AppTranslations.of(context).text('title_card_fraudulent');
-                        //info['description']
-                        mostrarAlerta(context, tarjetaFraudulenta, '', 'assets/error.png');
-                      }else if(info['error_code'] == 3006){
-                        //La operación no esta permitida para este cliente o
-                        //esta transacción.
-                        String operacionNoPermitida = AppTranslations.of(context).text('title_operation_not_allowed');
-                        //info['description']
-                        mostrarAlerta(context, operacionNoPermitida, '', 'assets/error.png');
-                      }else if(info['error_code'] == 3008){
-                        //La tarjeta no es soportada en transacciones en linea.
-                        String tarjetaNoSoportadaOnline = AppTranslations.of(context).text('title_card_not_support_online');
-                        //info['description']
-                        mostrarAlerta(context, tarjetaNoSoportadaOnline, '', 'assets/error.png');
-                      }else if(info['error_code'] == 3009){
-                        //La tarjeta fue reportada como perdida.
-                        String tarjetaPerdida = AppTranslations.of(context).text('title_card_lost');
-                        //info['description']
-                        mostrarAlerta(context, tarjetaPerdida, '', 'assets/error.png');
-                      }else if(info['error_code'] == 3010){
-                        //El banco ha restringido la tarjeta.
-                        String bankRestrictedCard = AppTranslations.of(context).text('title_bank_restricted_card');
-                        //info['description']
-                        mostrarAlerta(context, bankRestrictedCard, '', 'assets/error.png');
-                      }else if(info['error_code'] == 3011){
-                        //El banco ha solicitado que la tarjeta sea retenida.
-                        //Contacte al banco.
-                        String tarjetaRetenida = AppTranslations.of(context).text('title_card_withheld');
-                        //info['description']
-                        mostrarAlerta(context, tarjetaRetenida, '', 'assets/error.png');
-                      }else if(info['error_code'] == 3012){
-                        //Se requiere solicitar al banco autorización para
-                        //realizar este pago.
-                        String solictarPago = AppTranslations.of(context).text('title_autorization_buy');
-                        //info['description']
-                        mostrarAlerta(context, solictarPago, '', 'assets/error.png');
-                      }else if(info['error_code'] == 4001){
-                        //La cuenta de Openpay no tiene fondos suficientes.
-                        String openpayNotFunds = AppTranslations.of(context).text('title_openpay_account_not_funds');
-                        //info['description']
-                        mostrarAlerta(context, openpayNotFunds, '', 'assets/error.png');
-                      }
-                      else{
-                        formKey.currentState.save();
-                        prefs.idTarjeta = info['id'];
-                        String tarjetaAgregado = AppTranslations.of(context).text('title_tarjetaAgregado');
-                        
-                      /*  Navigator.removeRoute(context,MaterialPageRoute(
-                          builder: (context){
-                            return IngresoTarjetaPage();
-                          },
-                          settings: RouteSettings(arguments: detalleTour)
-                        ) );*/
-                        //Navigator.pop(context);
-                      // Navigator.popUntil(context, ModalRoute.withName('metodopago'));
-                      //Navigator.popAndPushNamed(context,'metodopago',arguments: detalleTour);
-                        
-                        Navigator.popUntil(context, ModalRoute.withName('metodopago'));
-                        mostrarAviso(context, '$tarjetaAgregado', '', 'assets/check.jpg');
-                        //mostrarAlerta(context, 'Tarjeta Agregada', '', 'assets/check.jpg');
-                        //Navigator.pop(context);
-                    }
-                    
-                    });
-                  }else{
-                    String errorValidar = AppTranslations.of(context).text('title_errorValidar');
-                  mostrarAlerta(context, '$errorValidar', '', 'assets/error.png');
-                  }
-                  
-                },
-              )*/
             ],
           ),
         ),
       ),
-    );
+    );*/
   }
 
   Widget dialogo(BuildContext context,String title, String mensaje, String imagen){

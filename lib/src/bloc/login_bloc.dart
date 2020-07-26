@@ -504,7 +504,7 @@ Future<bool> signInGoogle(BuildContext context) async { //Se va a llamar en la i
      }else if(error.code == "ERROR_INVALID_ACTION_CODE"){
        mostrarAlerta(context, "$invalidactionCode", '', 'assets/error.png');
      }else{
-       mostrarAlerta(context, "${error.toString()}", '', 'assets/error.png');
+       mostrarAlerta(context, "${error.message.toString()}", '', 'assets/error.png');
      }
    });
    return true;
@@ -684,7 +684,7 @@ Future<void> signInEmail( String email,String pass, BuildContext context)async{
       }else if(error.code == "ERROR_OPERATION_NOT_ALLOWED"){
         mostrarAlerta(context, "$emailpassnoEnabled",'', 'assets/error.png');
       }else{
-        mostrarAlerta(context, "${error.toString()}",'', 'assets/error.png');
+        mostrarAlerta(context, "${error.message.toString()}",'', 'assets/error.png');
       }
       
     });
@@ -986,7 +986,7 @@ Future<void> signInEmail( String email,String pass, BuildContext context)async{
       }else if(error.code == "ERROR_EMAIL_ALREADY_IN_USE"){
         mostrarAlerta(context, "$emailisReady",'', 'assets/error.png');
       }else{
-        mostrarAlerta(context, "${error.toString()}",'', 'assets/error.png');
+        mostrarAlerta(context, "${error.message.toString()}",'', 'assets/error.png');
       }
     });
 
@@ -1016,7 +1016,7 @@ Future<void> signInEmail( String email,String pass, BuildContext context)async{
       }else if(error.code == "ERROR_USER_NOT_FOUND"){
         mostrarMensajeErrorResetPassword(context, '$usernotFound' , '$errorReset');
       }else{
-        mostrarMensajeErrorResetPassword(context, '${error.toString()}' , '$errorReset');
+        mostrarMensajeErrorResetPassword(context, '${error.message.toString()}' , '$errorReset');
       }
       
     });

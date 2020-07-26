@@ -7,7 +7,7 @@ import 'package:selftourapp/src/bloc/provider.dart';
 import 'package:selftourapp/src/pages/usuario/term_serv_page.dart';
 import 'package:selftourapp/src/providers/usuario_provider.dart';
 import 'package:selftourapp/src/translation_class/app_translations.dart';
-import 'package:selftourapp/src/utils/utils.dart';
+//import 'package:selftourapp/src/utils/utils.dart';
 import 'package:selftourapp/src/widgets/tree_size_dot_widget.dart';
 
 class CreateAccountPage extends StatefulWidget {
@@ -17,10 +17,13 @@ class CreateAccountPage extends StatefulWidget {
 
 class _CreateAccountPageState extends State<CreateAccountPage> {
   final usuarioProvider = UsuarioProvider();
+  bool aceptar = false;
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     String crearCuenta = AppTranslations.of(context).text('title_createaccount');
+    
     //final registerBloc = BlocProvider.of<RegisterBloc>(context);
     
     final bloc = BlocProvider.of<LoginBloc>(context);
@@ -59,6 +62,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
             SizedBox(height: size.height * 0.02,),
             _telefono(bloc),
             SizedBox(height: size.height * 0.03),
+            _checkTerm(),
             _botonContinuar(bloc),
             Row(
               children: <Widget>[
@@ -70,6 +74,54 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _checkTerm(){
+    String termServ = AppTranslations.of(context).text('title_termserv');
+    String acept = AppTranslations.of(context).text('title_acept');
+
+    return Padding(
+      padding: EdgeInsets.only(left: 10.0),
+      child: Row(
+        children: <Widget>[
+          Checkbox(
+            value: aceptar,
+            //checkColor: Color(0xFFD62250), //Color de la palomita del check
+            activeColor: Color(0xFFD62250), // Color del fondo del check
+            onChanged: (bool acepto){
+              setState(() {});
+              aceptar = acepto;
+            }
+          ),
+          Text(
+            "$acept ",
+            style: TextStyle(
+              fontFamily: 'Point-SemiBold'
+            ),
+          ),
+          FlatButton(
+            padding: EdgeInsets.zero,
+            onPressed: (){
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context){
+                    return TermServPage();
+                  },
+                  fullscreenDialog: true
+                )
+              );
+            }, 
+            child: Text(
+              "$termServ",
+              style: TextStyle(
+                fontFamily: 'Point-SemiBold',
+                color: Colors.blue
+              ),
+            )
+          )
+        ],
       ),
     );
   }
@@ -329,7 +381,7 @@ Widget _botonContinuar(LoginBloc bloc){
         width: size.width * 0.7,
         borderRadius: 5.0,
         color: Color(0xFFD62250),
-        onPressed: snapshot.hasData ? ()async{
+        onPressed: (snapshot.hasData && aceptar) ? ()async{
          await Future.delayed(Duration(seconds: 2),()async{
            await _registrar(context, bloc);
           });
