@@ -7,7 +7,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 //import 'package:flutter_map/plugin_api.dart' as prefix0;
 //import 'package:http/http.dart' as http;
-import 'package:flutter_mapbox_navigation/flutter_mapbox_navigation.dart';
+import 'package:flutter_mapbox_navigation/library.dart';
 //import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 //import 'package:selfttour/src/googlemaps/screen_mapa/navigator.dart';
@@ -23,24 +23,6 @@ import 'package:selftourapp/src/providers/categorias_providers.dart';
 import 'package:selftourapp/src/translation_class/app_translations.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 //import 'package:polyline/polyline.dart' as polyline;
- 
-/*void main() => runApp(
-  MultiProvider(providers: [
-      ChangeNotifierProvider.value(value: AppState(),)
-  ],
-  child: MyMapa()
-  )
-);*/
- 
-/*class MyMapa extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Material App',
-      home: Mapa()
-    );
-  }
-}*/
 
 class Mapa extends StatefulWidget {
   @override
@@ -65,33 +47,55 @@ class _MapaState extends State<Mapa> {
   @override
   void initState() {
     super.initState();
-    // _directions = MapboxNavigation(onRouteProgress: (arrived) async {
-    //     _distanceRemaining = await _directions.distanceRemaining;
-    //     _durationRemaining = await _directions.durationRemaining;
 
-    //     setState(() {
-    //       _arrived = arrived;
-    //     });
-    //     if (arrived){
-    //       await Future.delayed(Duration(seconds: 3));
-    //       await _directions.finishNavigation();
-    //     }
-          
-    //   });
+    // _directions = MapboxNavigation(onRouteProgress: (arrived) async{
+      
+    //         _distanceRemaining = await _directions.distanceRemaining;
+    //         _durationRemaining = await _directions.durationRemaining;
+      
+    //         setState(() {
+    //           _arrived = arrived;
+    //         });
+    //         if(arrived)
+    //           await _directions.finishNavigation();
+      
+    //       });
 
+    initPlatformState();
+  }
 
-    _directions = MapboxNavigation(onRouteProgress: (arrived) async{
-      
-            _distanceRemaining = await _directions.distanceRemaining;
-            _durationRemaining = await _directions.durationRemaining;
-      
-            setState(() {
-              _arrived = arrived;
-            });
-            if(arrived)
-              await _directions.finishNavigation();
-      
-          });
+  // Platform messages are asynchronous, so we initialize in an async method.
+  Future<void> initPlatformState()async{
+    // If the widget was removed from the tree while the asynchronous platform
+    // message was in flight, we want to discard the reply rather than calling
+    // setState to update our non-existent appearance.
+    if (!mounted) return;
+
+    _directions = MapboxNavigation(onRouteProgress: (arrived) async {
+      _distanceRemaining = await _directions.distanceRemaining;
+      _durationRemaining = await _directions.durationRemaining;
+
+      setState(() {
+        _arrived = arrived;
+      });
+      if (arrived)
+        {
+          await Future.delayed(Duration(seconds: 3));
+          await _directions.finishNavigation();
+        }
+    });
+
+    String platformVersion;
+    // Platform messages may fail, so we use a try/catch PlatformException.
+    try {
+      platformVersion = await _directions.platformVersion;
+    }catch(PlatformException) {
+      platformVersion = 'Failed to get platform version.';
+    }
+
+    setState(() {
+      platformVersion = platformVersion;
+    });
   }
 
   @override
@@ -727,9 +731,9 @@ class _MapaState extends State<Mapa> {
                                 print(result[10]);
                               });*/
                               
-                            final origen = Location(name: '${appState.initialPosition.toString()}',latitude: appState.initialPosition.latitude,longitude: appState.initialPosition.longitude );
-                            final destino = Location(name: '${detalletour['site']}',latitude: double.parse(detalletour['lat']) ,longitude: double.parse(detalletour['lng']) );
-                            await _directions.startNavigation( origin: origen, destination: destino,mode: NavigationMode.walking,simulateRoute: false,language: "${prefs.idioma}");//units: VoiceUnits.imperial
+                            final origen = WayPoint(name: '${appState.initialPosition.toString()}',latitude: appState.initialPosition.latitude,longitude: appState.initialPosition.longitude );
+                            final destino = WayPoint(name: '${detalletour['site']}',latitude: double.parse(detalletour['lat']) ,longitude: double.parse(detalletour['lng']) );
+                            await _directions.startNavigation( origin: origen, destination: destino,mode: MapBoxNavigationMode.walking,simulateRoute: false,language: "${prefs.idioma}",units: VoiceUnits.metric);//units: VoiceUnits.imperial
                            
                               
                             // await appState.userLocation().then((result){
@@ -749,15 +753,15 @@ class _MapaState extends State<Mapa> {
                             //   );
                           }else if(value == 2){
                             print("Opcion: $value");
-                            final origen = Location(name: '${appState.initialPosition.toString()}',latitude: appState.initialPosition.latitude,longitude: appState.initialPosition.longitude );
-                            final destino = Location(name: '${detalletour['site']}',latitude: double.parse(detalletour['lat']) ,longitude: double.parse(detalletour['lng']) );
+                            final origen = WayPoint(name: '${appState.initialPosition.toString()}',latitude: appState.initialPosition.latitude,longitude: appState.initialPosition.longitude );
+                            final destino = WayPoint(name: '${detalletour['site']}',latitude: double.parse(detalletour['lat']) ,longitude: double.parse(detalletour['lng']) );
                             //_directions.startNavigation( origin: origen, destination: destino,mode: NavigationMode.cycling,simulateRoute: false,language: 'German',units: VoiceUnits.metric);
-                            await _directions.startNavigation( origin: origen, destination: destino,mode: NavigationMode.cycling,simulateRoute: false,language: "${prefs.idioma}");//units: VoiceUnits.metric
+                            await _directions.startNavigation( origin: origen, destination: destino,mode: MapBoxNavigationMode.cycling,simulateRoute: false,language: "${prefs.idioma}",units: VoiceUnits.metric);//units: VoiceUnits.metric
                           }else if(value == 3){
                             print("Opcion: $value");
-                            final origen = Location(name: '${appState.initialPosition.toString()}',latitude: appState.initialPosition.latitude,longitude: appState.initialPosition.longitude );
-                            final destino = Location(name: '${detalletour['site']}',latitude: double.parse(detalletour['lat']) ,longitude: double.parse(detalletour['lng']) );
-                            await _directions.startNavigation( origin: origen, destination: destino,mode: NavigationMode.driving,simulateRoute: false,language: "${prefs.idioma}");//units: VoiceUnits.metric
+                            final origen = WayPoint(name: '${appState.initialPosition.toString()}',latitude: appState.initialPosition.latitude,longitude: appState.initialPosition.longitude );
+                            final destino = WayPoint(name: '${detalletour['site']}',latitude: double.parse(detalletour['lat']) ,longitude: double.parse(detalletour['lng']) );
+                            await _directions.startNavigation( origin: origen, destination: destino,mode: MapBoxNavigationMode.driving,simulateRoute: false,language: "${prefs.idioma}",units: VoiceUnits.metric);//units: VoiceUnits.metric
                           }
                           //print("Opcion: $value");
                         },

@@ -748,7 +748,7 @@ class _MetodoPagoPageState extends State<MetodoPagoPage> {
             SizedBox(
               height: size.height * 0.02,
             ),
-            (prefs.idTarjeta == '') ?
+            (prefs.idTarjeta == '' || prefs.idTarjeta == null) ?
             Card(
               elevation: 0.0,
               child: Container(
@@ -775,20 +775,45 @@ class _MetodoPagoPageState extends State<MetodoPagoPage> {
                   return Card(
                     elevation: 0.0,
                     child: Container(
-                        width: size.width * 1.0,
-                        height: size.height * 0.1,//|| tarjeta['card']['card_number'] == '[]'
-                        child:Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: <Widget>[
-                            Icon(Icons.credit_card,color: Colors.grey,),
-                            //tarjeta[0]['card']['card_number']
-                            
-                            Text('$tarjetacredito',style: TextStyle(fontFamily: 'Point-SemiBold',fontSize: 18.0)),
-                            //Text('${tarjeta[0]['card']['card_number']}',style: TextStyle(fontFamily: 'Point-SemiBold',fontSize: 18.0)),
-                            Icon(Icons.navigate_next,color: Colors.grey,)
-                          ],
-                        ),
-                  )
+                      width: size.width * 1.0,
+                      height: size.height * 0.1,//|| tarjeta['card']['card_number'] == '[]'
+                      child:Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: <Widget>[
+                          Icon(Icons.credit_card,color: Colors.grey,),
+                          //tarjeta[0]['card']['card_number']
+                          
+                          Text('$tarjetacredito',style: TextStyle(fontFamily: 'Point-SemiBold',fontSize: 18.0)),
+                          //Text('${tarjeta[0]['card']['card_number']}',style: TextStyle(fontFamily: 'Point-SemiBold',fontSize: 18.0)),
+                          Icon(Icons.navigate_next,color: Colors.grey,)
+                        ],
+                      ),
+                    )
+                  );
+                }else if(snapshot.hasError){
+                  return Card(
+                    elevation: 0.0,
+                    child: Container(
+                      width: size.width * 1.0,
+                      height: size.height * 0.1,//|| tarjeta['card']['card_number'] == '[]'
+                      child:Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: <Widget>[
+                          Icon(Icons.credit_card,color: Colors.grey,),
+                          //tarjeta[0]['card']['card_number']
+                          Text(
+                            '${snapshot.error.toString()}',
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontFamily: 'Point-SemiBold',
+                              fontSize: 18.0
+                            )
+                          ),
+                          //Text('${tarjeta[0]['card']['card_number']}',style: TextStyle(fontFamily: 'Point-SemiBold',fontSize: 18.0)),
+                          Icon(Icons.navigate_next,color: Colors.grey,)
+                        ],
+                      ),
+                    )
                   );
                 }else{
                   final tarjeta = snapshot.data;
@@ -873,20 +898,20 @@ class _MetodoPagoPageState extends State<MetodoPagoPage> {
                     ),
                   ),
               ),
-              SizedBox(
-                height: size.height * 0.03,
-              ),
-              Padding(
-                padding: EdgeInsets.only(left: 10.0),
-                child: Text(
-                  '$cupon:',
-                  textAlign: TextAlign.left,
-                  style: TextStyle(
-                    fontFamily: 'Point-SemiBold',
-                    fontSize: 17.0
-                  )
-                ),
-              ),
+              // SizedBox(
+              //   height: size.height * 0.03,
+              // ),
+              // Padding(
+              //   padding: EdgeInsets.only(left: 10.0),
+              //   child: Text(
+              //     '$cupon:',
+              //     textAlign: TextAlign.left,
+              //     style: TextStyle(
+              //       fontFamily: 'Point-SemiBold',
+              //       fontSize: 17.0
+              //     )
+              //   ),
+              // ),
              /* SizedBox(
                 height: size.height * 0.03,
               ),*/

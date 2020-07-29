@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_progress_button/flutter_progress_button.dart';
@@ -438,18 +439,21 @@ Widget _termsconditions(){
 
 Widget _signIn(){
   String sesion = AppTranslations.of(context).text('title_login');
-  return FlatButton(
-    child: Text('$sesion',style: TextStyle(fontFamily: 'Point-SemiBold',color: Colors.black,fontWeight: FontWeight.bold,fontSize: 13.0),),
-    onPressed: (){
-      //Navigator.pushReplacementNamed(context, 'sesionpage');
-      /*Navigator.of(context).push(MaterialPageRoute(
-        builder: (context){
-          return SesionPage();
-        },
-        fullscreenDialog: true,
-      ));*/
-      Navigator.pop(context);
-    },
+
+  return RichText(
+    text: TextSpan(
+      text:'$sesion',
+      style: TextStyle(
+        fontFamily: 'Point-SemiBold',
+        color: Colors.black,
+        fontWeight: FontWeight.bold,
+        fontSize: 13.0
+      ),
+      recognizer: TapGestureRecognizer()
+        ..onTap=(){
+        Navigator.pop(context);
+      }
+    )
   );
 }
 }

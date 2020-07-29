@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong/latlong.dart';
-import 'package:flutter_mapbox_navigation/flutter_mapbox_navigation.dart';
+import 'package:flutter_mapbox_navigation/library.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:selftourapp/src/models/tour_categoria_model.dart';
 
@@ -124,9 +124,9 @@ class _MapaState extends State<MapaBox> {
                   textTheme: ButtonTextTheme.primary,
                   color: Colors.blue,
                   onPressed: ()async{
-                    final origen = Location(name: '${tour.city.toString()},${tour.country.toString()}',latitude: initialPosition.latitude,longitude: initialPosition.longitude );
-                    final destino = Location(name: '${tour.city.toString()},${tour.country.toString()}',latitude: lastPosition.latitude,longitude: lastPosition.longitude);
-                    await directions.startNavigation(origin:origen,destination: destino,mode: NavigationMode.driving,simulateRoute: false);
+                    final origen = WayPoint(name: '${tour.city.toString()},${tour.country.toString()}',latitude: initialPosition.latitude,longitude: initialPosition.longitude );
+                    final destino = WayPoint(name: '${tour.city.toString()},${tour.country.toString()}',latitude: lastPosition.latitude,longitude: lastPosition.longitude);
+                    await directions.startNavigation(origin:origen,destination: destino,mode: MapBoxNavigationMode.driving,simulateRoute: false);
                   },
                 ),
               )

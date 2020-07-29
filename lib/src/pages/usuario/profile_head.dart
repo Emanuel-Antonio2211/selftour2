@@ -710,7 +710,8 @@ class _ProfileHeadState extends State<ProfileHead> {
                                             color: Colors.black,
                                             child: Icon(
                                               Icons.library_books,
-                                              color: Colors.white)
+                                              color: Colors.white
+                                            )
                                           ),
                                         ),
                                         SizedBox(
@@ -721,7 +722,7 @@ class _ProfileHeadState extends State<ProfileHead> {
                                           textAlign: TextAlign.start,
                                           overflow: TextOverflow.ellipsis,
                                           style: TextStyle(
-                                          fontFamily: 'Point-SemiBold'
+                                            fontFamily: 'Point-SemiBold'
                                           ),
                                         ),
                                       ],
@@ -789,7 +790,7 @@ class _ProfileHeadState extends State<ProfileHead> {
                                           textAlign: TextAlign.start,
                                           overflow: TextOverflow.ellipsis,
                                           style: TextStyle(
-                                          fontFamily: 'Point-SemiBold'
+                                            fontFamily: 'Point-SemiBold'
                                           ),
                                         ),
                                       ],
@@ -983,7 +984,7 @@ class _ProfileHeadState extends State<ProfileHead> {
                                           textAlign: TextAlign.start,
                                           overflow: TextOverflow.ellipsis,
                                           style: TextStyle(
-                                          fontFamily: 'Point-SemiBold'
+                                            fontFamily: 'Point-SemiBold'
                                           ),
                                         ),
                                       ],
