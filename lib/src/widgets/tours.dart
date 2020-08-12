@@ -79,7 +79,7 @@ class _ToursGeneralState extends State<ToursGeneral> {
       print("Datos del usuario:");
       print(prefs.estadoUser);
       print(prefs.countryCode);
-      final resultado = await provider.getTours(prefs.estadoUser.toString(),prefs.countryCode.toString(),page:'1');
+      final resultado = await provider.getTours(prefs.estadoUser.toString(),prefs.countryCode.toString(),page: '1');
       final tours = new ListaToursC.fromJsonList(resultado['tours'][0]['data_tour']);
       for(int i = 0; i < tours.itemsTours.length; i++){
         widget.listaTours.add(tours.itemsTours[i]);
@@ -103,10 +103,10 @@ class _ToursGeneralState extends State<ToursGeneral> {
             onRefresh: cargarTours,
             child: ListView.builder(
               shrinkWrap: true,
-              primary: true,
+              primary: false,
               scrollDirection: Axis.vertical,
               controller: _scrollController,
-              //physics: AlwaysScrollableScrollPhysics(),
+              physics: AlwaysScrollableScrollPhysics(),
               itemCount: widget.listaTours.length,
               itemBuilder: (context,i){
                 return _tarjeta(context,widget.listaTours[i]);
@@ -129,11 +129,12 @@ class _ToursGeneralState extends State<ToursGeneral> {
   }
 
   void cargar()async{
-    _scrollController.animateTo(
-      _scrollController.position.pixels + 100,
-      curve: Curves.fastOutSlowIn,
-      duration: Duration(milliseconds: 250)
-    );
+    // _scrollController.animateTo(
+    //   _scrollController.position.pixels + 100,
+    //   curve: Curves.fastOutSlowIn,
+    //   duration: Duration(milliseconds: 250)
+    // );
+    
     //ListaToursC result;
     
       // _appState.userLocation().then((value)async{
@@ -179,12 +180,13 @@ class _ToursGeneralState extends State<ToursGeneral> {
         for(int i = 0; i < resp.itemsTours.length; i++){
           widget.listaTours.add(resp.itemsTours[i]);
         }
-      }else if(result['tours']['total'] == "empty"){
+      }else if(result['tours'][0]['total'] == "empty"){
         print("No hay datos");
+        _scrollController.position.didEndScroll();
       }
       
 
-      _scrollController.position.didEndScroll();
+      //_scrollController.position.didEndScroll();
     //widget.siguientePagina();
   }
 
@@ -214,6 +216,8 @@ class _ToursGeneralState extends State<ToursGeneral> {
     var size = MediaQuery.of(context).size;
     //CategoriasProvider categoriasProvider = CategoriasProvider();
     String valoracion = AppTranslations.of(context).text('title_puntuacion');
+    String personas = AppTranslations.of(context).text('title_cant_personas');
+    String noGallery = 'https://selftour-public.s3.amazonaws.com/no_gallery.jpg';
     //final BaseCacheManager baseCacheManager = DefaultCacheManager();
 
     final tarjeta = Stack(
@@ -236,7 +240,7 @@ class _ToursGeneralState extends State<ToursGeneral> {
                       )*/
 
                       CachedNetworkImage(
-                        imageUrl: "${tour.gallery.toString()}",
+                        imageUrl: tour.gallery == null ? noGallery : "${tour.gallery.toString()}",
                         //errorWidget: (context, url, error)=>Icon(Icons.error),
                         //cacheManager: baseCacheManager,
                         useOldImageOnUrlChange: true,
@@ -337,9 +341,9 @@ class _ToursGeneralState extends State<ToursGeneral> {
                   tour.title == null ? '':tour.title,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
-                          color: Colors.white,
-                          fontFamily: 'Point-SemiBold',
-                          //fontWeight: FontWeight.bold
+                    color: Colors.white,
+                    fontFamily: 'Point-SemiBold',
+                    //fontWeight: FontWeight.bold
                 ),),
                 Row(
                   children: <Widget>[
@@ -361,13 +365,18 @@ class _ToursGeneralState extends State<ToursGeneral> {
                         color: Colors.white
                       ),
                     ),
-                    Text(
-                      ' (  )',
-                      style: TextStyle(
-                        fontFamily: 'Point-SemiBold',
-                        color: Colors.white
+                    tour.total_comment > 0 ?
+                    Container(
+                      width: size.width * 0.35,
+                      child: Text(
+                        ' (${tour.total_comment.toString()} $personas)',
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontFamily: 'Point-SemiBold',
+                          color: Colors.white
+                        ),
                       ),
-                    )
+                    ):Container()
                   ],
                 )
               ],

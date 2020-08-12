@@ -123,6 +123,25 @@ class PushNotificationProvider{
             print('===== On Message =====');
             print(info);
             //Map<String,dynamic> informacion;
+            /*
+
+             {
+              iduser: vincemis610@gmail.com, 
+              google.c.sender.id: 440179473802, 
+              google.c.a.e: 1, 
+              nickname: Vince Mis, 
+              aps: {
+                alert: {
+                  title: Vince Mis, 
+                  body: para poner el homepage en la app de googleOAuth
+                }
+              }, 
+              useravatar: https://selftour-user-profile.s3.amazonaws.com/1/1595577202107.png, 
+              gcm.message_id: 1596571687899166, 
+              click_action: FLUTTER_NOTIFICATION_CLICK
+              }
+
+            */
             String usuario = 'no-data';
             String mensaje = 'no-message';
             String emailUser;
@@ -141,33 +160,55 @@ class PushNotificationProvider{
               fotoUsuarioNoti = info['notification']['icon'];
               dataUser = info['data']['user'];
               dataEmail = info['data']['mail'];
+
+              informacion = {
+                "usuario": "${usuario.toString()}",
+                "mensaje": "${mensaje.toString()}",
+                "emailuser": "${emailUser.toString()}",
+                "fotouser": "${fotoUser.toString()}"
+              };
+
+              datosReceived = {
+                "usuario": "${usuario.toString()}",
+                "mensaje": "${mensaje.toString()}",
+                "emailuser": "${emailUser.toString()}",
+                "fotouser": "${fotoUser.toString()}",
+                "fotousuarionoti": "${fotoUsuarioNoti.toString()}",
+                "datauser": "${dataUser.toString()}",
+                "dataemail": "${dataEmail.toString()}"
+              };
+
+              //El argumento se agrega al stream
+              _mensajesStreamController.sink.add(informacion);
+              mostrarNotificaciones(fotoUser.toString(),usuario, mensaje);
+
             }else{
-              usuario = info['notification']['title'] ?? 'no-data-ios';
-              mensaje = info['notification']['body'];
-              emailUser = info['data']['iduser'];
-              fotoUser = info['data']['useravatar'];
+              usuario = info['aps']['alert']['title'] ?? 'no-data-ios';
+              mensaje = info['aps']['alert']['body'];
+              emailUser = info['iduser'];
+              fotoUser = info['useravatar'];
+
+              informacion = {
+                "usuario": "${usuario.toString()}",
+                "mensaje": "${mensaje.toString()}",
+                "emailuser": "${emailUser.toString()}",
+                "fotouser": "${fotoUser.toString()}"
+              };
+
+              datosReceived = {
+                "usuario": "${usuario.toString()}",
+                "mensaje": "${mensaje.toString()}",
+                "emailuser": "${emailUser.toString()}",
+                "fotouser": "${fotoUser.toString()}",
+                "fotousuarionoti": "${fotoUsuarioNoti.toString()}",
+                "datauser": "${dataUser.toString()}",
+                "dataemail": "${dataEmail.toString()}"
+              };
+
+              //El argumento se agrega al stream
+              _mensajesStreamController.sink.add(informacion);
+              mostrarNotificaciones(fotoUser.toString(),usuario, mensaje);
             }
-            informacion = {
-              "usuario": "${usuario.toString()}",
-              "mensaje": "${mensaje.toString()}",
-              "emailuser": "${emailUser.toString()}",
-              "fotouser": "${fotoUser.toString()}"
-            };
-
-            datosReceived = {
-              "usuario": "${usuario.toString()}",
-              "mensaje": "${mensaje.toString()}",
-              "emailuser": "${emailUser.toString()}",
-              "fotouser": "${fotoUser.toString()}",
-              "fotousuarionoti": "${fotoUsuarioNoti.toString()}",
-              "datauser": "${dataUser.toString()}",
-              "dataemail": "${dataEmail.toString()}"
-            };
-
-            //El argumento se agrega al stream
-            _mensajesStreamController.sink.add(informacion);
-
-            mostrarNotificaciones(fotoUser.toString(),usuario, mensaje);
 
             /*mensajes.listen((data){
               mostrarNotificaciones(fotoUser.toString(),usuario, mensaje);
@@ -203,32 +244,99 @@ class PushNotificationProvider{
               fotoUsuarioNoti = info['notification']['icon'];
               dataUser = info['data']['user'];
               dataEmail = info['data']['mail'];
+
+              informacion = {
+                "usuario": "${usuario.toString()}",
+                "mensaje": "${mensaje.toString()}",
+                "emailuser": "${emailUser.toString()}",
+                "fotouser": "${fotoUser.toString()}"
+              };
+
+              datosReceived = {
+                "usuario": "${usuario.toString()}",
+                "mensaje": "${mensaje.toString()}",
+                "emailuser": "${emailUser.toString()}",
+                "fotouser": "${fotoUser.toString()}",
+                "fotousuarionoti": "${fotoUsuarioNoti.toString()}",
+                "datauser": "${dataUser.toString()}",
+                "dataemail": "${dataEmail.toString()}"
+              };
+
+              //El argumento se agrega al stream
+              _mensajesStreamController.sink.add(informacion);
+
+              final chat = Chat.fromJsonMap(datosReceived);
+
+              if(_prefs.token == ''){
+                navigationKey.currentState.push(
+                  MaterialPageRoute(
+                    builder: (context){
+                      return SesionPageChatUser();
+                    },
+                    settings: RouteSettings(
+                      arguments: chat
+                    )
+                  )
+                );
+              }else{
+                navigationKey.currentState.push(
+                  MaterialPageRoute(
+                    builder: (context){
+                      return ChatPage(userEmail: info['data']['iduser'],userName: info['data']['nickname'],userAvatar: info['data']['useravatar']);
+                    }
+                  )
+                );
+              }
               
             }else{
-              //argumento = info['mensaje'] ?? 'no-data-ios';
-              usuario = info['notification']['title'] ?? 'no-data-ios';
-              mensaje = info['notification']['body'];
-              emailUser = info['data']['iduser'];
-              fotoUser = info['data']['useravatar'];
+              usuario = info['aps']['alert']['title'] ?? 'no-data-ios';
+              mensaje = info['aps']['alert']['body'];
+              emailUser = info['iduser'];
+              fotoUser = info['useravatar'];
+
+              informacion = {
+                "usuario": "${usuario.toString()}",
+                "mensaje": "${mensaje.toString()}",
+                "emailuser": "${emailUser.toString()}",
+                "fotouser": "${fotoUser.toString()}"
+              };
+
+              datosReceived = {
+                "usuario": "${usuario.toString()}",
+                "mensaje": "${mensaje.toString()}",
+                "emailuser": "${emailUser.toString()}",
+                "fotouser": "${fotoUser.toString()}",
+                "fotousuarionoti": "${fotoUsuarioNoti.toString()}",
+                "datauser": "${dataUser.toString()}",
+                "dataemail": "${dataEmail.toString()}"
+              };
+
+              //El argumento se agrega al stream
+              _mensajesStreamController.sink.add(informacion);
+
+              final chat = Chat.fromJsonMap(datosReceived);
+
+              if(_prefs.token == ''){
+                navigationKey.currentState.push(
+                  MaterialPageRoute(
+                    builder: (context){
+                      return SesionPageChatUser();
+                    },
+                    settings: RouteSettings(
+                      arguments: chat
+                    )
+                  )
+                );
+              }else{
+                navigationKey.currentState.push(
+                  MaterialPageRoute(
+                    builder: (context){
+                      return ChatPage(userEmail: info['iduser'],userName: info['aps']['alert']['title'],userAvatar: info['useravatar']);
+                    }
+                  )
+                );
+              }
             }
-            informacion = {
-              "usuario": "${usuario.toString()}",
-              "mensaje": "${mensaje.toString()}",
-              "emailuser": "${emailUser.toString()}",
-              "fotouser": "${fotoUser.toString()}"
-            };
-
-            datosReceived = {
-              "usuario": "${usuario.toString()}",
-              "mensaje": "${mensaje.toString()}",
-              "emailuser": "${emailUser.toString()}",
-              "fotouser": "${fotoUser.toString()}",
-              "fotousuarionoti": "${fotoUsuarioNoti.toString()}",
-              "datauser": "${dataUser.toString()}",
-              "dataemail": "${dataEmail.toString()}"
-            };
-
-            _mensajesStreamController.sink.add(informacion);
             //mostrarNotificaciones(fotoUser.toString(),usuario, mensaje);
             // mensajes.listen((data){
             //   //mostrarNotificaciones(fotoUser.toString(),usuario, mensaje);
@@ -240,29 +348,6 @@ class PushNotificationProvider{
             //     )
             //   );
             // });
-
-            final chat = Chat.fromJsonMap(datosReceived);
-
-            if(_prefs.token == ''){
-              navigationKey.currentState.push(
-                MaterialPageRoute(
-                  builder: (context){
-                    return SesionPageChatUser();
-                  },
-                  settings: RouteSettings(
-                    arguments: chat
-                  )
-                )
-              );
-            }else{
-              navigationKey.currentState.push(
-                MaterialPageRoute(
-                  builder: (context){
-                    return ChatPage(userEmail: info['data']['iduser'],userName: info['data']['nickname'],userAvatar: info['data']['useravatar']);
-                  }
-                )
-              );
-            }
           },
           //Se dispara cuando la aplicación está en segundo plano
           onResume: (info)async{
@@ -291,51 +376,97 @@ class PushNotificationProvider{
               fotoUsuarioNoti = info['notification']['icon'];
               dataUser = info['data']['user'];
               dataEmail = info['data']['mail'];
-            }else{
-              //argumento = info['mensaje'] ?? 'no-data-ios';
-              usuario = info['notification']['title'] ?? 'no-data-ios';
-              mensaje = info['notification']['body'];
-              emailUser = info['data']['iduser'];
-              fotoUser = info['data']['useravatar'];
-            }
-            informacion = {
-              "usuario": "${usuario.toString()}",
-              "mensaje": "${mensaje.toString()}",
-              "emailuser": "${emailUser.toString()}",
-              "fotouser": "${fotoUser.toString()}"
-            };
 
-            datosReceived = {
-              "usuario": "${usuario.toString()}",
-              "mensaje": "${mensaje.toString()}",
-              "emailuser": "${emailUser.toString()}",
-              "fotouser": "${fotoUser.toString()}",
-              "fotousuarionoti": "${fotoUsuarioNoti.toString()}",
-              "datauser": "${dataUser.toString()}",
-              "dataemail": "${dataEmail.toString()}"
-            };
-            _mensajesStreamController.sink.add(informacion);
-            //mostrarNotificaciones(fotoUser.toString(),usuario, mensaje);
-            final chat = Chat.fromJsonMap(datosReceived);
-            if(_prefs.token == ''){
-              navigationKey.currentState.push(
-                MaterialPageRoute(
-                  builder: (context){
-                    return SesionPageChatUser();
-                  },
-                  settings: RouteSettings(
-                    arguments: chat
+              informacion = {
+                "usuario": "${usuario.toString()}",
+                "mensaje": "${mensaje.toString()}",
+                "emailuser": "${emailUser.toString()}",
+                "fotouser": "${fotoUser.toString()}"
+              };
+
+              datosReceived = {
+                "usuario": "${usuario.toString()}",
+                "mensaje": "${mensaje.toString()}",
+                "emailuser": "${emailUser.toString()}",
+                "fotouser": "${fotoUser.toString()}",
+                "fotousuarionoti": "${fotoUsuarioNoti.toString()}",
+                "datauser": "${dataUser.toString()}",
+                "dataemail": "${dataEmail.toString()}"
+              };
+
+              //El argumento se agrega al stream
+              _mensajesStreamController.sink.add(informacion);
+
+              final chat = Chat.fromJsonMap(datosReceived);
+
+              if(_prefs.token == ''){
+                navigationKey.currentState.push(
+                  MaterialPageRoute(
+                    builder: (context){
+                      return SesionPageChatUser();
+                    },
+                    settings: RouteSettings(
+                      arguments: chat
+                    )
                   )
-                )
-              );
+                );
+              }else{
+                navigationKey.currentState.push(
+                  MaterialPageRoute(
+                    builder: (context){
+                      return ChatPage(userEmail: info['data']['iduser'],userName: info['data']['nickname'],userAvatar: info['data']['useravatar']);
+                    }
+                  )
+                );
+              }
             }else{
-              navigationKey.currentState.push(
-                MaterialPageRoute(
-                  builder: (context){
-                    return ChatPage(userEmail: info['data']['iduser'],userName: info['data']['nickname'],userAvatar: info['data']['useravatar']);
-                  }
-                )
-              );
+              usuario = info['aps']['alert']['title'] ?? 'no-data-ios';
+              mensaje = info['aps']['alert']['body'];
+              emailUser = info['iduser'];
+              fotoUser = info['useravatar'];
+
+              informacion = {
+                "usuario": "${usuario.toString()}",
+                "mensaje": "${mensaje.toString()}",
+                "emailuser": "${emailUser.toString()}",
+                "fotouser": "${fotoUser.toString()}"
+              };
+
+              datosReceived = {
+                "usuario": "${usuario.toString()}",
+                "mensaje": "${mensaje.toString()}",
+                "emailuser": "${emailUser.toString()}",
+                "fotouser": "${fotoUser.toString()}",
+                "fotousuarionoti": "${fotoUsuarioNoti.toString()}",
+                "datauser": "${dataUser.toString()}",
+                "dataemail": "${dataEmail.toString()}"
+              };
+
+              //El argumento se agrega al stream
+              _mensajesStreamController.sink.add(informacion);
+
+              final chat = Chat.fromJsonMap(datosReceived);
+
+              if(_prefs.token == ''){
+                navigationKey.currentState.push(
+                  MaterialPageRoute(
+                    builder: (context){
+                      return SesionPageChatUser();
+                    },
+                    settings: RouteSettings(
+                      arguments: chat
+                    )
+                  )
+                );
+              }else{
+                navigationKey.currentState.push(
+                  MaterialPageRoute(
+                    builder: (context){
+                      return ChatPage(userEmail: info['iduser'],userName: info['aps']['alert']['title'],userAvatar: info['useravatar']);
+                    }
+                  )
+                );
+              }
             }
             
           }

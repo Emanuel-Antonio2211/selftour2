@@ -51,6 +51,7 @@ class _ToursRecientesState extends State<ToursRecientes> {
 
   Widget recientes (BuildContext context,InfoTour tourReciente){
     final size = MediaQuery.of(context).size;
+    String noGallery = 'https://selftour-public.s3.amazonaws.com/no_gallery.jpg';
     //CategoriasProvider categoriasProvider = CategoriasProvider();
     //PreferenciasUsuario prefs = PreferenciasUsuario();
     //final BaseCacheManager baseCacheManager = DefaultCacheManager();
@@ -72,7 +73,7 @@ class _ToursRecientesState extends State<ToursRecientes> {
                 )*/
 
                 CachedNetworkImage(
-                  imageUrl: "${tourReciente.gallery}",
+                  imageUrl: tourReciente.gallery == null ? noGallery : "${tourReciente.gallery}",
                   //errorWidget: (context, url, error)=>Icon(Icons.error),
                   //cacheManager: baseCacheManager,
                   useOldImageOnUrlChange: true,

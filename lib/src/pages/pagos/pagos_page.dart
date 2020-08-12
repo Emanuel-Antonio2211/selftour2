@@ -341,12 +341,17 @@ class _DetalleCompraPageState extends State<DetalleCompraPage> {
                   ),
                   ClipRRect(
                     borderRadius: BorderRadius.circular(5.0),
-                    child: Image.network(
-                      detalleTour.route[0]['gallery'][0]['url'],
-                      width: 120.0,
-                      height: 120.0,
+                    child: FadeInImage(
+                        image: NetworkImage(
+                        detalleTour.route[0]['gallery'][0]['url'],
+                        scale: 1.0,
+                      ),
+                      width: size.width * 0.4,
+                      height: size.height * 0.2,
                       fit: BoxFit.fill,
-                      scale: 1.0,
+                      placeholder: AssetImage(
+                        'assets/loading.gif'
+                      )
                     ),
                   )
                 ],
@@ -1615,6 +1620,7 @@ class _IngresoTarjetaPageState extends State<IngresoTarjetaPage> {
                           child: TextFormField(
                             maxLength: 4,
                             initialValue: tarjeta.cvv2,
+                            obscureText: true,
                             onSaved: (value){
                               tarjeta.cvv2 = value;
                             },

@@ -53,6 +53,7 @@ class _ToursRecomendadosState extends State<ToursRecomendados> {
 
   Widget recomendados(BuildContext context, InfoTour tourRecomendado){
     final size = MediaQuery.of(context).size;
+    String noGallery = 'https://selftour-public.s3.amazonaws.com/no_gallery.jpg';
     //final BaseCacheManager baseCacheManager = DefaultCacheManager();
     
     final tarjeta = Container(
@@ -71,7 +72,7 @@ class _ToursRecomendadosState extends State<ToursRecomendados> {
                   height: size.height * 0.24,
                 )*/
                 CachedNetworkImage(
-                  imageUrl: "${tourRecomendado.gallery}",
+                  imageUrl: tourRecomendado.gallery == null ? noGallery : "${tourRecomendado.gallery}",
                   //errorWidget: (context, url, error)=>Icon(Icons.error),
                   //cacheManager: baseCacheManager,
                   useOldImageOnUrlChange: true,

@@ -55,6 +55,7 @@ class _ToursPopularesState extends State<ToursPopulares> {
 
   Widget tourPopulares(BuildContext context,InfoTour tourPopular){
     final size = MediaQuery.of(context).size;
+    String noGallery = 'https://selftour-public.s3.amazonaws.com/no_gallery.jpg';
     //CategoriasProvider categoriasProvider = CategoriasProvider();
     //PreferenciasUsuario prefs = PreferenciasUsuario();
     //final BaseCacheManager baseCacheManager = DefaultCacheManager();
@@ -76,7 +77,7 @@ class _ToursPopularesState extends State<ToursPopulares> {
                     height: size.height * 0.23,
                   )*/
                   CachedNetworkImage(
-                    imageUrl: "${tourPopular.gallery}",
+                    imageUrl: tourPopular.gallery == null ? noGallery : "${tourPopular.gallery}",
                     //errorWidget: (context, url, error)=>Icon(Icons.error),
                     //cacheManager: baseCacheManager,
                     useOldImageOnUrlChange: true,

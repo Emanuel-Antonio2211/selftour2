@@ -288,6 +288,21 @@ class _CompradosState extends State<Comprados> {
   String codCountry;
   AppState _appState = AppState();
 
+  @override
+  void initState() { 
+    super.initState();
+    _scrollController.addListener((){
+      if(_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 10){
+        //_scrollController.position.didEndScroll();
+        //print('Cargar siguientes categorías');
+        //Se ejecuta la función para mostrar la siguiente página
+        //de categorías
+        //widget.siguientePagina();
+        fetchData();
+      }
+    });
+  }
+
   Future<Null> cargarTours()async{
     final duration = Duration(seconds: 2);
 
@@ -299,7 +314,7 @@ class _CompradosState extends State<Comprados> {
         
       // });
 
-      _categoriasProvider.toursComprados().then((result){
+      _categoriasProvider.toursComprados(page: '1' ).then((result){
         final comprados = ListaToursC.fromJsonList(result['shopping']['tours']);
         for(int i = 0; i < comprados.itemsTours.length; i++){
           widget.listaComprados.add(comprados.itemsTours[i]);
@@ -315,16 +330,7 @@ class _CompradosState extends State<Comprados> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    _scrollController.addListener((){
-      if(_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 10){
-        //_scrollController.position.didEndScroll();
-        //print('Cargar siguientes categorías');
-        //Se ejecuta la función para mostrar la siguiente página
-        //de categorías
-        //widget.siguientePagina();
-        fetchData();
-      }
-    });
+
     return Container(
       height: size.height * 0.8,
       child: Stack(
@@ -332,6 +338,8 @@ class _CompradosState extends State<Comprados> {
           RefreshIndicator(
             onRefresh: cargarTours,
             child: ListView.builder(
+              shrinkWrap: true,
+              primary: false,
               controller: _scrollController,
               physics: AlwaysScrollableScrollPhysics(),
               itemCount: widget.listaComprados.length,
@@ -356,23 +364,29 @@ class _CompradosState extends State<Comprados> {
   }
 
   void cargar(){
-    setState(() {
-      
-    });
     isloading = false;
-    _scrollController.animateTo(
-      _scrollController.position.pixels + 100,
-      curve: Curves.fastOutSlowIn,
-      duration: Duration(milliseconds: 250)
-    );
+    // _scrollController.animateTo(
+    //   _scrollController.position.pixels + 100,
+    //   curve: Curves.fastOutSlowIn,
+    //   duration: Duration(milliseconds: 250)
+    // );
+    
     _categoriasProvider.toursComprados().then((resp){
       setState(() {
         isloading = false;
       });
-      final comprados = ListaToursC.fromJsonList(resp['shopping']['tours']);
-      for(int i = 0; i < comprados.itemsTours.length; i++){
-        widget.listaComprados.add(comprados.itemsTours[i]);
+      //['shopping']['msg'] == "NO SE ENCONTRO NINGUN TOUR"
+      //['shopping']['tours']
+      if(resp['shopping']['tours'] != null){
+        final comprados = ListaToursC.fromJsonList(resp['shopping']['tours']);
+        for(int i = 0; i < comprados.itemsTours.length; i++){
+          widget.listaComprados.add(comprados.itemsTours[i]);
+        }
+      }else if(resp['shopping']['msg'] == "NO SE ENCONTRO NINGUN TOUR"){
+        print("No hay tours");
+        _scrollController.position.didEndScroll();
       }
+      
     });
     //widget.siguientePagina();
   }
@@ -449,6 +463,8 @@ class _CompradosState extends State<Comprados> {
 
   Widget _tourComprado(BuildContext context, InfoTour infotour){
     final size = MediaQuery.of(context).size;
+    String noGallery = 'https://selftour-public.s3.amazonaws.com/no_gallery.jpg';
+
     return GestureDetector(
       onTap: (){
         Navigator.pushNamed(context, '/detalletour',arguments: infotour);
@@ -525,7 +541,7 @@ class _CompradosState extends State<Comprados> {
               borderRadius: BorderRadius.circular(10.0),
               child: CachedNetworkImage(
                 imageUrl: infotour.url == null ?
-                "https://selftour-public.s3.amazonaws.com/no_gallery.jpg":
+                "$noGallery":
                  "${infotour.url}",
                 //errorWidget: (context, url, error)=>Icon(Icons.error),
                 //cacheManager: baseCacheManager,

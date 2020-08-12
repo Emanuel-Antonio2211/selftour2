@@ -160,7 +160,25 @@ class _BusquedaTourPageState extends State<BusquedaTourPage> with AutomaticKeepA
                       final tours = new ListaToursC.fromJsonList(snapshot.data['tours'][0]['data_tour']);
                       return ToursGeneral(listaTours: tours.itemsTours);
                       
-                    }else if(snapshot.data['tours']['total'] == "empty"){
+                    }else if(snapshot.data['tours'][0]['total'] == "empty"){
+                      return Column(
+                        children: <Widget>[
+                          SafeArea(
+                            child: SizedBox(
+                              height: size.height * 0.4,
+                            ),
+                          ),
+                          Center(
+                            child: Text(
+                              '$noDatos',
+                              style: TextStyle(
+                                fontFamily: 'Point-SemiBold'
+                              ),
+                            )
+                          ),
+                        ],
+                      );
+                    }else{
                       return Column(
                         children: <Widget>[
                           SafeArea(
@@ -200,7 +218,25 @@ class _BusquedaTourPageState extends State<BusquedaTourPage> with AutomaticKeepA
                     if(snapshot.data['tours'][0]['data_tour'] != null){
                       final tours = new ListaToursC.fromJsonList(snapshot.data['tours'][0]['data_tour']);
                       return ToursGeneral(listaTours: tours.itemsTours);
-                    }else if(snapshot.data['tours']['total'] == "empty"){
+                    }else if(snapshot.data['tours'][0]['total'] == "empty"){
+                      return Column(
+                        children: <Widget>[
+                          SafeArea(
+                            child: SizedBox(
+                              height: size.height * 0.4,
+                            ),
+                          ),
+                          Center(
+                            child: Text(
+                              '$noDatos',
+                              style: TextStyle(
+                                fontFamily: 'Point-SemiBold'
+                              ),
+                            )
+                          ),
+                        ],
+                      );
+                    }else{
                       return Column(
                         children: <Widget>[
                           SafeArea(

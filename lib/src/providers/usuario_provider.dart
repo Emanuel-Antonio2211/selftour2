@@ -893,4 +893,17 @@ class UsuarioProvider{
     //   print("El correo tal vez no existe o no fue encontrado como registrado");
     // });
   }
+
+  Future<List<dynamic>> termConditions()async{
+    final url = Uri.https(
+      'api-users.selftours.app', 
+      '/termsConditions'
+    );
+
+    final resp = await http.get(url);
+
+    final decodedResp = json.decode(resp.body);
+    //print(decodedResp[0]['terms']);
+    return decodedResp;
+  }
 }

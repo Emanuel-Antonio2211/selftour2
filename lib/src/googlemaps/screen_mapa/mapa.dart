@@ -89,7 +89,7 @@ class _MapaState extends State<Mapa> {
     // Platform messages may fail, so we use a try/catch PlatformException.
     try {
       platformVersion = await _directions.platformVersion;
-    }catch(PlatformException) {
+    }catch(e) {
       platformVersion = 'Failed to get platform version.';
     }
 
@@ -1691,8 +1691,9 @@ class _DetalleSitioState extends State<DetalleSitio> {
                           //initialData: InitialData,
                           builder: (BuildContext context, AsyncSnapshot<Map<String,dynamic>> snapshot) {
                             if(snapshot.hasData){
-                             // final resp = snapshot.data;
-                              return null;
+                              final resp = snapshot.data;
+                              prefs.idiomaDescripcion = Locale(resp['data']['detections'][0][0]['language']);
+                              return Container();
                             }
                             return Container();
                           },

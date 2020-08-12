@@ -612,16 +612,34 @@ class _DetalleTourPageState extends State<DetalleTourPage> with SingleTickerProv
                   )
                 ):null,
               );
+            }else if(snapshot.hasError){
+              return Column(
+                children: <Widget>[
+                  SafeArea(
+                    child: SizedBox(
+                      height: size.height * 0.4,
+                    ),
+                  ),
+                  Center(
+                    child: Text(
+                      "${snapshot.error.toString()}",
+                      style: TextStyle(
+                        fontFamily: 'Point-SemiBold'
+                      ),
+                    )
+                  )
+                ],
+              );
             }else{
               return Column(
-                  children: <Widget>[
-                    SafeArea(
-                      child: SizedBox(
-                        height: size.height * 0.4,
-                      ),
+                children: <Widget>[
+                  SafeArea(
+                    child: SizedBox(
+                      height: size.height * 0.4,
                     ),
-                    Center(child: CircularProgressIndicator())
-                  ],
+                  ),
+                  Center(child: CircularProgressIndicator())
+                ],
               );
               
             }

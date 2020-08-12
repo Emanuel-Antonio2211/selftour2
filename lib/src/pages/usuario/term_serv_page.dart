@@ -1,28 +1,56 @@
 import 'package:flutter/material.dart';
+import 'package:selftourapp/src/preferencias_usuario/preferencias_usuario.dart';
+import 'package:selftourapp/src/providers/categorias_providers.dart';
+import 'package:selftourapp/src/providers/usuario_provider.dart';
+import 'package:selftourapp/src/translation_class/app_translations.dart';
 
-class TermServPage extends StatelessWidget {
-  final String termServ = """Minim aute consequat consequat enim esse id velit tempor elit consectetur elit. Eiusmod amet pariatur culpa veniam eu deserunt ullamco excepteur id et amet. Aute veniam nisi non nulla consequat cillum voluptate aute exercitation ullamco. Deserunt aliqua irure incididunt minim reprehenderit do labore. Lorem ex veniam non ullamco dolor quis ad et dolore officia.
+class TermServPage extends StatefulWidget {
+  @override
+  _TermServPageState createState() => _TermServPageState();
+}
 
-Elit reprehenderit enim elit ad labore eiusmod ad ullamco ea incididunt id occaecat. Veniam non aliquip dolore Lorem sit elit dolore. Duis reprehenderit consectetur mollit occaecat reprehenderit consequat fugiat pariatur est. Ullamco non proident ea minim ipsum. Quis id ad dolore Lorem dolore aliqua minim nostrud dolore. Aliqua sunt pariatur qui duis esse qui qui do culpa.
+class _TermServPageState extends State<TermServPage> {
+  UsuarioProvider _usuarioProvider = UsuarioProvider();
+  CategoriasProvider _categoriasProvider = CategoriasProvider();
+  PreferenciasUsuario _prefs = PreferenciasUsuario();
 
-Officia est sint ullamco consequat do. Mollit consequat non exercitation tempor ex laborum ea qui dolore proident consectetur. Nulla ex magna consectetur aliqua incididunt amet dolor est sit aute enim.
+  bool mostrarTraductor = true;
+  bool mostrarOriginal = false;
+  String terminos = '';
 
-Proident ut anim nostrud ea quis. Ad ut Lorem officia ut ad anim consequat fugiat incididunt non non ut. Lorem deserunt do sunt elit ea dolore ea amet voluptate dolore sint Lorem. Officia exercitation tempor commodo excepteur quis aliqua ea commodo Lorem.
+  void _mostrarBotonTraductor(){
+    setState(() {
+      mostrarTraductor = true;
+      mostrarOriginal = false;
+    });
+  }
 
-Pariatur consequat laboris commodo minim. Fugiat eiusmod eu sint id incididunt irure voluptate nostrud amet pariatur eiusmod duis. Commodo voluptate proident enim exercitation non. Ad ex voluptate nostrud sint qui nostrud cupidatat eu cupidatat do tempor. Nisi nulla qui voluptate deserunt Lorem amet aliquip incididunt cillum ea incididunt cillum et. Officia sit duis reprehenderit dolor mollit est exercitation in. Commodo do mollit enim fugiat commodo mollit culpa quis dolor qui id veniam.
+  void _ocultarBotonTraductor(){
+    setState(() {
+      
+      mostrarOriginal = true;
+      mostrarTraductor = false;
+    });
+  }
 
-Ad laboris laborum pariatur officia nulla exercitation laboris exercitation consequat. Laboris id labore labore deserunt nulla consectetur ullamco dolore nisi anim enim. Ullamco deserunt pariatur ad et dolor. Ipsum reprehenderit ut duis elit nisi in nulla ullamco. In nisi veniam labore officia ipsum cillum deserunt eiusmod incididunt ea elit minim commodo est.
-
-Incididunt Lorem id magna sint nisi cupidatat pariatur enim voluptate qui ex anim labore ut. Cupidatat veniam aute officia amet ad cupidatat. Adipisicing laboris excepteur non commodo eu ullamco quis non proident. Anim ut tempor ipsum labore voluptate ipsum nostrud ipsum duis magna Lorem. Consequat sint est proident laborum.
-
-Consequat et aliquip reprehenderit non commodo deserunt in. Aliquip tempor dolore pariatur sint adipisicing tempor minim. Ad pariatur id elit nisi voluptate non laborum aute dolor ad id pariatur. Ut commodo incididunt quis aute culpa dolore adipisicing occaecat voluptate anim quis laborum non. Nostrud do est minim aliquip do occaecat cillum cillum voluptate ullamco. Nisi dolore Lorem culpa do est minim proident non do elit nisi ad laboris.""";
-  
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    String termserv = AppTranslations.of(context).text('title_termserv');
+    String traducir = AppTranslations.of(context).text('title_traducir');
+    String textoOriginal = AppTranslations.of(context).text('title_texto_original');
+    
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
         backgroundColor: Colors.white,
+        centerTitle: true,
+        title: Text(
+          "$termserv".toUpperCase(),
+          style: TextStyle(
+            fontFamily: 'Point-SemiBold'
+          ),
+        ),
         leading: IconButton(
           icon: Icon(
             Icons.arrow_back,
@@ -35,10 +63,118 @@ Consequat et aliquip reprehenderit non commodo deserunt in. Aliquip tempor dolor
         elevation: 0.0,
       ),
       body: SingleChildScrollView(
-        child: Column(
-          children: <Widget>[
-            Text(termServ,textAlign: TextAlign.justify,style: TextStyle(fontFamily: 'Point-SemiBold'),)
-          ],
+        child: FutureBuilder(
+          future: _usuarioProvider.termConditions(),
+          builder: (BuildContext context, AsyncSnapshot<List<dynamic>> snapshot) {
+            if(snapshot.hasData){
+              final texto = snapshot.data[0]['terms'].replaceAll(RegExp(r'</br>'),'\n');
+              return Padding(
+                padding: EdgeInsets.symmetric(horizontal: size.width * 0.04,vertical: size.width * 0.02),
+                child: Column(
+                  children: <Widget>[
+                    FutureBuilder(
+                      future: _categoriasProvider.detectarIdioma(texto.toString()),
+                      //initialData: InitialData,
+                      builder: (BuildContext context, AsyncSnapshot<Map<String,dynamic>> snapshot) {
+                        if(snapshot.hasData){
+                          final resp = snapshot.data;
+                          _prefs.idiomaTerms = Locale(resp['data']['detections'][0][0]['language']);
+                          return Container();
+                        }
+                        return Container();
+                      },
+                    ),
+                    _prefs.idioma == _prefs.idiomaTerms ? Container():
+                    Container(
+                      child: Row(
+                        children: <Widget>[
+                          Visibility(
+                            visible: mostrarTraductor,
+                            child: FlatButton(
+                              padding: EdgeInsets.zero,
+                              onPressed: ()async{
+                                setState(() {
+                                          
+                                });
+                                Map<String,dynamic> resp = await _categoriasProvider.traducirFull(_prefs.idioma == null ? 'en':_prefs.idioma,snapshot.data[0]['terms'].toString() );
+                                terminos = resp['data']['translations'][0]['translatedText'].replaceAll(RegExp(r'</br>'),'\n').toString();
+                                _ocultarBotonTraductor();
+                              }, 
+                              child: Text(
+                                "$traducir",
+                                style: TextStyle(
+                                  fontFamily: 'SourceSansPro-Light',
+                                  color: Colors.blue,
+                                  decoration: TextDecoration.underline
+                                ),
+                              )
+                            ),
+                          ),
+                          Visibility(
+                            visible: !mostrarTraductor,
+                            child: FlatButton(
+                              padding: EdgeInsets.zero,
+                              onPressed: (){
+                                setState(() {
+                                          
+                                });
+                                _mostrarBotonTraductor();
+                              }, 
+                              child: Text(
+                                "$textoOriginal",
+                                style: TextStyle(
+                                  fontFamily: 'SourceSansPro-Light',
+                                  color: Colors.blue,
+                                  decoration: TextDecoration.underline
+                                ),
+                              )
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    RichText(
+                      text: TextSpan(
+                        text: mostrarTraductor ? "${texto.toString()}":terminos,//mostrarTraductor ? "${texto.toString()}":terminos
+                        style: TextStyle(
+                          fontFamily: 'SourceSansPro-Light',
+                          color: Colors.black
+                        )
+                      ),
+                      textAlign: TextAlign.justify,
+                    )
+                  ],
+                ),
+              );
+            }else if(snapshot.hasError){
+              return Column(
+                children: <Widget>[
+                  SizedBox(
+                    height: size.height * 0.34,
+                  ),
+                  Center(
+                    child: Text(
+                      "${snapshot.error.toString()}",
+                      style: TextStyle(
+                        fontFamily: 'Point-SemiBold'
+                      ),
+                    )
+                  )
+                ],
+              );
+            }else{
+              return Column(
+                children: <Widget>[
+                  SizedBox(
+                    height: size.height * 0.34,
+                  ),
+                  Center(
+                    child: CircularProgressIndicator(),
+                  )
+                ],
+              );
+            }
+          },
         ),
       ),
     );

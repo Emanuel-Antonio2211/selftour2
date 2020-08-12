@@ -117,12 +117,12 @@ class _ListaToursCategoriaVerticalState extends State<ListaToursCategoriaVertica
             child: ListView.builder(
               scrollDirection: Axis.vertical,
               shrinkWrap: true,
-              primary: true,
+              primary: false,
               //pageSnapping: false,
               controller: widget._pageController,
               //children: _tarjetas(context)
               itemCount: widget.listaTours.length,
-              //physics: AlwaysScrollableScrollPhysics(), //FixedExtentScrollPhysics() AlwaysScrollableScrollPhysics() BouncingScrollPhysics()
+              physics: AlwaysScrollableScrollPhysics(), //FixedExtentScrollPhysics() AlwaysScrollableScrollPhysics() BouncingScrollPhysics()
               //ClampingScrollPhysics()
               itemBuilder: (context,i){
                 return _tarjeta(context, widget.listaTours[i]);
@@ -147,11 +147,12 @@ class _ListaToursCategoriaVerticalState extends State<ListaToursCategoriaVertica
   void cargar()async{
     String noData = AppTranslations.of(context).text('title_nodata');
     //isloading = false;
-    widget._pageController.animateTo(
-      widget._pageController.position.pixels + 100,
-      curve: Curves.fastOutSlowIn, 
-      duration: Duration(milliseconds: 250)
-    );
+    // widget._pageController.animateTo(
+    //   widget._pageController.position.pixels + 100,
+    //   curve: Curves.fastOutSlowIn, 
+    //   duration: Duration(milliseconds: 250)
+    // );
+
     //widget.siguientePagina();
     
     // _appState.userLocation().then((value)async{
@@ -203,9 +204,9 @@ class _ListaToursCategoriaVerticalState extends State<ListaToursCategoriaVertica
           }
         }else if(datos.containsKey('dataTours')){
           print(noData);
+          widget._pageController.position.didEndScroll();
         }
       }
-      widget._pageController.position.didEndScroll();
     
     print("Lista paginado");
     print(widget.listaTours);
@@ -239,6 +240,8 @@ class _ListaToursCategoriaVerticalState extends State<ListaToursCategoriaVertica
     
     //String pais = AppTranslations.of(context).text('title_country');
     String valoracion = AppTranslations.of(context).text('title_puntuacion');
+    String noGallery = 'https://selftour-public.s3.amazonaws.com/no_gallery.jpg';
+    String personas = AppTranslations.of(context).text('title_cant_personas');
 
     final tarjeta = Stack(
       children: <Widget>[
@@ -257,7 +260,7 @@ class _ListaToursCategoriaVerticalState extends State<ListaToursCategoriaVertica
                     scale: 1.0,
                   )*/
                   CachedNetworkImage(
-                    imageUrl: "${tour.foto.toString()}",
+                    imageUrl: tour.foto == null ? noGallery : "${tour.foto.toString()}",
                     //errorWidget: (context, url, error)=>Icon(Icons.error),
                     //cacheManager: baseCacheManager,
                     useOldImageOnUrlChange: true,
@@ -426,7 +429,7 @@ class _ListaToursCategoriaVerticalState extends State<ListaToursCategoriaVertica
                         ),
                       ),
                       Text(
-                        ' (  )',
+                        ' (${tour.totalcom.toString()} $personas)',
                         style: TextStyle(
                           fontFamily: 'Point-SemiBold',
                           color: Colors.white
@@ -442,7 +445,7 @@ class _ListaToursCategoriaVerticalState extends State<ListaToursCategoriaVertica
           padding: EdgeInsets.only(right: 8.0),
           child: Align(
             alignment: Alignment.bottomRight,
-            heightFactor: 11.7,
+            heightFactor: 12.6,
             child: Padding(
               padding: EdgeInsets.only(right: size.width * 0.05),
               child: Text(
@@ -631,11 +634,11 @@ class _ListaToursCategoriaGridState extends State<ListaToursCategoriaGrid> {
           onRefresh: cargarTours,
           child: GridView.builder(
             shrinkWrap: true,
-            primary: true,
+            primary: false,
             scrollDirection: Axis.vertical,
             controller: _scrollController,
             itemCount: widget.listaTours.length,
-            //physics: AlwaysScrollableScrollPhysics(),
+            physics: AlwaysScrollableScrollPhysics(),
             itemBuilder: (context,i){
               return _tarjeta(context, widget.listaTours[i]);
             },
@@ -671,11 +674,12 @@ class _ListaToursCategoriaGridState extends State<ListaToursCategoriaGrid> {
 
   void cargar()async{
     String noData = AppTranslations.of(context).text('title_nodata');
-    _scrollController.animateTo(
-      _scrollController.position.pixels + 20,
-      curve: Curves.fastOutSlowIn, 
-      duration: Duration(milliseconds: 250)
-    );
+    // _scrollController.animateTo(
+    //   _scrollController.position.pixels + 20,
+    //   curve: Curves.fastOutSlowIn, 
+    //   duration: Duration(milliseconds: 250)
+    // );
+
     //widget.siguientePagina();
 
     // _appState.userLocation().then((value)async{
@@ -721,9 +725,9 @@ class _ListaToursCategoriaGridState extends State<ListaToursCategoriaGrid> {
         }
       }else if(datos.containsKey('dataTours')){
         print(noData);
+        _scrollController.position.didEndScroll();
       }
       
-      _scrollController.position.didEndScroll();
     print("Lista paginado");
     print(widget.listaTours);
     
@@ -755,6 +759,9 @@ class _ListaToursCategoriaGridState extends State<ListaToursCategoriaGrid> {
     final size = MediaQuery.of(context).size;
     //String pais = AppTranslations.of(context).text('title_country');
     String valoracion = AppTranslations.of(context).text('title_puntuacion');
+    String noGallery = 'https://selftour-public.s3.amazonaws.com/no_gallery.jpg';
+    String personas = AppTranslations.of(context).text('title_cant_personas');
+
     final tarjeta = Stack(
       children: <Widget>[
         Container(
@@ -773,7 +780,7 @@ class _ListaToursCategoriaGridState extends State<ListaToursCategoriaGrid> {
                         scale: 1.0,
                       )*/
                       CachedNetworkImage(
-                        imageUrl: "${tour.foto.toString()}",
+                        imageUrl: tour.foto == null ? noGallery : "${tour.foto.toString()}",
                         //errorWidget: (context, url, error)=>Icon(Icons.error),
                         //cacheManager: baseCacheManager,
                         useOldImageOnUrlChange: true,
@@ -930,12 +937,16 @@ class _ListaToursCategoriaGridState extends State<ListaToursCategoriaGrid> {
             child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Text(
-                    tour.title == null ? '' : tour.title,
-                    style: TextStyle(
-                      fontFamily: 'Point-SemiBold',
-                      fontSize: 15.0,
-                      color: Colors.white
+                  Container(
+                    width: size.width * 0.45,
+                    child: Text(
+                      tour.title == null ? '' : tour.title,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontFamily: 'Point-SemiBold',
+                        fontSize: 15.0,
+                        color: Colors.white
+                      ),
                     ),
                   ),
                   
@@ -946,7 +957,7 @@ class _ListaToursCategoriaGridState extends State<ListaToursCategoriaGrid> {
         Align(
           alignment: Alignment.bottomLeft,
           child: Padding(
-            padding: EdgeInsets.only(left: 10.0,right: 10.0,bottom: 10.0),
+            padding: EdgeInsets.only(left: 5.0,right: 5.0,bottom: 10.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
@@ -954,12 +965,14 @@ class _ListaToursCategoriaGridState extends State<ListaToursCategoriaGrid> {
                   children: <Widget>[
                     Icon(
                       Icons.star,
+                      size: 14.0,
                       color: Colors.yellow,
                     ),
                     Text(
                       tour.score == null ? '' : tour.score.toString(),
                       style: TextStyle(
                         fontFamily: 'Point-SemiBold',
+                        fontSize: 10.0,
                         color: Colors.white
                       ),
                     ),
@@ -967,13 +980,15 @@ class _ListaToursCategoriaGridState extends State<ListaToursCategoriaGrid> {
                       '$valoracion',
                       style: TextStyle(
                         fontFamily: 'Point-SemiBold',
+                        fontSize: 10.0,
                         color: Colors.white
                       ),
                     ),
                     Text(
-                      ' (  )',
+                      ' (${tour.totalcom.toString()} $personas)',
                       style: TextStyle(
                         fontFamily: 'Point-SemiBold',
+                        fontSize: 10.0,
                         color: Colors.white
                       ),
                     )

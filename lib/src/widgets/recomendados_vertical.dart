@@ -101,10 +101,10 @@ class _RecomendadoVerticalState extends State<RecomendadoVertical> {
             onRefresh: cargarRecomendados,
             child: ListView.builder(
               shrinkWrap: true,
-              primary: true,
+              primary: false,
               controller: _scrollController,
               itemCount: widget.listaRecomendados.length,//snapshot.data.length
-              //physics: AlwaysScrollableScrollPhysics(),
+              physics: AlwaysScrollableScrollPhysics(),
               itemBuilder: (context,index){
                 return recomendados(context, widget.listaRecomendados[index]);
               },
@@ -161,6 +161,8 @@ class _RecomendadoVerticalState extends State<RecomendadoVertical> {
     final size = MediaQuery.of(context).size;
     //PreferenciasUsuario prefs = PreferenciasUsuario();
     String valoracion = AppTranslations.of(context).text('title_puntuacion');
+    String noGallery = 'https://selftour-public.s3.amazonaws.com/no_gallery.jpg';
+    String personas = AppTranslations.of(context).text('title_cant_personas');
 
     final recomendado = Stack(
       children: <Widget>[
@@ -178,7 +180,7 @@ class _RecomendadoVerticalState extends State<RecomendadoVertical> {
                   height: size.height * 0.3,
                 )*/
                 CachedNetworkImage(
-                  imageUrl: "${tour.gallery}",
+                  imageUrl: tour.gallery == null ? noGallery : "${tour.gallery}",
                   //errorWidget: (context, url, error)=>Icon(Icons.error),
                   //cacheManager: baseCacheManager,
                   useOldImageOnUrlChange: true,
@@ -299,7 +301,7 @@ class _RecomendadoVerticalState extends State<RecomendadoVertical> {
                           ),
                         ),
                         Text(
-                          ' (   )',
+                          ' (${tour.totalcom.toString()} $personas)',
                           style: TextStyle(
                             fontFamily: 'Point-SemiBold',
                             color: Colors.white
@@ -427,11 +429,11 @@ class _RecomendadoGridState extends State<RecomendadoGrid> {
             onRefresh: cargarRecomendados,
             child: GridView.builder(
               shrinkWrap: true,
-              primary: true,
+              primary: false,
               scrollDirection: Axis.vertical,
               controller: _scrollController,
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
-              //physics: AlwaysScrollableScrollPhysics(),
+              physics: AlwaysScrollableScrollPhysics(),
               itemCount: widget.listaRecomendados.length,//snapshot.data.length
               itemBuilder: (context,i){
                 return recomendadoGrid(context, widget.listaRecomendados[i]);
@@ -488,6 +490,8 @@ class _RecomendadoGridState extends State<RecomendadoGrid> {
   Widget recomendadoGrid(BuildContext context,InfoTour tour){
     final size = MediaQuery.of(context).size;
     String valoracion = AppTranslations.of(context).text('title_puntuacion');
+    String noGallery = 'https://selftour-public.s3.amazonaws.com/no_gallery.jpg';
+    String personas = AppTranslations.of(context).text('title_cant_personas');
     
     final recomendado = Card(
       child: Stack(
@@ -503,7 +507,7 @@ class _RecomendadoGridState extends State<RecomendadoGrid> {
               height: size.height * 0.4,
             )*/
             CachedNetworkImage(
-              imageUrl: "${tour.gallery}",
+              imageUrl: tour.gallery == null ? noGallery : "${tour.gallery}",
               //errorWidget: (context, url, error)=>Icon(Icons.error),
               //cacheManager: baseCacheManager,
               useOldImageOnUrlChange: true,
@@ -599,12 +603,16 @@ class _RecomendadoGridState extends State<RecomendadoGrid> {
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Text(
-                      tour.title == null ? '' : tour.title,
-                      style: TextStyle(
-                        fontFamily: 'Point-SemiBold',
-                        fontSize: 15.0,
-                        color: Colors.white
+                    Container(
+                      width: size.width * 0.45,
+                      child: Text(
+                        tour.title == null ? '' : tour.title,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontFamily: 'Point-SemiBold',
+                          fontSize: 15.0,
+                          color: Colors.white
+                        ),
                       ),
                     ),
                     
@@ -615,7 +623,7 @@ class _RecomendadoGridState extends State<RecomendadoGrid> {
           Align(
             alignment: Alignment.bottomLeft,
             child: Padding(
-              padding: EdgeInsets.only(left: 10.0,right: 10.0,bottom: 10.0),
+              padding: EdgeInsets.only(left: 5.0,right: 5.0,bottom: 10.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
@@ -623,12 +631,14 @@ class _RecomendadoGridState extends State<RecomendadoGrid> {
                     children: <Widget>[
                       Icon(
                         Icons.star,
+                        size: 14.0,
                         color: Colors.yellow,
                       ),
                       Text(
                         tour.score == null ? '' : tour.score.toString(),
                         style: TextStyle(
                           fontFamily: 'Point-SemiBold',
+                          fontSize: 10.0,
                           color: Colors.white
                         ),
                       ),
@@ -636,13 +646,15 @@ class _RecomendadoGridState extends State<RecomendadoGrid> {
                         '$valoracion',
                         style: TextStyle(
                           fontFamily: 'Point-SemiBold',
+                          fontSize: 10.0,
                           color: Colors.white
                         ),
                       ),
                       Text(
-                        ' (   )',
+                        ' (${tour.totalcom.toString()} $personas)',
                         style: TextStyle(
                           fontFamily: 'Point-SemiBold',
+                          fontSize: 10.0,
                           color: Colors.white
                         ),
                       )

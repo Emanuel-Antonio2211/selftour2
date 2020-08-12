@@ -210,5 +210,8 @@ flutter:
     - family: Point-SemiBoldItalic
       fonts:
       - asset: assets/tipografia/Point-SemiBoldItalic.ttf
+    - family: Point-SemiBoldItalic
+      fonts:
+      - asset: assets/tipografia/SourceSansPro-Light.ttf
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages

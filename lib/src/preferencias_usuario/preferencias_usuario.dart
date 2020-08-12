@@ -267,6 +267,13 @@ class PreferenciasUsuario {
     return _prefs.getString('idiomaComentario');
   }
 
+  set idiomaTerms(Locale value){
+    _prefs.setString('idiomaTerms', value.toString());
+  }
+  get idiomaTerms{
+    return _prefs.getString('idiomaTerms');
+  }
+
   // GET y SET de la última página
   get ultimaPagina {
     return _prefs.getString('ultimaPagina') ?? 'login';

@@ -60,6 +60,7 @@ class CategoriaHorizontal extends StatelessWidget {
   Widget _tarjeta(BuildContext context,Categoria categoria){
     final size = MediaQuery.of(context).size;
     final BaseCacheManager baseCacheManager = DefaultCacheManager();
+    String noGallery = 'https://selftour-public.s3.amazonaws.com/no_gallery.jpg';
 
     /*baseCacheManager.getFile("${categoria.icon.toString()}").listen((info){
       log("File: "+info.file.path);
@@ -77,7 +78,7 @@ class CategoriaHorizontal extends StatelessWidget {
                     borderRadius: BorderRadius.circular(5.0),
                     child:
                     CachedNetworkImage(
-                          imageUrl: "${categoria.icon.toString()}",
+                          imageUrl: categoria.icon == null ? noGallery : "${categoria.icon.toString()}",
                           //errorWidget: (context, url, error)=>Icon(Icons.error),
                           //color: Colors.lightBlue.withOpacity(0.6),
                           cacheManager: baseCacheManager,

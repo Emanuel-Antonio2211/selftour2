@@ -263,7 +263,7 @@ class CategoriasProvider{
       _url, 
       '/tours',
       {
-        'page': page == '' ? '${_toursPage.toString()}': '$page',
+        'page': page == '' ? '${_toursPage.toString()}': '${page.toString()}',
         'items': '5',
         'state': '$state',
         'country': '$country'
@@ -444,14 +444,14 @@ class CategoriasProvider{
     return decodedResp;
   }
 
-  Future<Map<String,dynamic>> verFavoritos()async{
+  Future<Map<String,dynamic>> verFavoritos({String page = ''})async{
     //final String url = "https://api-users.selftours.app/favoritesTours";
     final String url = "api-users.selftours.app";
     _toursPage++;
     final _url = Uri.https(
       url, 
       'favoritesTours',{
-        'page': _toursPage.toString()
+        'page': page == '' ? _toursPage.toString():page
         //'items': '5',
         //'state': '$state',
         //'country': '$country'
@@ -475,7 +475,7 @@ class CategoriasProvider{
     return decodedResp;
   }
 
-  Future<Map<String,dynamic>> toursComprados()async{
+  Future<Map<String,dynamic>> toursComprados({String page = ''})async{
     //String url = "https://api-users.selftours.app/shoppingTours";
     final String url = "api-users.selftours.app";
     _toursPage++;
@@ -483,7 +483,7 @@ class CategoriasProvider{
       url, 
       'shoppingTours',
       {
-        'page': '${_toursPage.toString()}'
+        'page': page == '' ? '${_toursPage.toString()}':page
         //'items': '5',
         //'state': '$state',
         //'country': '$country'
@@ -802,16 +802,12 @@ class CategoriasProvider{
         "target" : "$codeLanguage"
       }
     );*/
-    try{
-      final respuesta = await http.get(response);
-      final decodedResp = json.decode(respuesta.body);
-      //print("Traducción: $decodedResp");
-
-      return decodedResp;
-    }catch(error){
-      //print(error);
-      return error;
-    }
+    // try{
+      
+    // }catch(error){
+      
+    //   return error;
+    // }
     //final respuesta = await http.get(response);
     //final decodedResp = json.decode(respuesta.body);
    // print("Traducción: $decodedResp");
@@ -819,6 +815,37 @@ class CategoriasProvider{
     //String traductor = decodedResp['data']['translations'][0]['translatedText'].toString();
 
     //return decodedResp;
+    final respuesta = await http.get(response);
+    final decodedResp = json.decode(respuesta.body);
+    //print("Traducción: $decodedResp");
+
+    return decodedResp;
+
+  }
+
+  Future<Map<String,dynamic>> traducirFull(String codeLanguage,String texto)async{
+    String url = 'translation.googleapis.com';
+    var response;
+    response = Uri.https(
+      url, 
+      '/language/translate/v2',
+      {
+        "key" : "AIzaSyAAw4woNIssZ0P5Lonws9W-9LTRHRCMyqc"
+      }
+    );
+
+    final respuesta = await http.post(
+      response,
+      body: {
+        "q" : "$texto",
+        "model": "base",
+        "target": "$codeLanguage"
+      }
+    );
+
+    final decodedResp = json.decode(respuesta.body);
+    //print(decodedResp);
+    return decodedResp;
 
   }
 

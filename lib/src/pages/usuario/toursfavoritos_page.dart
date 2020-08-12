@@ -335,6 +335,21 @@ class _FavoritosState extends State<Favoritos> {
   String codCountry;
   AppState _appState = AppState();
 
+  @override
+  void initState() { 
+    super.initState();
+    _scrollController.addListener((){
+      if(_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 10){
+        //_scrollController.position.didEndScroll();
+        //print('Cargar siguientes categorías');
+        //Se ejecuta la función para mostrar la siguiente página
+        //de categorías
+        //widget.siguientePagina();
+        fetchData();
+      }
+    });
+  }
+
   Future<Null> cargarTours()async{
     final duration = Duration(seconds: 2);
 
@@ -345,7 +360,7 @@ class _FavoritosState extends State<Favoritos> {
       //   codCountry = value[5].toString();
         
       // });
-      provider.verFavoritos().then((result){
+      provider.verFavoritos(page: '1').then((result){
         final favoritos = new ListaToursC.fromJsonList(result['resp']['tours']);
         for(int i = 0; i < favoritos.itemsTours.length; i++){
           widget.listaFavoritos.add(favoritos.itemsTours[i]);
@@ -360,16 +375,7 @@ class _FavoritosState extends State<Favoritos> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    _scrollController.addListener((){
-      if(_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 10){
-        //_scrollController.position.didEndScroll();
-        //print('Cargar siguientes categorías');
-        //Se ejecuta la función para mostrar la siguiente página
-        //de categorías
-        //widget.siguientePagina();
-        fetchData();
-      }
-    });
+    
     return Container(
       height: size.height * 0.8,
       child: Stack(
@@ -377,6 +383,8 @@ class _FavoritosState extends State<Favoritos> {
           RefreshIndicator(
             onRefresh: cargarTours,
             child: ListView.builder(
+              shrinkWrap: true,
+              primary: false,
               controller: _scrollController,
               itemCount: widget.listaFavoritos.length,
               physics: AlwaysScrollableScrollPhysics(),
@@ -399,21 +407,19 @@ class _FavoritosState extends State<Favoritos> {
     final duration = Duration(seconds: 2);
     return Timer(duration,cargar);
   }
-  void cargar()async{
-    setState(() {
-      
-    });
-    _scrollController.animateTo(
-      _scrollController.position.pixels + 100,
-      curve: Curves.fastOutSlowIn,
-      duration: Duration(milliseconds: 250)
-    );
+  void cargar(){
+    // _scrollController.animateTo(
+    //   _scrollController.position.pixels + 100,
+    //   curve: Curves.fastOutSlowIn,
+    //   duration: Duration(milliseconds: 250)
+    // );
+
     // await _appState.userLocation().then((value)async{
     //     state = value[1].toString();
     //     codCountry = value[5].toString();
 
     //   });
-      await provider.verFavoritos().then((resp){
+      provider.verFavoritos().then((resp){
           setState(() {
             isloading = false;
           });
@@ -426,6 +432,7 @@ class _FavoritosState extends State<Favoritos> {
             }
           }else if(resp['resp']['msg'] == "NO SE ENCONTRO NINGUN TOUR"){
             print("No hay datos");
+            _scrollController.position.didEndScroll();
           }
           
         });
@@ -456,6 +463,7 @@ class _FavoritosState extends State<Favoritos> {
 
   Widget _toursFavoritos(BuildContext context, InfoTour tour){
     final size = MediaQuery.of(context).size;
+    String noGallery = 'https://selftour-public.s3.amazonaws.com/no_gallery.jpg';
 
     return GestureDetector(
       onTap: (){
@@ -531,7 +539,7 @@ class _FavoritosState extends State<Favoritos> {
                   borderRadius: BorderRadius.circular(10.0),
                   child: CachedNetworkImage(
                     imageUrl: tour.picture == null ? 
-                    'https://selftour-public.s3.amazonaws.com/no_gallery.jpg' : 
+                    '$noGallery' : 
                     "${tour.picture.toString()}",
                     //errorWidget: (context, url, error)=>Icon(Icons.error),
                     //cacheManager: baseCacheManager,

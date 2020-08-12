@@ -68,6 +68,10 @@ class InfoTour {
   List latlng;
   bool comprado = false;
   int favorite;
+  int total_comment;
+
+  //populares
+  int totalcom;
 
   //Lugares cercanos
   int idroute;
@@ -130,6 +134,10 @@ class InfoTour {
     this.latlng,
     this.comprado,
     this.favorite,
+    this.total_comment,
+
+    //populares
+    this.totalcom,
 
     this.idroute,
     this.title_route,
@@ -187,6 +195,10 @@ class InfoTour {
     latlng        = json['latlng'];
     comprado      = json['comprado'];
     favorite      = json['favorite'];
+    total_comment = json['totalcomment'];
+
+    //populares
+    totalcom      = json['totalcom'];
 
     idroute       = json['idroute'];
     title_route   = json['title_route'];

@@ -386,7 +386,7 @@ class DataSearch extends SearchDelegate{
                 return GestureDetector(
                   onTap: (){
                     //Se cierra la búsqueda primero
-                    //close(context, null);
+                    close(context, null);
                     showResults(context);
                     Navigator.pushNamed(context, '/detalletour',arguments: tour);
                   },

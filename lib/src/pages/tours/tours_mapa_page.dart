@@ -147,7 +147,7 @@ class _ToursMapaPageState extends State<ToursMapaPage> {
                           [
                           Marker(
                             visible: true,
-                            markerId: MarkerId('${places[i].idtour}'),
+                            markerId: MarkerId('${places[i].title}'),//'${places[i].title}'
                             position: LatLng(places[i].lat, places[i].lng),
                             infoWindow: InfoWindow(
                               title: '\$ ${double.parse(places[i].price.toString()).toString()}',
@@ -160,17 +160,15 @@ class _ToursMapaPageState extends State<ToursMapaPage> {
                           )
                           ]
                         );
-
-                        Uint8List markerIcon = await getBytesFromCanvas(160, 20,places[i].title);
+                        Uint8List markerIcon = await getBytesFromCanvas(50, 20,"${(i+1).toString()}");//places[i].title
                           marcadores.add(
                             Marker(
                               visible: true,
-                              markerId: MarkerId(places[i].title),//${places[index].title}
+                              markerId: MarkerId("${places[i].idtour}"),//${places[index].title}
                               position: LatLng(places[i].lat, places[i].lng),
                               icon: BitmapDescriptor.fromBytes(markerIcon)
                             )
                           );
-
                       }
                     }
                   }catch(e){
@@ -256,7 +254,7 @@ class _ToursMapaPageState extends State<ToursMapaPage> {
                   
                   },
                   itemBuilder: (BuildContext context,int index){
-                    return lugares(places[index]);
+                    return lugares(places[index], index);
                   },
                 ),
               ),
@@ -317,7 +315,7 @@ class _ToursMapaPageState extends State<ToursMapaPage> {
   }
 
 
-  Widget lugares(InfoTour tour){
+  Widget lugares(InfoTour tour, int i){
     final size = MediaQuery.of(context).size;
     
     return GestureDetector(
@@ -327,6 +325,7 @@ class _ToursMapaPageState extends State<ToursMapaPage> {
       },
       child: Card(
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             ClipRRect(
               borderRadius: BorderRadius.only(topRight: Radius.circular(5.0),topLeft: Radius.circular(5.0) ),
@@ -346,11 +345,16 @@ class _ToursMapaPageState extends State<ToursMapaPage> {
               padding: EdgeInsets.symmetric(horizontal: 5.0),
               height: size.height * 0.1,
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
-                  Text(
-                    tour.title,
-                    style: TextStyle(
-                      fontFamily: 'Point-SemiBold'
+                  Container(
+                    width: size.width * 0.8,
+                    child: Text(
+                      "${(i+1)}. ${tour.title}",
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontFamily: 'Point-SemiBold'
+                      ),
                     ),
                   ),
                   Align(
@@ -416,7 +420,7 @@ class _ToursMapaPageState extends State<ToursMapaPage> {
       paint
     );
     TextPainter painter = TextPainter(
-      textAlign: TextAlign.end,
+      textAlign: TextAlign.start,
       //textDirection: TextDirection.,
       ellipsis: text
     );

@@ -103,10 +103,10 @@ class _RecienteVerticalState extends State<RecienteVertical> {
             onRefresh: cargarRecientes,
             child: ListView.builder(
               shrinkWrap: true,
-              primary: true,
+              primary: false,
               controller: _scrollController,
               itemCount: widget.listaRecientes.length,//snapshot.data.length
-              //physics: AlwaysScrollableScrollPhysics(),
+              physics: AlwaysScrollableScrollPhysics(),
               itemBuilder: (context,index){
                 return recientes(context, widget.listaRecientes[index]);
               },
@@ -163,6 +163,8 @@ class _RecienteVerticalState extends State<RecienteVertical> {
     final size = MediaQuery.of(context).size;
     //PreferenciasUsuario prefs = PreferenciasUsuario();
     String valoracion = AppTranslations.of(context).text('title_puntuacion');
+    String personas = AppTranslations.of(context).text('title_cant_personas');
+    String noGallery = 'https://selftour-public.s3.amazonaws.com/no_gallery.jpg';
 
     final recientes = Stack(
       children: <Widget>[
@@ -180,7 +182,7 @@ class _RecienteVerticalState extends State<RecienteVertical> {
                   height: size.height * 0.3
                 )*/
                 CachedNetworkImage(
-                  imageUrl: "${tour.gallery}",
+                  imageUrl: tour.gallery == null ? noGallery : "${tour.gallery}",
                   //errorWidget: (context, url, error)=>Icon(Icons.error),
                   //cacheManager: baseCacheManager,
                   useOldImageOnUrlChange: true,
@@ -300,11 +302,15 @@ class _RecienteVerticalState extends State<RecienteVertical> {
                             color: Colors.white
                           ),
                         ),
-                        Text(
-                          ' (  )',
-                          style: TextStyle(
-                            fontFamily: 'Point-SemiBold',
-                            color: Colors.white
+                        Container(
+                          width: size.width * 0.35,
+                          child: Text(
+                            ' (${tour.totalcom.toString()} $personas)',
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontFamily: 'Point-SemiBold',
+                              color: Colors.white
+                            ),
                           ),
                         )
                       ],
@@ -429,11 +435,11 @@ class _RecienteGridState extends State<RecienteGrid> {
             onRefresh: cargarRecientes,
             child: GridView.builder(
               shrinkWrap: true,
-              primary: true,
+              primary: false,
               scrollDirection: Axis.vertical,
               controller: _scrollController,
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
-              //physics: AlwaysScrollableScrollPhysics(),
+              physics: AlwaysScrollableScrollPhysics(),
               itemCount: widget.listaRecientes.length,//snapshot.data.length
               itemBuilder: (context,i){
                 return recienteGrid(context, widget.listaRecientes[i]);
@@ -490,6 +496,9 @@ class _RecienteGridState extends State<RecienteGrid> {
   Widget recienteGrid(BuildContext context,InfoTour tour){
     final size = MediaQuery.of(context).size;
     String valoracion = AppTranslations.of(context).text('title_puntuacion');
+    String personas = AppTranslations.of(context).text('title_cant_personas');
+    String noGallery = 'https://selftour-public.s3.amazonaws.com/no_gallery.jpg';
+
     final recienteTour = Card(
       child: Stack(
         children: <Widget>[
@@ -504,7 +513,7 @@ class _RecienteGridState extends State<RecienteGrid> {
               height: size.height * 0.4,
             )*/
             CachedNetworkImage(
-              imageUrl: "${tour.gallery}",
+              imageUrl: tour.gallery == null ? noGallery : "${tour.gallery}",
               //errorWidget: (context, url, error)=>Icon(Icons.error),
               //cacheManager: baseCacheManager,
               useOldImageOnUrlChange: true,
@@ -600,12 +609,16 @@ class _RecienteGridState extends State<RecienteGrid> {
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Text(
-                      tour.title == null ? '' : tour.title,
-                      style: TextStyle(
-                        fontFamily: 'Point-SemiBold',
-                        fontSize: 15.0,
-                        color: Colors.white
+                    Container(
+                      width: size.width * 0.45,
+                      child: Text(
+                        tour.title == null ? '' : tour.title,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontFamily: 'Point-SemiBold',
+                          fontSize: 15.0,
+                          color: Colors.white
+                        ),
                       ),
                     ),
                     
@@ -616,7 +629,7 @@ class _RecienteGridState extends State<RecienteGrid> {
           Align(
             alignment: Alignment.bottomLeft,
             child: Padding(
-              padding: EdgeInsets.only(left: 10.0,right: 10.0,bottom: 10.0),
+              padding: EdgeInsets.only(left: 5.0,right: 5.0,bottom: 10.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
@@ -624,12 +637,14 @@ class _RecienteGridState extends State<RecienteGrid> {
                     children: <Widget>[
                       Icon(
                         Icons.star,
+                        size: 14.0,
                         color: Colors.yellow,
                       ),
                       Text(
                         tour.score == null ? '' : tour.score.toString(),
                         style: TextStyle(
                           fontFamily: 'Point-SemiBold',
+                          fontSize: 10.0,
                           color: Colors.white
                         ),
                       ),
@@ -637,14 +652,20 @@ class _RecienteGridState extends State<RecienteGrid> {
                         '$valoracion',
                         style: TextStyle(
                           fontFamily: 'Point-SemiBold',
+                          fontSize: 10.0,
                           color: Colors.white
                         ),
                       ),
-                      Text(
-                        ' (  )',
-                        style: TextStyle(
-                          fontFamily: 'Point-SemiBold',
-                          color: Colors.white
+                      Container(
+                        width: size.width * 0.2,
+                        child: Text(
+                          ' (${tour.totalcom.toString()} $personas)',
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontFamily: 'Point-SemiBold',
+                            fontSize: 10.0,
+                            color: Colors.white
+                          ),
                         ),
                       )
                     ],
