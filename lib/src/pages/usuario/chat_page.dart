@@ -185,8 +185,8 @@ class ChatPageState extends State<ChatPage> {
 
   Widget buildItem(int index, DocumentSnapshot document){
     String imageUser = "https://pluspng.com/img-png/user-png-icon-male-user-icon-512.png";
-    print("Contenido: ");
-    print(document['content']);
+    // print("Contenido: ");
+    // print(document['content']);
 
     if(document['idFrom']==email){ //id
       // Right (my message) - Nuestro mensaje se ubica a la derecha
