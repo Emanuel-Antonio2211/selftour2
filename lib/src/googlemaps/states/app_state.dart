@@ -82,6 +82,7 @@ class AppState with ChangeNotifier{
       
       _prefs.estadoUser = addresses.first.adminArea;
       _prefs.countryCode = addresses.first.countryCode;
+      _prefs.codPostal = addresses.first.postalCode;
 
     // if (_permissionGranted == l.PermissionStatus.denied) {
     //   // _permissionGranted = await userUbicacion.requestPermission();

@@ -901,10 +901,10 @@ class _DetalleTourPageState extends State<DetalleTourPage> with SingleTickerProv
             ),
             Flexible(
               child: Text(
-                '${detalle.city.toString()}',//${detalle.state.toString()} ${detalle.country.toString()}
+                '${detalle.ciudad['city'].toString()}, ${detalle.ciudad['state'].toString()}, ${detalle.ciudad['country'].toString()}',//${detalle.state.toString()} ${detalle.country.toString()}
                 style: TextStyle(
-                    fontSize: 13.0,
-                    fontFamily: 'Point-SemiBold',
+                  fontSize: 13.0,
+                  fontFamily: 'Point-SemiBold'
                 ),
               ),
             )
@@ -1115,7 +1115,7 @@ class _DetalleTourPageState extends State<DetalleTourPage> with SingleTickerProv
 }
 
   Widget _datosCreadorTour(BuildContext context, InfoTour detalle){
-    //final size = MediaQuery.of(context).size;
+    final size = MediaQuery.of(context).size;
     //String enviarMensaje = AppTranslations.of(context).text('title_send_message');
     //String verMensaje = AppTranslations.of(context).text('title_show_message');
     //prefs.iduser = '';
@@ -1153,6 +1153,9 @@ class _DetalleTourPageState extends State<DetalleTourPage> with SingleTickerProv
           child: detalle.shop == 0 && prefs.email != detalle.userData['mail'] && prefs.idtour != detalle.idtour.toString() ? 
           Row(
             children: <Widget>[
+              SizedBox(
+                width: size.width * 0.03,
+              ),
               GestureDetector(
                 onTap: (){
 
@@ -1166,35 +1169,38 @@ class _DetalleTourPageState extends State<DetalleTourPage> with SingleTickerProv
                   ),
                 ),
               ),
-              GestureDetector(
-                onTap: (){
+              // GestureDetector(
+              //   onTap: (){
 
-                },
-                child: Container(
-                  width: 25.0,
-                  height: 17.0,
-                  child: Image.asset(
-                    'assets/logotwitter.png',
-                    color: Colors.grey,
-                  ),
-                ),
-              ),
-              GestureDetector(
-                onTap: (){
+              //   },
+              //   child: Container(
+              //     width: 25.0,
+              //     height: 17.0,
+              //     child: Image.asset(
+              //       'assets/logotwitter.png',
+              //       color: Colors.grey,
+              //     ),
+              //   ),
+              // ),
+              // GestureDetector(
+              //   onTap: (){
 
-                },
-                child: Container(
-                  width: 25.0,
-                  height: 17.0,
-                  child: Image.asset(
-                    'assets/google@3x.png',
-                    color: Colors.grey,
-                  ),
-                ),
-              )
+              //   },
+              //   child: Container(
+              //     width: 25.0,
+              //     height: 17.0,
+              //     child: Image.asset(
+              //       'assets/google@3x.png',
+              //       color: Colors.grey,
+              //     ),
+              //   ),
+              // )
             ],
           ) : Row(
             children: <Widget>[
+              SizedBox(
+                width: size.width * 0.03,
+              ),
               GestureDetector(
                 onTap: (){
 
@@ -1208,26 +1214,26 @@ class _DetalleTourPageState extends State<DetalleTourPage> with SingleTickerProv
                   ),
                 ),
               ),
-              GestureDetector(
-                onTap: (){
+              // GestureDetector(
+              //   onTap: (){
 
-                },
-                child: Container(
-                  width: 25.0,
-                  height: 17.0,
-                  child: Image.asset('assets/logotwitter.png'),
-                ),
-              ),
-              GestureDetector(
-                onTap: (){
+              //   },
+              //   child: Container(
+              //     width: 25.0,
+              //     height: 17.0,
+              //     child: Image.asset('assets/logotwitter.png'),
+              //   ),
+              // ),
+              // GestureDetector(
+              //   onTap: (){
 
-                },
-                child: Container(
-                  width: 25.0,
-                  height: 17.0,
-                  child: Image.asset('assets/google@3x.png'),
-                ),
-              )
+              //   },
+              //   child: Container(
+              //     width: 25.0,
+              //     height: 17.0,
+              //     child: Image.asset('assets/google@3x.png'),
+              //   ),
+              // )
             ],
           ),
         )
@@ -1694,10 +1700,11 @@ Widget _parrafoInformacion(BuildContext context,InfoTour detalle) {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: sitios.map((sitio){
+                          
                           return Column(
                             children: <Widget>[
                               Text(
-                                sitio,
+                                sitio.replaceAll(RegExp(r'</br>'), '\n'),
                                 textAlign: TextAlign.justify,
                                 style: TextStyle(
                                     fontFamily: 'Point-SemiBold',
@@ -1721,11 +1728,11 @@ Widget _parrafoInformacion(BuildContext context,InfoTour detalle) {
                           return Column(
                             children: <Widget>[
                               Text(
-                                "${sitioT.toString()}",
+                                "${sitioT.replaceAll(RegExp(r'</br>'), '\n').replaceAll(RegExp(r"&quot;"), "''")}",
                                 textAlign: TextAlign.justify,
                                 style: TextStyle(
-                                    fontFamily: 'Point-SemiBold',
-                                    fontStyle: FontStyle.normal
+                                  fontFamily: 'Point-SemiBold',
+                                  fontStyle: FontStyle.normal
                                 )
                               ), 
                               SizedBox(

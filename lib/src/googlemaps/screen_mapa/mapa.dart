@@ -1751,7 +1751,7 @@ class _DetalleSitioState extends State<DetalleSitio> {
                         Padding(
                           padding: EdgeInsets.symmetric(horizontal: 10.0),
                           child: Text(
-                            widget.descripcion,
+                            widget.descripcion.replaceAll(RegExp(r'</br>'), '\n'),
                             textAlign: TextAlign.justify,
                             style: TextStyle(
                               fontFamily: 'Point-SemiBold'
@@ -1761,7 +1761,7 @@ class _DetalleSitioState extends State<DetalleSitio> {
                         Padding(
                           padding: EdgeInsets.symmetric(horizontal: 10.0),
                           child: Text(
-                            descripcionTour,
+                            descripcionTour.replaceAll(RegExp(r'</br>'), '\n').replaceAll(RegExp(r"&quot;"), "''"),
                             textAlign: TextAlign.justify,
                             style: TextStyle(
                               fontFamily: 'Point-SemiBold'

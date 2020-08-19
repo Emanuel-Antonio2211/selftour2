@@ -274,6 +274,13 @@ class PreferenciasUsuario {
     return _prefs.getString('idiomaTerms');
   }
 
+  set codPostal(String value){
+    _prefs.setString('codPostal', value);
+  }
+  get codPostal{
+    return _prefs.getString('codPostal');
+  }
+
   // GET y SET de la última página
   get ultimaPagina {
     return _prefs.getString('ultimaPagina') ?? 'login';

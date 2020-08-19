@@ -245,30 +245,42 @@ class _EditInformationPageState extends State<EditInformationPage> {
               onPressed: ()async{
                 await Future.delayed(Duration(seconds: 2),()async{
                   int codPais;
-                  String codPostal;
+                  //String codPostal;
 
                  // List<String> tokens = List();
-                  await _appState.userLocation().then((result){
-                    print(result[5]);
-                    codPostal = result[7].toString();
-                    //result[2] == 'Mexico'
-                    if(result[5] == 'MX'){
+                  // await _appState.userLocation().then((result){
+                  //   print(result[5]);
+                  //   codPostal = result[7].toString();
+                  //   //result[2] == 'Mexico'
+                  //   if(result[5] == 'MX'){
+                  //     codPais = 200;
+                  //   }else if(result[5] == 'DE'){
+                  //     codPais = 4;
+                  //   }else if(result[5] == 'JP'){
+                  //     codPais = 168;
+                  //   }else if(result[5] == 'FR'){
+                  //     codPais = 136;
+                  //   }else if(result[5] == 'US'){
+                  //     codPais = 129;
+                  //   }
+                  // });
+                  if(prefs.countryCode == 'MX'){
                       codPais = 200;
-                    }else if(result[5] == 'DE'){
+                    }else if(prefs.countryCode == 'DE'){
                       codPais = 4;
-                    }else if(result[5] == 'JP'){
+                    }else if(prefs.countryCode == 'JP'){
                       codPais = 168;
-                    }else if(result[5] == 'FR'){
+                    }else if(prefs.countryCode == 'FR'){
                       codPais = 136;
-                    }else if(result[5] == 'US'){
+                    }else if(prefs.countryCode == 'US'){
                       codPais = 129;
                     }
-                  });
                   print(codPais.toString());
                   if(formKey.currentState.validate()){
                     formKey.currentState.save();
                     print("Datos a ingresar");
                     //print(foto.path);
+                    print(cuentaFacebook);
                     print(nombre);
                     print(telefono);
                     /*
@@ -289,7 +301,7 @@ class _EditInformationPageState extends State<EditInformationPage> {
                     print(tokens);
                     */
 
-                  await _usuarioProvider.actualizarPerfil(nombre, telefono,fechaNacimiento, codPostal,codPais.toString(),cuentaFacebook,webPag,foto, prefs.token).then((result)async{
+                  await _usuarioProvider.actualizarPerfil(nombre, telefono,fechaNacimiento, prefs.codPostal,codPais.toString(),cuentaFacebook,webPag,foto, prefs.token).then((result)async{
                       final respuesta = result;
                       setState(() {
                       
@@ -471,7 +483,7 @@ class _EditInformationPageState extends State<EditInformationPage> {
                         },
                       ),
                     ),
-                    SizedBox(height: size.height * 0.04,),
+                    SizedBox(height: size.height * 0.02,),
                     // Padding(
                     //   padding: EdgeInsets.symmetric(horizontal: size.width * 0.02),
                     //   child: TextFormField(
@@ -538,7 +550,7 @@ class _EditInformationPageState extends State<EditInformationPage> {
                       padding: EdgeInsets.symmetric(horizontal: size.width * 0.02),
                       child: TextFormField(
                         keyboardType: TextInputType.text,
-                        initialValue: ( datosUsuario['dataUser']['data'][0]['fb'] == '0' || datosUsuario['dataUser']['data'][0]['fb'] == null || datosUsuario['dataUser']['data'][0]['fb'] == "") ? '': datosUsuario['dataUser']['data'][0]['fb'].toString(),
+                        initialValue: ( datosUsuario['dataUser']['data'][0]['fb'] == '0' || datosUsuario['dataUser']['data'][0]['fb'] == null || datosUsuario['dataUser']['data'][0]['fb'] == "" || datosUsuario['dataUser']['data'][0]['fb'] == "ninguno") ? 'https://web.facebook.com/': datosUsuario['dataUser']['data'][0]['fb'].toString(),
                         //(prefs.accountFacebook == null || prefs.accountFacebook == "null") ? '': prefs.accountFacebook
                         decoration: InputDecoration(
                           labelText: '$ctaFacebook',
@@ -553,6 +565,9 @@ class _EditInformationPageState extends State<EditInformationPage> {
                         onSaved: (String facebook){
                           cuentaFacebook = facebook;
                         },
+                        // onChanged: (String facebook){
+                        //   print(facebook);
+                        // },
                       ),
                     ),
                     Padding(
@@ -573,7 +588,7 @@ class _EditInformationPageState extends State<EditInformationPage> {
                       padding: EdgeInsets.symmetric(horizontal: size.width * 0.02),
                       child: TextFormField(
                         keyboardType: TextInputType.text,
-                        initialValue: ( datosUsuario['dataUser']['data'][0]['webpage'] == '0' || datosUsuario['dataUser']['data'][0]['webpage'] == 'undefined' || datosUsuario['dataUser']['data'][0]['webpage'] == null || datosUsuario['dataUser']['data'][0]['webpage'] == "") ? '': datosUsuario['dataUser']['data'][0]['webpage'].toString(),
+                        initialValue: ( datosUsuario['dataUser']['data'][0]['webpage'] == '0' || datosUsuario['dataUser']['data'][0]['webpage'] == 'undefined' || datosUsuario['dataUser']['data'][0]['webpage'] == null || datosUsuario['dataUser']['data'][0]['webpage'] == "" || datosUsuario['dataUser']['data'][0]['webpage'] == "ninguno") ? '': datosUsuario['dataUser']['data'][0]['webpage'].toString(),
                         //(prefs.pagWeb == 'undefined' || prefs.pagWeb == null || prefs.pagWeb == "null") ? '': prefs.pagWeb.toString()
                         decoration: InputDecoration(
                           labelText: '$paginaWeb',

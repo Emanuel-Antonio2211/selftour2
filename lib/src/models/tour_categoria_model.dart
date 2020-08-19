@@ -54,6 +54,7 @@ class InfoTour {
   String category;
   String idCity;
   String city;
+  Map<String,dynamic> ciudad;
   String region;
   String state;
   String country;
@@ -121,6 +122,7 @@ class InfoTour {
     this.category,
     this.idCity,
     this.city,
+    this.ciudad,
     this.region,
     this.state,
     this.country,
@@ -181,7 +183,8 @@ class InfoTour {
     ctidss        = json['ctidss'];
     category      = json['category'];
     idCity        = json['idcity'];
-    city          = json['location'];
+    city          = json['location'];//['location_ids']
+    ciudad        = json['location_ids'];
     region        = json['state or region'];
     state         = json['state'];
     country       = json['country'];
