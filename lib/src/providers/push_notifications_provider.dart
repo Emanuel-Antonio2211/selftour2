@@ -18,19 +18,145 @@ class PushNotificationProvider{
   PreferenciasUsuario _prefs = PreferenciasUsuario();
   FlutterLocalNotificationsPlugin localNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
-  final GlobalKey<NavigatorState> _navigatorKey = new GlobalKey<NavigatorState>();
+ final GlobalKey<NavigatorState> _navigatorKey = new GlobalKey<NavigatorState>();
 
-  GlobalKey<NavigatorState> get navigationKey => _navigatorKey;
+ GlobalKey<NavigatorState> get navigationKey => _navigatorKey;
 
   Map<String, dynamic> informacion;
   Map<String,dynamic> datosReceived;
 
   //Se crea un stream para las notificaciones
-  final _mensajesStreamController = StreamController<Map<String,dynamic>>.broadcast();
+ final _mensajesStreamController = StreamController<Map<String,dynamic>>.broadcast();
 
   //Se necesita escuchar lo que se emita en el streamcontroller
   //Cada vez que se reciba una notificación, la aplicación se va a actualizar
   Stream<Map<String,dynamic>> get mensajes => _mensajesStreamController.stream;
+
+  /*static Future<dynamic> onBackgroundMessage(Map<String, dynamic> info) async {
+    // if (message.containsKey('data')) {
+    //   // Handle data message
+    //   final dynamic data = message['data'];
+    // }
+
+    // if (message.containsKey('notification')) {
+    //   // Handle notification message
+    //   final dynamic notification = message['notification'];
+    // }
+
+    String usuario = 'no-data';
+    String mensaje = 'no-message';
+    String emailUser;
+    String fotoUser;
+    String fotoUsuarioNoti;
+    String dataUser;
+    String dataEmail;
+    if(Platform.isAndroid){
+      //argumento = info['data']['mensaje'] ?? 'no-data';
+      usuario = info['notification']['title'];
+      mensaje = info['notification']['body'];
+      emailUser = info['data']['iduser'];
+      fotoUser = info['data']['useravatar'];
+      //Desde el servidor
+      fotoUsuarioNoti = info['notification']['icon'];
+      dataUser = info['data']['user'];
+      dataEmail = info['data']['mail'];
+
+      informacion = {
+        "usuario": "${usuario.toString()}",
+        "mensaje": "${mensaje.toString()}",
+        "emailuser": "${emailUser.toString()}",
+        "fotouser": "${fotoUser.toString()}"
+      };
+
+      datosReceived = {
+        "usuario": "${usuario.toString()}",
+        "mensaje": "${mensaje.toString()}",
+        "emailuser": "${emailUser.toString()}",
+        "fotouser": "${fotoUser.toString()}",
+        "fotousuarionoti": "${fotoUsuarioNoti.toString()}",
+        "datauser": "${dataUser.toString()}",
+        "dataemail": "${dataEmail.toString()}"
+      };
+
+      //El argumento se agrega al stream
+      _mensajesStreamController.sink.add(informacion);
+
+      final chat = Chat.fromJsonMap(datosReceived);
+
+      if(_prefs.token == ''){
+        navigationKey.currentState.push(
+          MaterialPageRoute(
+            builder: (context){
+              return SesionPageChatUser();
+            },
+            settings: RouteSettings(
+              arguments: chat
+            )
+          )
+        );
+      }else{
+        navigationKey.currentState.push(
+          MaterialPageRoute(
+            builder: (context){
+              return ChatPage(userEmail: info['data']['iduser'],userName: info['data']['nickname'],userAvatar: info['data']['useravatar']);
+            }
+          )
+        );
+      }
+      
+    }else{
+      usuario = info['aps']['alert']['title'] ?? 'no-data-ios';
+      mensaje = info['aps']['alert']['body'];
+      emailUser = info['iduser'];
+      fotoUser = info['useravatar'];
+
+      informacion = {
+        "usuario": "${usuario.toString()}",
+        "mensaje": "${mensaje.toString()}",
+        "emailuser": "${emailUser.toString()}",
+        "fotouser": "${fotoUser.toString()}"
+      };
+
+      datosReceived = {
+        "usuario": "${usuario.toString()}",
+        "mensaje": "${mensaje.toString()}",
+        "emailuser": "${emailUser.toString()}",
+        "fotouser": "${fotoUser.toString()}",
+        "fotousuarionoti": "${fotoUsuarioNoti.toString()}",
+        "datauser": "${dataUser.toString()}",
+        "dataemail": "${dataEmail.toString()}"
+      };
+
+      //El argumento se agrega al stream
+      _mensajesStreamController.sink.add(informacion);
+
+      final chat = Chat.fromJsonMap(datosReceived);
+
+      if(_prefs.token == ''){
+        navigationKey.currentState.push(
+          MaterialPageRoute(
+            builder: (context){
+              return SesionPageChatUser();
+            },
+            settings: RouteSettings(
+              arguments: chat
+            )
+          )
+        );
+      }else{
+        navigationKey.currentState.push(
+          MaterialPageRoute(
+            builder: (context){
+              return ChatPage(userEmail: info['iduser'],userName: info['aps']['alert']['title'],userAvatar: info['useravatar']);
+            }
+          )
+        );
+      }
+    }
+
+
+    // Or do other work.
+  }*/
 
   void initNotification(){
     //@mipmap/launcher_icon
@@ -67,46 +193,10 @@ class PushNotificationProvider{
           //Este token se almacena en la base de datos
           print('===== FCM Token ========');
           print(token);
-    
-          //ei1Ip7gZWF8:APA91bE1OOsbRhVxm9l3mwkQuJmubcR_Fyc2tEuyV5Cw9zx_2PNj1GBvmo8TOD8xfwWWdxZPOlWgricxL__jBGmQZrY-WafTQduxc8f_57JBC6BnGiubHrb2Wy6-Doc8ntkLrqGRT4bY
         });
         //Se muestran las maneras de recibir una notificación
         firebaseMessaging.configure(
-          /*onBackgroundMessage: (info)async{
-            
-            String usuario = 'no-data';
-            String mensaje = 'no-message';
-            String emailUser;
-            String fotoUser;
-            print('===== On BackgroundMessage =====');
-            print(info);
-            if (info.containsKey('data') && info.containsKey('notification')) {
-              // Handle data message
-              if(Platform.isAndroid){
-              //argumento = info['data']['mensaje'] ?? 'no-data';
-                usuario = info['notification']['title'];
-                mensaje = info['notification']['body'];
-                emailUser = info['data']['iduser'];
-                fotoUser = info['data']['useravatar'];
-              }else{
-                usuario = info['notification']['title'] ?? 'no-data-ios';
-                mensaje = info['notification']['body'];
-                emailUser = info['data']['iduser'];
-                fotoUser = info['data']['useravatar'];
-              }
-              informacion = {
-                "usuario": "${usuario.toString()}",
-                "mensaje": "${mensaje.toString()}",
-                "emailuser": "${emailUser.toString()}",
-                "fotouser": "${fotoUser.toString()}"
-              };
-            }else{
-              print("No hay datos");
-            }
-            //El argumento se agrega al stream
-            _mensajesStreamController.sink.add(informacion);
-            //mostrarNotificaciones(fotoUser.toString(),usuario, mensaje);
-          },*/
+          //onBackgroundMessage: Platform.isIOS ? null : PushNotificationProvider.onBackgroundMessage,
           //Se dispara cuando la aplicación está abierta
           onMessage: (info)async{
             /*

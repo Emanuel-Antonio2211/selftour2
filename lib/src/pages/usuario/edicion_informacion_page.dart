@@ -313,10 +313,10 @@ class _EditInformationPageState extends State<EditInformationPage> {
                       prefs.accountFacebook = respuesta['dataUser']['data'][0]['fb'].toString();
                       prefs.pagWeb = respuesta['dataUser']['data'][0]['webpage'].toString();
                       print(prefs.photoUrl);
-                      final QuerySnapshot resultado = await Firestore.instance.collection('users').where('email',isEqualTo: prefs.email).getDocuments();
-                      final List<DocumentSnapshot> documents = resultado.documents;
-                      if(documents.single.data['photoUrl'] != prefs.photoUrl){
-                        Firestore.instance.collection('users').document(prefs.email).updateData({'photoUrl': prefs.photoUrl});
+                      final QuerySnapshot resultado = await FirebaseFirestore.instance.collection('users').where('email',isEqualTo: prefs.email).get();
+                      final List<DocumentSnapshot> documents = resultado.docs;
+                      if(documents.single.data()['photoUrl'] != prefs.photoUrl){
+                        FirebaseFirestore.instance.collection('users').doc(prefs.email).update({'photoUrl': prefs.photoUrl});
                         print("La imagen se actualizó");
                       }else{
                         print("La foto es igual");

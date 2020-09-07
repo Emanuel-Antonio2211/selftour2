@@ -38,7 +38,7 @@ class Provider extends InheritedWidget{ //Hereda de un Widget, es decir, se conv
   //Va a buscar en el arbol de Widgets y va a regresar la instancia de loginBloc
   static LoginBloc of (BuildContext context){
     //Va a buscar la instancia de la Clase Provider
-    return (context.inheritFromWidgetOfExactType(Provider) as Provider).loginBloc; // Va a retornar la instanciade tipo loginBloc
+    return (context.dependOnInheritedWidgetOfExactType() as Provider).loginBloc; // Va a retornar la instanciade tipo loginBloc
   }
 
 }

@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 //import 'package:selfttour/src/models/tour_categoria_model.dart';
-import 'package:selftourapp/src/pages/usuario/fullFoto_page.dart';
+//import 'package:selftourapp/src/pages/usuario/fullFoto_page.dart';
 import 'package:selftourapp/src/preferencias_usuario/preferencias_usuario.dart';
 import 'package:selftourapp/src/providers/usuario_provider.dart';
 import 'package:selftourapp/src/translation_class/app_translations.dart';
@@ -36,7 +36,7 @@ class ChatPageState extends State<ChatPage> {
   String userEmail;
   String email;
 
-  var listMessage;
+  List<QueryDocumentSnapshot> listMessage;
   String groupChatId;
   PreferenciasUsuario prefs = new PreferenciasUsuario();
 
@@ -79,7 +79,7 @@ class ChatPageState extends State<ChatPage> {
     }else{
       groupChatId = '$userEmail-$email'; //$userId-$id
     }
-    Firestore.instance.collection('users').document(email).updateData({'chattingWith': userEmail}); //userId
+    FirebaseFirestore.instance.collection('users').doc(email).update({'chattingWith': userEmail}); //userId
     //Firestore.instance.collection('users').document(id).updateData({'tokenfcm': tokenFCM});
     setState(() {
       
@@ -133,14 +133,14 @@ class ChatPageState extends State<ChatPage> {
     if(content.trim() != ''){
       textEditingController.clear();
 
-      DocumentReference documentReference = Firestore.instance
+      DocumentReference documentReference = FirebaseFirestore.instance
         .collection('messages')
-        .document(groupChatId)
+        .doc(groupChatId)
         .collection(groupChatId)
-        .document(DateTime.now().millisecondsSinceEpoch.toString());
+        .doc(DateTime.now().millisecondsSinceEpoch.toString());
       
-      Firestore.instance.runTransaction((transaction)async{
-        await transaction.set(
+      FirebaseFirestore.instance.runTransaction((transaction)async{
+        transaction.set(
           documentReference,
           {
             'idFrom': email, //id
@@ -155,11 +155,11 @@ class ChatPageState extends State<ChatPage> {
       //usuarioProvider.enviarNoti(prefs.tokenFCM.toString(),userName,prefs.photoUrl,content,userEmail);
       // print("Usuario");
       // print(userEmail);
-      Firestore.instance.collection('users').document('$userEmail').collection('tokensfcm').snapshots().listen((t){
-        t.documents.forEach((doc){
+      FirebaseFirestore.instance.collection('users').doc('$userEmail').collection('tokensfcm').snapshots().listen((t){
+        t.docs.forEach((doc){
           //print(doc.data.keys); 
           // print(doc.data['token']);
-          usuarioProvider.enviarNoti(doc.data['token'].toString(),prefs.name.toString(),prefs.photoUrl.toString(),content,email)
+          usuarioProvider.enviarNoti(doc.data()['token'].toString(),prefs.name.toString(),prefs.photoUrl.toString(),content,email)
             .catchError((error){
               print(error);
             });
@@ -188,15 +188,15 @@ class ChatPageState extends State<ChatPage> {
     // print("Contenido: ");
     // print(document['content']);
 
-    if(document['idFrom']==email){ //id
+    if(document.data()['idFrom']==email){ //id
       // Right (my message) - Nuestro mensaje se ubica a la derecha
       return Row(
         children: <Widget>[
-          document['type'] == 0
+          document.data()['type'] == 0
            //Text
            ? Container(
              child: Text(
-               document['content'],
+               document.data()['content'],
                style: TextStyle(color: Color(0xff203152)),
              ),
              padding: EdgeInsets.symmetric(horizontal: 10.0,vertical: 10.0),
@@ -208,7 +208,7 @@ class ChatPageState extends State<ChatPage> {
              margin: EdgeInsets.only(bottom: isLastMessageRight(index) ? 20.0 : 10.0, right: 10.0),
 
            )
-           : document['type'] == 1
+           : document.data()['type'] == 1
            //Image
            ? Container(
              child: FlatButton(
@@ -218,12 +218,12 @@ class ChatPageState extends State<ChatPage> {
                     child:
                     //(document['content'] == null || document['content'] == 'null') ? imageUser : "${document['content']}"
                     CachedNetworkImage(
-                      imageUrl: "${document['content']}" ,
+                      imageUrl: imageUser,//"${document.data()['content']}"
                       //errorWidget: (context, url, error)=>Icon(Icons.error),
                       //cacheManager: baseCacheManager,
                       useOldImageOnUrlChange: true,
-                      width: 200.0,
-                      height: 200.0,
+                      width: 50.0,
+                      height: 50.0,
                       fit: BoxFit.fill,
                     )
                  )
@@ -278,10 +278,10 @@ class ChatPageState extends State<ChatPage> {
                   //clipBehavior: Clip.hardEdge,
                 )
                 : Container(width: 35.0),
-                document['type'] == 0
+                document.data()['type'] == 0
                 ? Container(
                   child: Text(
-                    document['content'],
+                    document.data()['content'],
                     style: TextStyle(color: Colors.white),
                   ),
                   padding: EdgeInsets.fromLTRB(15.0, 10.0, 15.0, 10.0),
@@ -289,7 +289,7 @@ class ChatPageState extends State<ChatPage> {
                   decoration: BoxDecoration(color: Color(0xff203152), borderRadius: BorderRadius.circular(8.0)),
                   margin: EdgeInsets.only(left: 10.0),
                 )
-                : document['type'] == 1
+                : document.data()['type'] == 1
                 ? Container(
                   child: FlatButton(
                     child: Material(
@@ -298,11 +298,11 @@ class ChatPageState extends State<ChatPage> {
                         child:
                         //(document['content'] == null || document['content'] == 'null') ? imageUser : "${document['content']}"
                         CachedNetworkImage(
-                          imageUrl: "${document['content']}",
+                          imageUrl: "${document.data()['content']}",
                           //errorWidget: (context, url, error)=>Icon(Icons.error),
                           //cacheManager: baseCacheManager,
                           useOldImageOnUrlChange: true,
-                          width: 200.0,
+                          width: 50.0,
                           fit: BoxFit.fill,
                         )
                       )
@@ -331,7 +331,7 @@ class ChatPageState extends State<ChatPage> {
             ? Container(
               child: Text(
                 DateFormat('dd MMM kk:mm')
-                .format(DateTime.fromMillisecondsSinceEpoch(int.parse(document['timestamp']))),
+                .format(DateTime.fromMillisecondsSinceEpoch(int.parse(document.data()['timestamp']))),
                 style: TextStyle(color: Colors.grey[300], fontSize: 12.0, fontStyle: FontStyle.italic),
               ),
               margin: EdgeInsets.only(left: 50.0, top: 5.0, bottom: 5.0),
@@ -347,7 +347,7 @@ class ChatPageState extends State<ChatPage> {
 
   bool isLastMessageLeft(int index){
     //id
-    if((index > 0 && listMessage != null && listMessage[index-1]['idFrom']==email) || index == 0){
+    if((index > 0 && listMessage != null && listMessage[index-1].data()['idFrom']==email) || index == 0){
       return true;
     }else{
       return false;
@@ -356,7 +356,7 @@ class ChatPageState extends State<ChatPage> {
 
   bool isLastMessageRight(int index){
     //id
-    if((index > 0 && listMessage != null && listMessage[index-1]['idFrom'] != email) || index == 0){
+    if((index > 0 && listMessage != null && listMessage[index-1].data()['idFrom'] != email) || index == 0){
       return true;
     }else{
       return false;
@@ -607,13 +607,13 @@ class ChatPageState extends State<ChatPage> {
       ? Center(
         child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Color(0xfff5a623))),
       ) : StreamBuilder(
-        stream: Firestore.instance
+        stream: FirebaseFirestore.instance
             .collection('messages')
-            .document(groupChatId)
+            .doc(groupChatId)
             .collection(groupChatId)
             .orderBy('timestamp',descending: true)
             .limit(20)
-            .snapshots(),
+            .snapshots(includeMetadataChanges: true),
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot){
           
           if(!snapshot.hasData){
@@ -621,13 +621,13 @@ class ChatPageState extends State<ChatPage> {
               child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Color(0xfff5a623))),
             );
           }else{
-            listMessage = snapshot.data.documents;
+            listMessage = snapshot.data.docs;
               return ListView.builder(
               padding: EdgeInsets.all(10.0),
               itemBuilder: (context,index){
-                return buildItem(index, snapshot.data.documents[index]);
+                return buildItem(index, snapshot.data.docs[index]);
               },
-              itemCount: snapshot.data.documents.length,
+              itemCount: snapshot.data.docs.length,
               reverse: true,
               controller: listScrollController,
             );

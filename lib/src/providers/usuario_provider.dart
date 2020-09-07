@@ -13,6 +13,8 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:selftourapp/src/providers/push_notifications_provider.dart';
 import 'package:dio/dio.dart';
 import 'package:http_parser/http_parser.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+//import 'package:apple_sign_in/apple_sign_in.dart';
 //import 'package:selftourapp/src/utils/utils.dart';
 //import 'package:shared_preferences/shared_preferences.dart';
 
@@ -48,7 +50,7 @@ class UsuarioProvider{
   FirebaseAuth _auth = FirebaseAuth.instance;
   final facebookLogin = new FacebookLogin();
   bool isLogged = false;
-  FirebaseUser myUser;
+  User myUser;
   //Twitter Sign in
     /*var twitterlogin = new TwitterLogin(
       consumerKey: '16CajoQjMsVVwX09Bwg2uommR',
@@ -144,13 +146,13 @@ class UsuarioProvider{
        });
       // Check is already sign up - Checa si está logueado
       // id decoded['id'].toString()
-      final QuerySnapshot result = await Firestore.instance.collection('users').where('email',isEqualTo: decoded['user'].toString() ).getDocuments(); //user.uid
-      final List<DocumentSnapshot> documents = result.documents;
-      final coleccion = Firestore.instance.collection('users').document('${prefs.email}').collection('tokensfcm');
+      final QuerySnapshot result = await FirebaseFirestore.instance.collection('users').where('email',isEqualTo: decoded['user'].toString() ).getDocuments(); //user.uid
+      final List<DocumentSnapshot> documents = result.docs;
+      final coleccion = FirebaseFirestore.instance.collection('users').doc('${prefs.email}').collection('tokensfcm');
       if(documents.length == 0){
         // Update data to server if new user - Actualiza los datos del servidor
         // si el usuario es nuevo
-        Firestore.instance.collection('users').document(decoded['user'].toString()).setData(
+        FirebaseFirestore.instance.collection('users').doc(decoded['user'].toString()).set(
           {
             'tokenfcm': "${prefs.tokenFCM.toString()}",
             'nickname':decoded['name'],
@@ -162,9 +164,9 @@ class UsuarioProvider{
           }
         );
 
-        Firestore.instance.runTransaction((transaction)async{
-            await transaction.set(
-              coleccion.document(),
+        FirebaseFirestore.instance.runTransaction((transaction)async{
+             transaction.set(
+              coleccion.doc(),
               {
                 'token': prefs.tokenFCM.toString()
               }
@@ -179,14 +181,14 @@ class UsuarioProvider{
         
       }else{
         print("El usuario existe");
-        final QuerySnapshot result = await Firestore.instance.collection('users').where('email',isEqualTo: prefs.email).getDocuments(); //authUser.providerData[1].email
-        final List<DocumentSnapshot> documents = result.documents;
-        final coleccion = Firestore.instance.collection('users').document('${prefs.email}').collection('tokensfcm');
+        final QuerySnapshot result = await FirebaseFirestore.instance.collection('users').where('email',isEqualTo: prefs.email).get(); //authUser.providerData[1].email
+        final List<DocumentSnapshot> documents = result.docs;
+        final coleccion = FirebaseFirestore.instance.collection('users').doc('${prefs.email}').collection('tokensfcm');
         //final List<DocumentSnapshot> documentColeccion = coleccion.documents;
         //documentColeccion.single.data['token'] != prefs.tokenFCM
 
         
-        if(documents.single.data['tokenfcm'] != prefs.tokenFCM ){
+        if(documents.single.data()['tokenfcm'] != prefs.tokenFCM ){
             
             // Firestore.instance.collection('users').document(prefs.email).setData(
             //   {
@@ -200,13 +202,13 @@ class UsuarioProvider{
             //     //'chattingWith': null
             //   }
             // );
-          Firestore.instance.collection('users').document(prefs.email).updateData({
+          FirebaseFirestore.instance.collection('users').doc(prefs.email).update({
             'tokenfcm': prefs.tokenFCM.toString()
           });
           print("Escribiendo datos");
-          Firestore.instance.runTransaction((transaction)async{
-            await transaction.set(
-              coleccion.document(),
+          FirebaseFirestore.instance.runTransaction((transaction)async{
+             transaction.set(
+              coleccion.doc(),
               {
                 'token': prefs.tokenFCM.toString()
               }
@@ -230,7 +232,7 @@ class UsuarioProvider{
     //print('Usuario: ${user.displayName}, ${user.email}, ${user.photoUrl},${user.providerId}');
   }
 
-  Future<FirebaseUser> logEmailPassword(String email,String password)async{
+  Future<User> logEmailPassword(String email,String password)async{
     // try{
     //    myUser = await _auth.signInWithEmailAndPassword(email: email, password: password);
     //   assert(myUser != null);
@@ -242,16 +244,16 @@ class UsuarioProvider{
     //   print(e); 
     //   return null;
     // }
-    myUser = await _auth.signInWithEmailAndPassword(email: email, password: password);
+    myUser = (await _auth.signInWithEmailAndPassword(email: email, password: password)).user;
     return myUser;
   }
 
-  Future<FirebaseUser> registerEmail(String email,String password)async{
+  Future<User> registerEmail(String email,String password)async{
     
-    myUser = await _auth.createUserWithEmailAndPassword(
+    myUser = (await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password
-      );
+      )).user;
     print("Respuesta del registro: ");
     print(myUser);
     return myUser;
@@ -406,7 +408,7 @@ class UsuarioProvider{
   }
 
   //Iniciar sesión en facebook
-  Future<FirebaseUser> loginWithFacebook() async {
+  Future<User> loginWithFacebook() async {
     var result = await facebookLogin.logIn(['email']);
     //facebookLogin.loginBehavior = FacebookLoginBehavior.nativeWithFallback;
     debugPrint(result.status.toString());
@@ -415,9 +417,9 @@ class UsuarioProvider{
         final token = result.accessToken;
         
         print("token: ${token.token}");
-        final AuthCredential credential = FacebookAuthProvider.getCredential(accessToken: token.token );
+        final AuthCredential credential = FacebookAuthProvider.credential(token.token );
         myUser =
-          await _auth.signInWithCredential(credential);
+          (await _auth.signInWithCredential(credential)).user;
         //prefs.token = token.toString();
         //prefs.name = myUser.providerData[1].displayName;
         //prefs.email = myUser.providerData[1].email;
@@ -543,7 +545,7 @@ class UsuarioProvider{
   }
 */
   //Iniciar sesión en Google
-  Future<FirebaseUser> loginWithGoogle() async{
+  Future<User> loginWithGoogle() async{
     //Se crea una instancia de GoogleSignAccount
     //Se está solicitando el cuadro de dialogo de inicio de sesion en google
     GoogleSignInAccount googleSignInAccount = await googleSignIn.signIn();
@@ -558,7 +560,7 @@ class UsuarioProvider{
     print("info: ${info['email']}");
     //Se hace la autenticacion con firebase
     //Verifica si la cuenta existe
-   myUser = await _auth.signInWithCredential(GoogleAuthProvider.getCredential(idToken: gSA.idToken,accessToken:gSA.accessToken));
+   myUser = (await _auth.signInWithCredential(GoogleAuthProvider.credential(idToken: gSA.idToken,accessToken:gSA.accessToken))).user;
    //prefs.token = gSA.idToken;
     
     print("Usuario Firebase Google: ");
@@ -587,6 +589,24 @@ class UsuarioProvider{
     print(decodedResp);
 
     return decodedResp;
+  }
+
+  //Login con Apple
+  Future<User> loginApple()async{
+    final appleIdCredential = await SignInWithApple.getAppleIDCredential(
+      scopes: [
+        AppleIDAuthorizationScopes.email,
+        AppleIDAuthorizationScopes.fullName,
+      ],
+    );
+
+    OAuthProvider oAuthProvider = new OAuthProvider("apple.com");
+    final credential = oAuthProvider.credential(
+      idToken: appleIdCredential.identityToken,
+      accessToken: appleIdCredential.authorizationCode
+    );
+    final User user = (await _auth.signInWithCredential(credential)).user;
+    return user;
   }
 
   Future<Map<String,dynamic>> verifGoogle(String idToken)async{

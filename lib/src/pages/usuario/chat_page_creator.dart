@@ -72,7 +72,7 @@ class ChatPageState extends State<ChatPageCreator> {
     }else{
       groupChatId = '$userEmail-$email';
     }
-    Firestore.instance.collection('users').document(email).updateData({'chatingWith': userEmail});
+    FirebaseFirestore.instance.collection('users').doc(email).update({'chatingWith': userEmail});
     setState(() {
       
     });
@@ -122,14 +122,14 @@ class ChatPageState extends State<ChatPageCreator> {
     if(content.trim() != ''){
       textEditingController.clear();
 
-      DocumentReference documentReference = Firestore.instance
+      DocumentReference documentReference = FirebaseFirestore.instance
         .collection('messages')
-        .document(groupChatId)
+        .doc(groupChatId)
         .collection(groupChatId)
-        .document(DateTime.now().millisecondsSinceEpoch.toString());
+        .doc(DateTime.now().millisecondsSinceEpoch.toString());
       
-      Firestore.instance.runTransaction((transaction)async{
-        await transaction.set(
+      FirebaseFirestore.instance.runTransaction((transaction)async{
+        transaction.set(
           documentReference,
           {
             'idFrom': email,
@@ -148,15 +148,15 @@ class ChatPageState extends State<ChatPageCreator> {
   }
 
   Widget buildItem(int index, DocumentSnapshot document){
-    if(document['idFrom']==email){
+    if(document.data()['idFrom']==email){
       // Right (my message) - Nuestro mensaje se ubica a la derecha
       return Row(
         children: <Widget>[
-          document['type'] == 0
+          document.data()['type'] == 0
            //Text
            ? Container(
              child: Text(
-               document['content'],
+               document.data()['content'],
                style: TextStyle(color: Color(0xff203152)),
              ),
              padding: EdgeInsets.symmetric(horizontal: 10.0,vertical: 10.0),
@@ -168,13 +168,13 @@ class ChatPageState extends State<ChatPageCreator> {
              margin: EdgeInsets.only(bottom: isLastMessageRight(index) ? 20.0 : 10.0, right: 10.0),
 
            )
-           : document['type'] == 1
+           : document.data()['type'] == 1
            //Image
            ? Container(
              child: FlatButton(
                child: Material(
                  child: Image.network(
-                   document['content'],
+                   document.data()['content'],
                    width: 200.0,
                    height: 200.0,
                    fit: BoxFit.fill,
@@ -216,7 +216,7 @@ class ChatPageState extends State<ChatPageCreator> {
                ),
                onPressed: (){
                  Navigator.push(
-                              context, MaterialPageRoute(builder: (context) => FullPhoto(url: document['content'])));
+                              context, MaterialPageRoute(builder: (context) => FullPhoto(url: document.data()['content'])));
                },
                padding: EdgeInsets.all(0),
 
@@ -273,10 +273,10 @@ class ChatPageState extends State<ChatPageCreator> {
                   //clipBehavior: Clip.hardEdge,
                 )
                 : Container(width: 35.0),
-                document['type'] == 0
+                document.data()['type'] == 0
                 ? Container(
                   child: Text(
-                    document['content'],
+                    document.data()['content'],
                     style: TextStyle(color: Colors.white),
                   ),
                   padding: EdgeInsets.fromLTRB(15.0, 10.0, 15.0, 10.0),
@@ -284,12 +284,12 @@ class ChatPageState extends State<ChatPageCreator> {
                   decoration: BoxDecoration(color: Color(0xff203152), borderRadius: BorderRadius.circular(8.0)),
                   margin: EdgeInsets.only(left: 10.0),
                 )
-                : document['type'] == 1
+                : document.data()['type'] == 1
                 ? Container(
                   child: FlatButton(
                     child: Material(
                       child: Image.network(
-                        document['content'],
+                        document.data()['content'],
                         width: 200.0,
                         height: 200.0,
                         fit: BoxFit.fill,
@@ -332,7 +332,7 @@ class ChatPageState extends State<ChatPageCreator> {
                     ),
                     onPressed: (){
                       Navigator.push(context,
-                                    MaterialPageRoute(builder: (context) => FullPhoto(url: document['content'])));
+                                    MaterialPageRoute(builder: (context) => FullPhoto(url: document.data()['content'])));
                     },
                     padding: EdgeInsets.all(0),
                   ),
@@ -354,7 +354,7 @@ class ChatPageState extends State<ChatPageCreator> {
             ? Container(
               child: Text(
                 DateFormat('dd MMM kk:mm')
-                .format(DateTime.fromMillisecondsSinceEpoch(int.parse(document['timestamp']))),
+                .format(DateTime.fromMillisecondsSinceEpoch(int.parse(document.data()['timestamp']))),
                 style: TextStyle(color: Colors.grey[300], fontSize: 12.0, fontStyle: FontStyle.italic),
               ),
               margin: EdgeInsets.only(left: 50.0, top: 5.0, bottom: 5.0),
@@ -620,9 +620,9 @@ class ChatPageState extends State<ChatPageCreator> {
       ? Center(
         child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Color(0xfff5a623))),
       ) : StreamBuilder(
-        stream: Firestore.instance
+        stream: FirebaseFirestore.instance
             .collection('messages')
-            .document(groupChatId)
+            .doc(groupChatId)
             .collection(groupChatId)
             .orderBy('timestamp',descending: true)
             .limit(20)

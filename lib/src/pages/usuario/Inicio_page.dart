@@ -13,7 +13,7 @@ class InicioPage extends StatefulWidget {
 
 class _InicioPageState extends State<InicioPage> {
   LoginBloc userBloc = LoginBloc();
-  FirebaseUser user;
+  User user;
 
   final usuarioProvider = new UsuarioProvider();
 
@@ -22,7 +22,7 @@ class _InicioPageState extends State<InicioPage> {
     userBloc = BlocProvider.of(context);
     return StreamBuilder(
       stream: userBloc.streamFirebase,
-      builder: (BuildContext context, AsyncSnapshot snapshot) {
+      builder: (BuildContext context, AsyncSnapshot<User> snapshot) {
         print(snapshot.connectionState);
         if (snapshot.connectionState == ConnectionState.waiting) {
           return _waiting();
@@ -32,13 +32,15 @@ class _InicioPageState extends State<InicioPage> {
           return _showProfile(snapshot);
         }else if(snapshot.connectionState == ConnectionState.done){
           return _showProfile(snapshot);
+        }else{
+          return _showProfile(snapshot);
         }
         
       },
     );
   }
 
-  Widget _showProfile(AsyncSnapshot<FirebaseUser> snapshot) {
+  Widget _showProfile(AsyncSnapshot<User> snapshot) {
     if (!snapshot.hasData || snapshot.hasError) {
       print('El usuario no está logueado');
       return Scaffold(
@@ -55,14 +57,14 @@ class _InicioPageState extends State<InicioPage> {
     } else {
       print('Usuario logueado');
       print('Email: ${snapshot.data.providerData.map((pro)=>pro.email).toString()}');
-      print(snapshot.data.photoUrl.toString());
+      print(snapshot.data.photoURL.toString());
       //print('${user.providerData.map((pro)=>pro.email).toString()}');
       return Scaffold(
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Image.network(snapshot.data.photoUrl.toString()),
+              Image.network(snapshot.data.photoURL.toString()),
               Text(snapshot.data.displayName.toString()),
               //Text('${snapshot.data.providerData.map((pro)=>pro.email).toString()}'),
               Text(snapshot.data.email.toString()),

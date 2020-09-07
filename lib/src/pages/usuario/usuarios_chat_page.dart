@@ -42,7 +42,7 @@ class _ChatUsuariosPageState extends State<ChatUsuariosPage> {
         elevation: 0.0,
       ),
       body: StreamBuilder(
-            stream: Firestore.instance.collection('users').where('chattingWith',isEqualTo: '${prefs.email.toString()}').snapshots(), //prefs.iduser.toString()
+            stream: FirebaseFirestore.instance.collection('users').where('chattingWith',isEqualTo: '${prefs.email.toString()}').snapshots(), //prefs.iduser.toString()
             builder: (context, AsyncSnapshot<QuerySnapshot>snapshot){
               
               switch(snapshot.connectionState){
@@ -88,7 +88,7 @@ class _ChatUsuariosPageState extends State<ChatUsuariosPage> {
                       ],
                     );
                   }else{
-                    if(snapshot.data.documents.isEmpty || snapshot.data.documents.length == 0 || snapshot.data.documents == null){
+                    if(snapshot.data.docs.isEmpty || snapshot.data.docs.length == 0 || snapshot.data.docs == null){
                       return Column(
                         children: <Widget>[
                           SizedBox(
@@ -106,9 +106,9 @@ class _ChatUsuariosPageState extends State<ChatUsuariosPage> {
                       );
                     }else{
                       return ListView.builder(
-                        itemCount: snapshot.data.documents.length,
+                        itemCount: snapshot.data.docs.length,
                         itemBuilder: (context,index){
-                          return itemUser(context, snapshot.data.documents[index]);
+                          return itemUser(context, snapshot.data.docs[index]);
                         },
                       );
                     }
@@ -117,8 +117,8 @@ class _ChatUsuariosPageState extends State<ChatUsuariosPage> {
                 break;
                 case ConnectionState.active:
                   print("Mensajes: ");
-                  print(snapshot.data.documents);
-                  print(prefs.token);
+                  print(snapshot.data.docs);
+                  //print(prefs.token);
                   if(!snapshot.hasData){
                     return Column(
                       children: <Widget>[
@@ -131,7 +131,7 @@ class _ChatUsuariosPageState extends State<ChatUsuariosPage> {
                       ],
                     );
                   }else{
-                    if(snapshot.data.documents.isEmpty || snapshot.data.documents.length == 0 || snapshot.data.documents == null){
+                    if(snapshot.data.docs.isEmpty || snapshot.data.docs.length == 0 || snapshot.data.docs == null){
                       return Column(
                         children: <Widget>[
                           SizedBox(
@@ -149,9 +149,9 @@ class _ChatUsuariosPageState extends State<ChatUsuariosPage> {
                       );
                     }else{
                       return ListView.builder(
-                        itemCount: snapshot.data.documents.length,
+                        itemCount: snapshot.data.docs.length,
                         itemBuilder: (context,index){
-                          return itemUser(context, snapshot.data.documents[index]);
+                          return itemUser(context, snapshot.data.docs[index]);
                         },
                       );
                     }
@@ -208,7 +208,7 @@ class _ChatUsuariosPageState extends State<ChatUsuariosPage> {
                 decoration: BoxDecoration(
                   image: DecorationImage(
                     image: NetworkImage(
-                      (snapshot['photoUrl'] == 'null' || snapshot['photoUrl'] == null || snapshot['photoUrl'] == '') ? imageUser : "${snapshot['photoUrl'].toString()}",
+                      (snapshot.data()['photoUrl'] == 'null' || snapshot.data()['photoUrl'] == null || snapshot.data()['photoUrl'] == '') ? imageUser : "${snapshot.data()['photoUrl'].toString()}",
                     ),
                   ),
                   shape: BoxShape.circle,
@@ -217,7 +217,7 @@ class _ChatUsuariosPageState extends State<ChatUsuariosPage> {
               SizedBox(
                 width: size.width * 0.04,
               ),
-              Text(snapshot['nickname'].toString())
+              Text(snapshot.data()['nickname'].toString())
             ],
           ),
           onPressed: (){
@@ -225,7 +225,7 @@ class _ChatUsuariosPageState extends State<ChatUsuariosPage> {
               builder: (context){
                 //userId: snapshot['id'].toString(),
                 //tokenFCM: snapshot['tokenfcm'].toString(),
-                return ChatPage(userEmail: snapshot['email'].toString() ,userName: snapshot['nickname'].toString(),userAvatar: snapshot['photoUrl'].toString()); //snapshot['id'].toString()
+                return ChatPage(userEmail: snapshot.data()['email'].toString() ,userName: snapshot.data()['nickname'].toString(),userAvatar: snapshot.data()['photoUrl'].toString()); //snapshot['id'].toString()
               },
               //settings: RouteSettings(arguments: snapshot['id'].toString())
             ));

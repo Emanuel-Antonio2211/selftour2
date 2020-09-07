@@ -38,7 +38,7 @@ class _SesionPageState extends State<SesionPageChat> {
     InfoTour detalleTour = ModalRoute.of(context).settings.arguments;
     return StreamBuilder(
       stream: userBloc.authStatus,
-      builder: (BuildContext context, AsyncSnapshot<FirebaseUser> snapshot) {
+      builder: (BuildContext context, AsyncSnapshot<User> snapshot) {
     String inicioSesion = AppTranslations.of(context).text('title_login');
     String crearCuenta = AppTranslations.of(context).text('title_createaccount');
     if (!snapshot.hasData || snapshot.hasError) {

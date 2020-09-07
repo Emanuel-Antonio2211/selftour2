@@ -57,12 +57,14 @@ import 'package:selftourapp/src/translation_class/application.dart';
 //import 'package:selfttour/src/utils/utils.dart';
 import 'package:selftourapp/src/widgets/fotos_sitio.dart';
 import 'package:selftourapp/src/widgets/galeria_fotos_tour.dart';
-
+// Import the firebase_core plugin
+import 'package:firebase_core/firebase_core.dart';
 
 void main() async{
   //Crea una instancia de la clase PreferenciasUsuario
   
 WidgetsFlutterBinding.ensureInitialized();
+await Firebase.initializeApp();
  final prefs = new PreferenciasUsuario();
  await prefs.initPrefs();
     SystemChrome.setPreferredOrientations(
